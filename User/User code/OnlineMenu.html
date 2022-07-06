@@ -1,0 +1,551 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>OnlineMenu.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.ST3 {color: #ce7b00; background-color: #dfdfdf}
+.literal {color: #0000e6}
+.ST2 {color: #0000e6; background-color: #dfdfdf}
+.comment {color: #969696}
+.guarded {background-color: #dfdfdf}
+.ST1 {color: #969696; background-color: #dfdfdf}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\OnlineMenu.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+  7 
+  8 <span class="literal">import</span> java.awt.event.ActionEvent;
+  9 <span class="literal">import</span> java.awt.event.ActionListener;
+ 10 <span class="literal">import</span> javax.swing.JOptionPane;
+ 11 <span class="literal">import</span> javax.swing.Timer;
+ 12 
+ 13 <span class="comment">/**</span>
+ 14 <span class="comment"> * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">form</span> <span class="ST0">that</span> <span class="ST0">displays</span> <span class="ST0">the</span> <span class="ST0">online</span> <span class="ST0">menu</span><span class="ST0">.</span>
+ 15 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 16  <span class="comment">*/</span>
+ 17 <span class="literal">public</span> <span class="literal">class</span> OnlineMenu <span class="literal">extends</span> javax.swing.JFrame {
+ 18     <span class="literal">private</span> SessionInfo session;<span class="comment">//stores the session information</span>
+ 19     <span class="literal">private</span> String gameData[][]=<span class="literal">new</span> String[3][WIDTH_OF_ONLINE_RECORD];<span class="comment">//stores game data array</span>
+ 20     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_ONLINE_RECORD=14;<span class="comment">//stores the width of an online game record</span>
+ 21     <span class="literal">private</span>  TableRenderer renderer;<span class="comment">//renders the online games table</span>
+ 22     <span class="literal">private</span> Timer updateTableTimer;<span class="comment">//used to periodically update the online table by requesting data from the server</span>
+ 23     <span class="comment">/**</span>
+ 24 <span class="comment">     * </span><span class="comment">Creates</span> <span class="comment">new</span> <span class="comment">form</span> <span class="comment">OnlineMenu</span>
+ 25      <span class="comment">*/</span>
+ 26     <span class="literal">private</span> OnlineMenu() {
+ 27         initComponents();
+ 28     }
+ 29     <span class="comment">/**</span>
+ 30 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">new</span> <span class="ST0">online</span> <span class="ST0">form</span>
+ 31 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">sess</span> <span class="comment">The</span> <span class="comment">session</span> <span class="comment">information</span>
+ 32      <span class="comment">*/</span>
+ 33     <span class="literal">public</span> OnlineMenu(SessionInfo sess){
+ 34         session=sess;
+ 35         initComponents();
+ 36         <span class="comment">//intilaises various visual aspects of the form</span>
+ 37         playBtn.setEnabled(<span class="literal">false</span>);deleteBtn.setEnabled(<span class="literal">false</span>);
+ 38         onlineGamesTbl.getTableHeader().setReorderingAllowed(<span class="literal">false</span>);<span class="comment">//prevents columns from being moved by the user</span>
+ 39         onlineGamesTbl.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);<span class="comment">//ensures only one row can be selected - making it visually easier for the user to use        </span>
+ 40         renderer=<span class="literal">new</span> TableRenderer(<span class="literal">this</span>);<span class="comment">//creates a custom table renderer</span>
+ 41         onlineGamesTbl.getColumnModel().getColumn(0).setCellRenderer(renderer);
+ 42         onlineGamesTbl.getColumnModel().getColumn(1).setCellRenderer(renderer);
+ 43         onlineGamesTbl.getColumnModel().getColumn(2).setCellRenderer(renderer);
+ 44         updateTable();<span class="comment">//updates the table by getting the online records from the server</span>
+ 45         <span class="comment">//creates a timer that periodically updates the online game table with data from the server</span>
+ 46         updateTableTimer=<span class="literal">new</span> Timer(10000, <span class="literal">new</span> ActionListener(){
+ 47             <span class="comment">/**</span>
+ 48 <span class="comment">             * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">table</span> <span class="ST0">using</span> <span class="ST0">the</span> <span class="ST0">timer</span> <span class="ST0">every</span> <span class="ST0">x</span> <span class="ST0">number</span> <span class="ST0">of</span> <span class="ST0">milliseconds</span><span class="ST0">.</span>
+ 49 <span class="comment">             * </span><span class="ST0">@param</span> <span class="comment">e</span> <span class="comment">The</span> <span class="comment">ActionEvent</span> <span class="comment">from</span> <span class="comment">the</span> <span class="comment">timer</span> <span class="comment">indicating</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">table</span> <span class="comment">should</span> <span class="comment">be</span> <span class="comment">updated</span>
+ 50              <span class="comment">*/</span>
+ 51             @Override
+ 52             <span class="literal">public</span> <span class="literal">void</span> actionPerformed(ActionEvent e) {
+ 53                 updateTable();<span class="comment">//updates thte table</span>
+ 54             }
+ 55         });updateTableTimer.start();<span class="comment">//starts the timer</span>
+ 56     }
+ 57     <span class="comment">/**</span>
+ 58 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">play</span> <span class="ST0">button</span> <span class="ST0">as</span> <span class="ST0">enabled</span> <span class="ST0">or</span> <span class="ST0">disabled</span>
+ 59 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">enable</span> <span class="comment">Whether</span> <span class="comment">or</span> <span class="comment">not</span> <span class="comment">the</span> <span class="comment">play</span> <span class="comment">button</span> <span class="comment">should</span> <span class="comment">be</span> <span class="comment">enabled</span>
+ 60      <span class="comment">*/</span>
+ 61     <span class="literal">public</span> <span class="literal">void</span> setPlayButtonEnabled(<span class="literal">boolean</span> enable){
+ 62         playBtn.setEnabled(enable);
+ 63     }
+ 64     <span class="comment">/**</span>
+ 65 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">delete</span> <span class="ST0">button</span> <span class="ST0">as</span> <span class="ST0">enabled</span> <span class="ST0">or</span> <span class="ST0">disabled</span>
+ 66 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">enable</span> <span class="comment">Whether</span> <span class="comment">or</span> <span class="comment">not</span> <span class="comment">the</span> <span class="comment">delete</span> <span class="comment">button</span> <span class="comment">should</span> <span class="comment">be</span> <span class="comment">enabled</span>
+ 67      <span class="comment">*/</span>
+ 68     <span class="literal">public</span> <span class="literal">void</span> setDeleteButtonEnabled(<span class="literal">boolean</span> enable){
+ 69         deleteBtn.setEnabled(enable);
+ 70     }
+ 71     <span class="comment">/**</span>
+ 72 <span class="comment">     * </span><span class="comment">Connects</span> <span class="comment">to</span> <span class="comment">server</span> <span class="comment">and</span> <span class="comment">attempts</span> <span class="comment">to</span> <span class="comment">update</span> <span class="comment">table</span> <span class="comment">of</span> <span class="comment">all</span> <span class="comment">games</span>
+ 73      <span class="comment">*/</span>
+ 74     <span class="literal">private</span> <span class="literal">void</span> updateTable(){
+ 75         <span class="literal">try</span>{
+ 76             String[]games;
+ 77             <span class="comment">//sets table to empty first</span>
+ 78             <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;3;y++){
+ 79                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;3;x++){
+ 80                     onlineGamesTbl.setValueAt(<span class="string">&quot;&quot;</span>,y,x);
+ 81                 }
+ 82             }
+ 83             <span class="comment">//stores whether a given row should be highlighted based on whether a game actually exists in that row of the table</span>
+ 84             <span class="literal">boolean</span> isRowOneHighlighted=<span class="literal">true</span>;
+ 85             <span class="literal">boolean</span> isRowTwoHighlighted=<span class="literal">true</span>;
+ 86             <span class="literal">boolean</span> isRowThreeHighlighted=<span class="literal">true</span>;
+ 87             gameData=ThreadClient.getOnlineGameData(session.getUsername());<span class="comment">//gets game data from server</span>
+ 88             <span class="comment">//updates table based on game data array</span>
+ 89             <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;gameData.length;y++){
+ 90                 onlineGamesTbl.setValueAt(gameData[y][0],y,0);<span class="comment">//sets game code</span>
+ 91                 <span class="comment">//sets the username of the opponent</span>
+ 92                 <span class="literal">if</span>(session.getUsername().equals(gameData[y][1])){
+ 93                     onlineGamesTbl.setValueAt(gameData[y][2],y,1);
+ 94                 }<span class="literal">else</span>{
+ 95                     onlineGamesTbl.setValueAt(gameData[y][1],y,1);
+ 96                 }
+ 97                 games=gameData[y][3].split(OfflinePlay.SPLIT_FEN_STRING);
+ 98                 <span class="literal">if</span>(String.valueOf(onlineGamesTbl.getValueAt(y, 1)).equals(<span class="string">&quot;&quot;</span>)){<span class="comment">//if the game has not yet been created, the field is set as empty and the row is rendered as a different colour</span>
+ 99                     <span class="literal">switch</span> (y) {
+100                         <span class="literal">case</span> 0:
+101                             isRowOneHighlighted=<span class="literal">false</span>;
+102                             <span class="literal">break</span>;
+103                         <span class="literal">case</span> 1:
+104                             isRowTwoHighlighted=<span class="literal">false</span>;
+105                             <span class="literal">break</span>;
+106                         <span class="literal">default</span>:
+107                             isRowThreeHighlighted=<span class="literal">false</span>;
+108                             <span class="literal">break</span>;
+109                     }
+110                     onlineGamesTbl.setValueAt(<span class="string">&quot;&quot;</span>,y,2);
+111                 }<span class="literal">else</span>{
+112                     onlineGamesTbl.setValueAt(games[games.length-1].split(<span class="string">&quot;</span> <span class="string">&quot;</span>)[5],y,2);<span class="comment">//gets the move number</span>
+113                 }
+114             }
+115             renderer.updateRowColour(isRowOneHighlighted, isRowTwoHighlighted, isRowThreeHighlighted);<span class="comment">//updates highlighter</span>
+116         }<span class="literal">catch</span>(Exception e){
+117             JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">An error occured when retriving game data from the server. Please check your network settings. Error Details: </span><span class="string">&quot;</span>+e.getMessage(),<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+118             Menu menu = <span class="literal">new</span> Menu(session);
+119             menu.setVisible(<span class="literal">true</span>);
+120             <span class="literal">this</span>.dispose();<span class="literal">return</span>;<span class="comment">//displays error message and takes user back to menu</span>
+121         }
+122     }
+123     <span class="comment">/**</span>
+124 <span class="comment">     * </span><span class="ST0">This</span> <span class="ST0">method</span> <span class="ST0">is</span> <span class="ST0">called</span> <span class="ST0">from</span> <span class="ST0">within</span> <span class="ST0">the</span> <span class="ST0">constructor</span> <span class="ST0">to</span> <span class="ST0">initialize</span> <span class="ST0">the</span> <span class="ST0">form</span><span class="ST0">.</span>
+125 <span class="comment">     * </span><span class="comment">WARNING</span><span class="comment">: </span><span class="comment">Do</span> <span class="comment">NOT</span> <span class="comment">modify</span> <span class="comment">this</span> <span class="comment">code</span><span class="comment">.</span> <span class="comment">The</span> <span class="comment">content</span> <span class="comment">of</span> <span class="comment">this</span> <span class="comment">method</span> <span class="comment">is</span> <span class="comment">always</span>
+126 <span class="comment">     * </span><span class="comment">regenerated</span> <span class="comment">by</span> <span class="comment">the</span> <span class="comment">Form</span> <span class="comment">Editor</span><span class="comment">.</span>
+127      <span class="comment">*/</span>
+128     @SuppressWarnings(<span class="string">&quot;</span><span class="string">unchecked</span><span class="string">&quot;</span>)
+129     <span class="ST1">// &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Generated Code&quot;&gt;                          </span>
+130     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">initComponents</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+131 
+132         <span class="guarded">jPanel1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JPanel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+133         <span class="guarded">jLabel1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+134         <span class="guarded">gameAgainstPersonBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+135         <span class="guarded">gameAgainstPersonBtn1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+136         <span class="guarded">playGameAgainstFriendEnterCodeBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+137         <span class="guarded">jScrollPane1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JScrollPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+138         <span class="guarded">onlineGamesTbl</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JTable</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+139         <span class="guarded">menuBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+140         <span class="guarded">playBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+141         <span class="guarded">deleteBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+142 
+143         <span class="guarded">setDefaultCloseOperation</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">WindowConstants</span><span class="guarded">.</span><span class="guarded">EXIT_ON_CLOSE</span><span class="guarded">)</span><span class="guarded">;</span>
+144         <span class="guarded">setTitle</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Title</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+145 
+146         <span class="guarded">jLabel1</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Online Play</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+147 
+148         <span class="guarded">gameAgainstPersonBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">New Game Against Random Player</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+149         <span class="guarded">gameAgainstPersonBtn</span><span class="guarded">.</span><span class="guarded">setToolTipText</span><span class="guarded">(</span><span class="ST3">&quot;&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+150         <span class="guarded">gameAgainstPersonBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+151             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+152                 <span class="guarded">gameAgainstPersonBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+153             <span class="guarded">}</span>
+154         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+155 
+156         <span class="guarded">gameAgainstPersonBtn1</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Create Game Against Friend</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+157         <span class="guarded">gameAgainstPersonBtn1</span><span class="guarded">.</span><span class="guarded">setToolTipText</span><span class="guarded">(</span><span class="ST3">&quot;&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+158         <span class="guarded">gameAgainstPersonBtn1</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+159             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+160                 <span class="guarded">gameAgainstPersonBtn1ActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+161             <span class="guarded">}</span>
+162         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+163 
+164         <span class="guarded">playGameAgainstFriendEnterCodeBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Play Against Friend - Enter Game Code</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+165         <span class="guarded">playGameAgainstFriendEnterCodeBtn</span><span class="guarded">.</span><span class="guarded">setToolTipText</span><span class="guarded">(</span><span class="ST3">&quot;&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+166         <span class="guarded">playGameAgainstFriendEnterCodeBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+167             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+168                 <span class="guarded">playGameAgainstFriendEnterCodeBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+169             <span class="guarded">}</span>
+170         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+171 
+172         <span class="guarded">onlineGamesTbl</span><span class="guarded">.</span><span class="guarded">setModel</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">table</span><span class="guarded">.</span><span class="guarded">DefaultTableModel</span><span class="guarded">(</span>
+173             <span class="ST2">new</span> <span class="guarded">Object</span> <span class="guarded">[</span><span class="guarded">]</span><span class="guarded">[</span><span class="guarded">]</span> <span class="guarded">{</span>
+174                 <span class="guarded">{</span><span class="ST2">null</span><span class="guarded">,</span> <span class="ST2">null</span><span class="guarded">,</span> <span class="ST2">null</span><span class="guarded">}</span><span class="guarded">,</span>
+175                 <span class="guarded">{</span><span class="ST2">null</span><span class="guarded">,</span> <span class="ST2">null</span><span class="guarded">,</span> <span class="ST2">null</span><span class="guarded">}</span><span class="guarded">,</span>
+176                 <span class="guarded">{</span><span class="ST2">null</span><span class="guarded">,</span> <span class="ST2">null</span><span class="guarded">,</span> <span class="ST2">null</span><span class="guarded">}</span>
+177             <span class="guarded">}</span><span class="guarded">,</span>
+178             <span class="ST2">new</span> <span class="guarded">String</span> <span class="guarded">[</span><span class="guarded">]</span> <span class="guarded">{</span>
+179                 <span class="ST3">&quot;</span><span class="ST3">Game Code</span><span class="ST3">&quot;</span><span class="guarded">,</span> <span class="ST3">&quot;</span><span class="ST3">Opponent</span><span class="ST3">&quot;</span><span class="guarded">,</span> <span class="ST3">&quot;</span><span class="ST3">Move Number</span><span class="ST3">&quot;</span>
+180             <span class="guarded">}</span>
+181         <span class="guarded">)</span> <span class="guarded">{</span>
+182             <span class="guarded">Class</span><span class="guarded">[</span><span class="guarded">]</span> <span class="guarded">types</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">Class</span> <span class="guarded">[</span><span class="guarded">]</span> <span class="guarded">{</span>
+183                 <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">lang</span><span class="guarded">.</span><span class="guarded">String</span><span class="guarded">.</span><span class="ST2">class</span><span class="guarded">,</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">lang</span><span class="guarded">.</span><span class="guarded">String</span><span class="guarded">.</span><span class="ST2">class</span><span class="guarded">,</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">lang</span><span class="guarded">.</span><span class="guarded">String</span><span class="guarded">.</span><span class="ST2">class</span>
+184             <span class="guarded">}</span><span class="guarded">;</span>
+185             <span class="ST2">boolean</span><span class="guarded">[</span><span class="guarded">]</span> <span class="guarded">canEdit</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="ST2">boolean</span> <span class="guarded">[</span><span class="guarded">]</span> <span class="guarded">{</span>
+186                 <span class="ST2">false</span><span class="guarded">,</span> <span class="ST2">false</span><span class="guarded">,</span> <span class="ST2">false</span>
+187             <span class="guarded">}</span><span class="guarded">;</span>
+188 
+189             <span class="ST2">public</span> <span class="guarded">Class</span> <span class="guarded">getColumnClass</span><span class="guarded">(</span><span class="ST2">int</span> <span class="guarded">columnIndex</span><span class="guarded">)</span> <span class="guarded">{</span>
+190                 <span class="ST2">return</span> <span class="guarded">types</span> <span class="guarded">[</span><span class="guarded">columnIndex</span><span class="guarded">]</span><span class="guarded">;</span>
+191             <span class="guarded">}</span>
+192 
+193             <span class="ST2">public</span> <span class="ST2">boolean</span> <span class="guarded">isCellEditable</span><span class="guarded">(</span><span class="ST2">int</span> <span class="guarded">rowIndex</span><span class="guarded">,</span> <span class="ST2">int</span> <span class="guarded">columnIndex</span><span class="guarded">)</span> <span class="guarded">{</span>
+194                 <span class="ST2">return</span> <span class="guarded">canEdit</span> <span class="guarded">[</span><span class="guarded">columnIndex</span><span class="guarded">]</span><span class="guarded">;</span>
+195             <span class="guarded">}</span>
+196         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+197         <span class="guarded">onlineGamesTbl</span><span class="guarded">.</span><span class="guarded">addFocusListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">FocusAdapter</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+198             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">focusGained</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">FocusEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+199                 <span class="guarded">onlineGamesTblFocusGained</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+200             <span class="guarded">}</span>
+201             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">focusLost</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">FocusEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+202                 <span class="guarded">onlineGamesTblFocusLost</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+203             <span class="guarded">}</span>
+204         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+205         <span class="guarded">jScrollPane1</span><span class="guarded">.</span><span class="guarded">setViewportView</span><span class="guarded">(</span><span class="guarded">onlineGamesTbl</span><span class="guarded">)</span><span class="guarded">;</span>
+206         <span class="ST2">if</span> <span class="guarded">(</span><span class="guarded">onlineGamesTbl</span><span class="guarded">.</span><span class="guarded">getColumnModel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">getColumnCount</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">&gt;</span> <span class="guarded">0</span><span class="guarded">)</span> <span class="guarded">{</span>
+207             <span class="guarded">onlineGamesTbl</span><span class="guarded">.</span><span class="guarded">getColumnModel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">getColumn</span><span class="guarded">(</span><span class="guarded">0</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">setResizable</span><span class="guarded">(</span><span class="ST2">false</span><span class="guarded">)</span><span class="guarded">;</span>
+208             <span class="guarded">onlineGamesTbl</span><span class="guarded">.</span><span class="guarded">getColumnModel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">getColumn</span><span class="guarded">(</span><span class="guarded">1</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">setResizable</span><span class="guarded">(</span><span class="ST2">false</span><span class="guarded">)</span><span class="guarded">;</span>
+209             <span class="guarded">onlineGamesTbl</span><span class="guarded">.</span><span class="guarded">getColumnModel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">getColumn</span><span class="guarded">(</span><span class="guarded">2</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">setResizable</span><span class="guarded">(</span><span class="ST2">false</span><span class="guarded">)</span><span class="guarded">;</span>
+210         <span class="guarded">}</span>
+211 
+212         <span class="guarded">menuBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Menu</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+213         <span class="guarded">menuBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+214             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+215                 <span class="guarded">menuBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+216             <span class="guarded">}</span>
+217         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+218 
+219         <span class="guarded">playBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Play</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+220         <span class="guarded">playBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+221             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+222                 <span class="guarded">playBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+223             <span class="guarded">}</span>
+224         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+225 
+226         <span class="guarded">deleteBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Delete</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+227         <span class="guarded">deleteBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+228             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+229                 <span class="guarded">deleteBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+230             <span class="guarded">}</span>
+231         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+232 
+233         <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span> <span class="guarded">jPanel1Layout</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">)</span><span class="guarded">;</span>
+234         <span class="guarded">jPanel1</span><span class="guarded">.</span><span class="guarded">setLayout</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">)</span><span class="guarded">;</span>
+235         <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">setHorizontalGroup</span><span class="guarded">(</span>
+236             <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+237             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+238                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">141</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+239                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+240                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+241                         <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">,</span> <span class="ST2">false</span><span class="guarded">)</span>
+242                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">gameAgainstPersonBtn</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+243                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">gameAgainstPersonBtn1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+244                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">playGameAgainstFriendEnterCodeBtn</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span><span class="guarded">)</span>
+245                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">304</span><span class="guarded">,</span> <span class="guarded">304</span><span class="guarded">,</span> <span class="guarded">304</span><span class="guarded">)</span><span class="guarded">)</span>
+246                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+247                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jScrollPane1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">651</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span>
+248                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">101</span><span class="guarded">,</span> <span class="guarded">101</span><span class="guarded">,</span> <span class="guarded">101</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+249             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+250                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">391</span><span class="guarded">,</span> <span class="guarded">391</span><span class="guarded">,</span> <span class="guarded">391</span><span class="guarded">)</span>
+251                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel1</span><span class="guarded">)</span>
+252                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span><span class="guarded">)</span>
+253             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+254                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">29</span><span class="guarded">,</span> <span class="guarded">29</span><span class="guarded">,</span> <span class="guarded">29</span><span class="guarded">)</span>
+255                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">menuBtn</span><span class="guarded">)</span>
+256                 <span class="guarded">.</span><span class="guarded">addPreferredGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">LayoutStyle</span><span class="guarded">.</span><span class="guarded">ComponentPlacement</span><span class="guarded">.</span><span class="guarded">RELATED</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+257                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">deleteBtn</span><span class="guarded">)</span>
+258                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">)</span>
+259                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">playBtn</span><span class="guarded">)</span>
+260                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">50</span><span class="guarded">,</span> <span class="guarded">50</span><span class="guarded">,</span> <span class="guarded">50</span><span class="guarded">)</span><span class="guarded">)</span>
+261         <span class="guarded">)</span><span class="guarded">;</span>
+262         <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">setVerticalGroup</span><span class="guarded">(</span>
+263             <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+264             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+265                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">)</span>
+266                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel1</span><span class="guarded">)</span>
+267                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">)</span>
+268                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">gameAgainstPersonBtn</span><span class="guarded">)</span>
+269                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">)</span>
+270                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">gameAgainstPersonBtn1</span><span class="guarded">)</span>
+271                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">)</span>
+272                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">playGameAgainstFriendEnterCodeBtn</span><span class="guarded">)</span>
+273                 <span class="guarded">.</span><span class="guarded">addPreferredGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">LayoutStyle</span><span class="guarded">.</span><span class="guarded">ComponentPlacement</span><span class="guarded">.</span><span class="guarded">RELATED</span><span class="guarded">,</span> <span class="guarded">65</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+274                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+275                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+276                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jScrollPane1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">114</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span>
+277                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">53</span><span class="guarded">,</span> <span class="guarded">53</span><span class="guarded">,</span> <span class="guarded">53</span><span class="guarded">)</span>
+278                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">menuBtn</span><span class="guarded">)</span>
+279                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">15</span><span class="guarded">,</span> <span class="guarded">15</span><span class="guarded">,</span> <span class="guarded">15</span><span class="guarded">)</span><span class="guarded">)</span>
+280                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+281                         <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">BASELINE</span><span class="guarded">)</span>
+282                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">playBtn</span><span class="guarded">)</span>
+283                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">deleteBtn</span><span class="guarded">)</span><span class="guarded">)</span>
+284                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">39</span><span class="guarded">,</span> <span class="guarded">39</span><span class="guarded">,</span> <span class="guarded">39</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+285         <span class="guarded">)</span><span class="guarded">;</span>
+286 
+287         <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span> <span class="guarded">layout</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">(</span><span class="guarded">getContentPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">;</span>
+288         <span class="guarded">getContentPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">setLayout</span><span class="guarded">(</span><span class="guarded">layout</span><span class="guarded">)</span><span class="guarded">;</span>
+289         <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">setHorizontalGroup</span><span class="guarded">(</span>
+290             <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+291             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+292         <span class="guarded">)</span><span class="guarded">;</span>
+293         <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">setVerticalGroup</span><span class="guarded">(</span>
+294             <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+295             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+296         <span class="guarded">)</span><span class="guarded">;</span>
+297 
+298         <span class="guarded">pack</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+299     <span class="guarded">}</span><span class="ST1">// &lt;/editor-fold&gt;                        </span>
+300 
+301     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">onlineGamesTblFocusGained</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">FocusEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                           
+302         <span class="comment">//enables play and delete button once a row has been selected</span>
+303         playBtn.setEnabled(<span class="literal">true</span>);deleteBtn.setEnabled(<span class="literal">true</span>);
+304     <span class="guarded">}</span>                                          
+305 
+306     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">onlineGamesTblFocusLost</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">FocusEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                         
+307 
+308     <span class="guarded">}</span>                                        
+309 
+310     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">menuBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                        
+311         <span class="comment">// takes user back to menu</span>
+312         Menu menu = <span class="literal">new</span> Menu(session);
+313         menu.setVisible(<span class="literal">true</span>);
+314         <span class="literal">this</span>.dispose();
+315     <span class="guarded">}</span>                                       
+316 
+317     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">gameAgainstPersonBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                                     
+318         <span class="comment">//checks to ensure that the user is in two or fewer games currently</span>
+319         <span class="literal">try</span>{
+320             Integer.parseInt(String.valueOf(onlineGamesTbl.getValueAt(2, 0)));
+321             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">You can only play up to three online games at any one time.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+322             <span class="literal">return</span>;
+323         }<span class="literal">catch</span>(NumberFormatException e){
+324         }
+325         <span class="literal">try</span>{
+326             ThreadClient.createNewRandomOnlineGame(session.getUsername());<span class="comment">//creates a new random online game</span>
+327         }<span class="literal">catch</span>(Exception e){
+328             JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">An error occured when communicating with the server. Please check your network settings. Error Details: </span><span class="string">&quot;</span>+e,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+329         }
+330         updateTable();<span class="comment">//updates the table to reflect the change</span>
+331     <span class="guarded">}</span>                                                    
+332 
+333     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">deleteBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                          
+334         <span class="comment">//attempts to delete a game that can be deleted.</span>
+335         <span class="comment">//only games where the opponent has net yet joined can be deleted</span>
+336         <span class="literal">if</span>(onlineGamesTbl.getSelectedRow()&gt;=0 &amp;&amp; onlineGamesTbl.getSelectedRow()&lt;=2){
+337             <span class="literal">if</span>(onlineGamesTbl.getValueAt(onlineGamesTbl.getSelectedRow(),1).equals(<span class="string">&quot;&quot;</span>)==<span class="literal">false</span>){
+338                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">You can only delete games that an opponent has not yet joined. Please go into the game and resign if you wish to remove the game.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Unable to Delete</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+339                 <span class="literal">return</span>;
+340             }
+341             <span class="comment">//asks for confirmation before deleting games</span>
+342             <span class="literal">int</span> confirm=JOptionPane.showConfirmDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">Are you sure you would like to delete this game?</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Delete?</span><span class="string">&quot;</span>,JOptionPane.YES_NO_CANCEL_OPTION);
+343             <span class="literal">if</span>(confirm!=JOptionPane.YES_OPTION){
+344                 <span class="literal">return</span>;
+345             }
+346             <span class="literal">try</span>{
+347                 ThreadClient.deleteOnlineGame(Integer.parseInt(String.valueOf(onlineGamesTbl.getValueAt(onlineGamesTbl.getSelectedRow(),0))), 0.5);<span class="comment">//deletes game</span>
+348                 updateTable();<span class="comment">//updates the tab;e</span>
+349             }<span class="literal">catch</span>(Exception  e){
+350                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">Error when communicating with the server. Please check your network settings. Error details: </span><span class="string">&quot;</span>+e.getMessage(),<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+351                 updateTable();
+352                 <span class="literal">return</span>;
+353             }
+354         }<span class="literal">else</span>{
+355             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Please select a valid game to delete</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+356             <span class="literal">return</span>;
+357         }
+358     <span class="guarded">}</span>                                         
+359 
+360     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">gameAgainstPersonBtn1ActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                                      
+361         <span class="comment">//takes user to form to create game against a friend</span>
+362         <span class="literal">if</span>(onlineGamesTbl.getValueAt(2,0).equals(<span class="string">&quot;&quot;</span>)==<span class="literal">false</span>){
+363             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">You can only have three games at any one time.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+364             <span class="literal">return</span>;
+365         }
+366         CreateGameAgainstFriend game = <span class="literal">new</span> CreateGameAgainstFriend(session);
+367         game.setVisible(<span class="literal">true</span>);
+368         <span class="literal">this</span>.dispose();
+369     <span class="guarded">}</span>                                                     
+370 
+371     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">playGameAgainstFriendEnterCodeBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                                                  
+372         <span class="comment">// allows user to input game code and play against friend</span>
+373         <span class="literal">if</span>(onlineGamesTbl.getValueAt(2,0).equals(<span class="string">&quot;&quot;</span>)==<span class="literal">false</span>){<span class="comment">//ensures that user does not join more than three games</span>
+374             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">You can only have three games at any one time.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+375             <span class="literal">return</span>;
+376         }
+377         String code =JOptionPane.showInputDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">Please enter the game code provided by a friend:</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Enter code</span><span class="string">&quot;</span>,JOptionPane.OK_CANCEL_OPTION);
+378         <span class="literal">if</span>(code==<span class="literal">null</span>){<span class="comment">//if cancel is pressed, nothing happens</span>
+379             <span class="literal">return</span>;
+380         }
+381         <span class="literal">try</span>{
+382             <span class="literal">int</span> codeInt=Integer.parseInt(code);<span class="comment">//tries converting code to an integer</span>
+383             <span class="literal">if</span>(codeInt&lt;0){
+384                 <span class="comment">//type and range check to ensure that the game code is possibly valid</span>
+385                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">The game code must be a valid integer greater than 0</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Invalid code</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+386                 <span class="literal">return</span>;
+387             }
+388             <span class="literal">try</span>{
+389                 <span class="literal">boolean</span> succ = ThreadClient.joinGameUsingFriendCode(codeInt, session.getUsername());<span class="comment">//attempts to join the game</span>
+390                 <span class="literal">if</span>(succ==<span class="literal">false</span>){
+391                     JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">Unable to join game. The code entered is invalid or can&#39;t be used to join a game</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+392                     updateTable();
+393                     <span class="literal">return</span>;
+394                 }
+395                 updateTable();<span class="comment">//updates the table</span>
+396             }<span class="literal">catch</span>(Exception e){
+397                  JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">Error when communicating with the server. Please check your network settings. Error details: </span><span class="string">&quot;</span>+e.getMessage(),<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+398                  updateTable();
+399                  <span class="literal">return</span>;
+400             }
+401         }<span class="literal">catch</span>(NumberFormatException e){
+402             JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">The game code must be a valid integer greater than 0</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Invalid code</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+403             <span class="literal">return</span>;
+404         }
+405     <span class="guarded">}</span>                                                                 
+406 
+407     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">playBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                        
+408         <span class="comment">// takes the user to the selected game</span>
+409         <span class="literal">if</span>(onlineGamesTbl.getSelectedRow()&lt;0 || onlineGamesTbl.getSelectedRow()&gt;2){<span class="comment">//ensures that a valid game is selected</span>
+410             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Invalid game selected.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Invalid Game</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+411             <span class="literal">return</span>;
+412         }
+413         <span class="comment">//checks to ensure game selected is playable</span>
+414         <span class="literal">if</span>(onlineGamesTbl.getValueAt(onlineGamesTbl.getSelectedRow(), 0).equals(<span class="string">&quot;&quot;</span>) || onlineGamesTbl.getValueAt(onlineGamesTbl.getSelectedRow(), 1).equals(<span class="string">&quot;&quot;</span>)){
+415             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Invalid game selected.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Invalid Game</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+416             <span class="literal">return</span>;            
+417         }
+418         <span class="comment">//gets the most recent version of the data from the server</span>
+419         String []data=<span class="literal">null</span>;
+420         <span class="literal">try</span>{
+421             data=ThreadClient.getGameData(Integer.parseInt(String.valueOf(onlineGamesTbl.getValueAt(onlineGamesTbl.getSelectedRow(),0))));<span class="comment">//gets updated version of game record before joining</span>
+422         }<span class="literal">catch</span>(Exception e){
+423             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Error when communicating with the server. Error details: </span><span class="string">&quot;</span>+e,<span class="string">&quot;</span><span class="string">Invalid Game</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+424             <span class="literal">return</span>;
+425         }
+426         <span class="comment">//checks to see if game is already over - if it is, an appropriate message is displayed and the game is deleted</span>
+427         <span class="literal">boolean</span> isUserPlayerOne=data[1].equals(session.getUsername());
+428         <span class="literal">if</span>(isUserPlayerOne &amp;&amp; data[8].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>) &amp;&amp; data[9].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){
+429             <span class="literal">if</span>(data[11].equals(<span class="string">&quot;</span><span class="string">1</span><span class="string">&quot;</span>)){
+430                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">You won this game.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Win</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+431             }<span class="literal">else</span> <span class="literal">if</span>(data[11].equals(<span class="string">&quot;</span><span class="string">0.5</span><span class="string">&quot;</span>)){
+432                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">This game was a draw.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Draw</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+433             }<span class="literal">else</span>{
+434                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">You lost this game.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Loss</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+435             }
+436             data[8]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+437             <span class="literal">try</span>{
+438                 ThreadClient.updateOnlineGameRecord(data);
+439             }<span class="literal">catch</span>(Exception e){
+440                 JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Error when  communicating with the server. Error details: </span><span class="string">&quot;</span>+e,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+441                 updateTable();
+442                 <span class="literal">return</span>;
+443             }
+444             updateTable();
+445             <span class="literal">return</span>;           
+446         }<span class="literal">else</span> <span class="literal">if</span>(!isUserPlayerOne &amp;&amp; data[9].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>) &amp;&amp; data[8].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){
+447             <span class="literal">if</span>(data[11].equals(<span class="string">&quot;</span><span class="string">1</span><span class="string">&quot;</span>)){
+448                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">You lost this game.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Loss</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+449             }<span class="literal">else</span> <span class="literal">if</span>(data[11].equals(<span class="string">&quot;</span><span class="string">0.5</span><span class="string">&quot;</span>)){
+450                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">This game was a draw.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Draw</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+451             }<span class="literal">else</span>{
+452                 JOptionPane.showMessageDialog(<span class="literal">this</span>,<span class="string">&quot;</span><span class="string">You won this game.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Win</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+453             }
+454             data[9]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+455             <span class="literal">try</span>{
+456                 ThreadClient.updateOnlineGameRecord(data);
+457             }<span class="literal">catch</span>(Exception e){
+458                 JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Error when  communicating with the server. Error details: </span><span class="string">&quot;</span>+e,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+459                 updateTable();
+460                 <span class="literal">return</span>;
+461             }
+462             updateTable();
+463             <span class="literal">return</span>;
+464         }
+465         <span class="comment">//games is playable, hence user is taken to it</span>
+466         <span class="comment">//creates the chess game object</span>
+467         String fenData[]=data[3].split(OfflinePlay.SPLIT_FEN_STRING);
+468         ChessBoardState[]statesSoFar=<span class="literal">new</span> ChessBoardState[fenData.length];
+469         <span class="literal">for</span>(<span class="literal">int</span> board=0;board&lt;fenData.length;board++){
+470             statesSoFar[board]=<span class="literal">new</span> ChessBoardState(fenData[board]);
+471         }
+472         <span class="comment">//takes the user to play the game</span>
+473         ChessGame game = <span class="literal">new</span> ChessGame(statesSoFar, <span class="literal">false</span>);
+474          ChessBoardOnline   onlineGame = <span class="literal">new</span> ChessBoardOnline(session,game,data);onlineGame.setVisible(<span class="literal">true</span>);<span class="literal">this</span>.dispose();
+475 
+476     <span class="guarded">}</span>                                       
+477 
+478     <span class="comment">/**</span>
+479 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">args</span> <span class="comment">the</span> <span class="comment">command</span> <span class="comment">line</span> <span class="comment">arguments</span>
+480      <span class="comment">*/</span>
+481     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> main(String args[]) {
+482         <span class="comment">/* Set the Nimbus look and feel */</span>
+483         <span class="comment">//&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot; Look and feel setting code (optional) &quot;&gt;</span>
+484         <span class="comment">/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.</span>
+485 <span class="comment">         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html </span>
+486 <span class="comment">         */</span>
+487         <span class="literal">try</span> {
+488             <span class="literal">for</span> (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+489                 <span class="literal">if</span> (<span class="string">&quot;</span><span class="string">Nimbus</span><span class="string">&quot;</span>.equals(info.getName())) {
+490                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
+491                     <span class="literal">break</span>;
+492                 }
+493             }
+494         } <span class="literal">catch</span> (ClassNotFoundException ex) {
+495             java.util.logging.Logger.getLogger(OnlineMenu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+496         } <span class="literal">catch</span> (InstantiationException ex) {
+497             java.util.logging.Logger.getLogger(OnlineMenu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+498         } <span class="literal">catch</span> (IllegalAccessException ex) {
+499             java.util.logging.Logger.getLogger(OnlineMenu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+500         } <span class="literal">catch</span> (javax.swing.UnsupportedLookAndFeelException ex) {
+501             java.util.logging.Logger.getLogger(OnlineMenu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+502         }
+503         <span class="comment">//&lt;/editor-fold&gt;</span>
+504 
+505         <span class="comment">/* Create and display the form */</span>
+506         java.awt.EventQueue.invokeLater(<span class="literal">new</span> Runnable() {
+507             <span class="literal">public</span> <span class="literal">void</span> run() {
+508                 <span class="literal">new</span> OnlineMenu().setVisible(<span class="literal">true</span>);
+509             }
+510         });
+511     }
+512 
+513     <span class="ST1">// Variables declaration - do not modify                     </span>
+514     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">deleteBtn</span><span class="guarded">;</span>
+515     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">gameAgainstPersonBtn</span><span class="guarded">;</span>
+516     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">gameAgainstPersonBtn1</span><span class="guarded">;</span>
+517     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span> <span class="guarded">jLabel1</span><span class="guarded">;</span>
+518     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JPanel</span> <span class="guarded">jPanel1</span><span class="guarded">;</span>
+519     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JScrollPane</span> <span class="guarded">jScrollPane1</span><span class="guarded">;</span>
+520     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">menuBtn</span><span class="guarded">;</span>
+521     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JTable</span> <span class="guarded">onlineGamesTbl</span><span class="guarded">;</span>
+522     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">playBtn</span><span class="guarded">;</span>
+523     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">playGameAgainstFriendEnterCodeBtn</span><span class="guarded">;</span>
+524     <span class="ST1">// End of variables declaration                   </span>
+525 }
+</pre></body>
+</html>

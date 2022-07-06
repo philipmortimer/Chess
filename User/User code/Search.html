@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Search.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\Search.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+  7 
+  8 <span class="comment">/**</span>
+  9 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">class</span> <span class="ST0">is</span> <span class="ST0">used</span> <span class="ST0">to</span> <span class="ST0">search</span> <span class="ST0">through</span> <span class="ST0">data</span>
+ 10 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 11  <span class="comment">*/</span>
+ 12 <span class="literal">public</span> <span class="literal">class</span> Search {
+ 13     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> INDEX_NOT_FOUND=-1;
+ 14     <span class="comment">/**</span>
+ 15 <span class="comment">     * </span><span class="ST0">Performs</span> <span class="ST0">a</span> <span class="ST0">binary</span> <span class="ST0">search</span> <span class="ST0">on</span> <span class="ST0">the</span> <span class="ST0">one</span> <span class="ST0">d</span> <span class="ST0">array</span><span class="ST0">.</span> <span class="comment">Assumes</span> <span class="comment">it</span> <span class="comment">is</span> <span class="comment">sorted</span> <span class="comment">lexographically</span><span class="comment">.</span> 
+ 16 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">DATA</span> <span class="comment">The</span> <span class="comment">data</span> <span class="comment">sorted</span> <span class="comment">lexographically</span>
+ 17 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">ITEM_TO_FIND</span> <span class="comment">the</span> <span class="comment">data</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">found</span>
+ 18 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">true</span> <span class="comment">is</span> <span class="comment">returned</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">record</span> <span class="comment">is</span> <span class="comment">in</span> <span class="comment">the</span> <span class="comment">array</span><span class="comment">, </span><span class="comment">otherwise</span> <span class="comment">false</span> <span class="comment">is</span> <span class="comment">returned</span>
+ 19      <span class="comment">*/</span>
+ 20     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">boolean</span> isRecordInArray(String[]DATA,String ITEM_TO_FIND){
+ 21         <span class="literal">if</span>(DATA.length==1){
+ 22             <span class="literal">if</span>(DATA[0].equals(ITEM_TO_FIND)){
+ 23                 <span class="literal">return</span> <span class="literal">true</span>;
+ 24             }<span class="literal">else</span>{
+ 25                 <span class="literal">return</span> <span class="literal">false</span>;
+ 26             }
+ 27         }
+ 28         <span class="literal">if</span>(DATA.length==0){
+ 29             <span class="literal">return</span> <span class="literal">false</span>;
+ 30         }
+ 31         String record=<span class="string">&quot;&quot;</span>;
+ 32         <span class="literal">int</span> first = 0;
+ 33         <span class="literal">int</span> last = DATA.length-1;
+ 34         <span class="literal">int</span> mid;
+ 35         <span class="literal">int</span> comparison;
+ 36         String primaryKeyBuffer;
+ 37         <span class="literal">do</span>{
+ 38             mid = (first+last)/2;
+ 39             primaryKeyBuffer=DATA[mid];
+ 40             <span class="comment">//if pk precedes itemToFind less than 0 </span>
+ 41             comparison = primaryKeyBuffer.compareTo(ITEM_TO_FIND);
+ 42             <span class="literal">if</span>(comparison==0){
+ 43                 <span class="literal">return</span> <span class="literal">true</span>;
+ 44             }<span class="literal">else</span> <span class="literal">if</span>(comparison&gt;0){
+ 45                 last = mid-1;
+ 46             }<span class="literal">else</span>{
+ 47                 first = mid + 1;
+ 48             }
+ 49         }<span class="literal">while</span>(last&gt;=first);
+ 50         <span class="literal">return</span> <span class="literal">false</span>;
+ 51     }
+ 52     <span class="comment">/**</span>
+ 53 <span class="comment">     * </span><span class="ST0">Performs</span> <span class="ST0">a</span> <span class="ST0">binary</span> <span class="ST0">search</span> <span class="ST0">on</span> <span class="ST0">the</span><span class="ST0"> 2</span><span class="ST0">d</span> <span class="ST0">array</span> <span class="ST0">inputted</span><span class="ST0">.</span> <span class="comment">It</span> <span class="comment">searches</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">itemToFind</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">assumes</span> <span class="comment">this</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">primary</span> <span class="comment">key</span> <span class="comment">at</span> <span class="comment">the</span> <span class="comment">nought</span> <span class="comment">element</span>
+ 54 <span class="comment">     * </span><span class="comment">of</span> <span class="comment">every</span> <span class="comment">row</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">uses</span> <span class="comment">binary</span> <span class="comment">search</span> <span class="comment">and</span> <span class="comment">the</span> <span class="comment">java</span> <span class="comment">String</span> <span class="comment">method</span> <span class="comment">.</span><span class="comment">compareTo</span><span class="comment">()</span><span class="comment">.</span> <span class="comment">Hence</span> <span class="comment">the</span> <span class="comment">data</span> <span class="comment">must</span> <span class="comment">be</span> <span class="comment">sorted</span> <span class="comment">by</span> <span class="comment">the</span> <span class="comment">primary</span> <span class="comment">key</span>
+ 55 <span class="comment">     * </span><span class="comment">with</span> <span class="comment">data</span> <span class="comment">of</span> <span class="comment">a</span> <span class="comment">small</span> <span class="comment">lexographic</span> <span class="comment">value</span> <span class="comment">at</span> <span class="comment">the</span> <span class="comment">top</span><span class="comment"> (</span><span class="comment">i</span><span class="comment">.</span><span class="comment">e</span><span class="comment">.</span> <span class="comment">sorted</span> <span class="comment">in</span> <span class="comment">ascending</span> <span class="comment">order</span><span class="comment">)</span><span class="comment">.</span>
+ 56 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">DATA</span> <span class="comment">The</span> <span class="comment">data</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">searched</span> <span class="comment">through</span><span class="comment">.</span>
+ 57 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">ITEM_TO_FIND</span> <span class="comment">The</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">find</span>
+ 58 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">WIDTH_OF_DATA</span> <span class="comment">The</span> <span class="comment">width</span> <span class="comment">of</span> <span class="comment">a</span> <span class="comment">record</span>
+ 59 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">the</span> <span class="comment">field</span> <span class="comment">containing</span> <span class="comment">the</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">find</span><span class="comment">.</span> <span class="comment">If</span> <span class="comment">no</span> <span class="comment">item</span> <span class="comment">is</span> <span class="comment">found</span><span class="comment">, </span><span class="comment">this</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">a</span> <span class="comment">null</span> <span class="comment">array</span> <span class="comment">of</span> <span class="comment">width</span> <span class="comment">equal</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">width</span> <span class="comment">of</span> <span class="comment">a</span> <span class="comment">record</span><span class="comment">.</span>
+ 60      <span class="comment">*/</span>
+ 61     <span class="literal">public</span> <span class="literal">static</span> String[]searchForRecordWithPrimaryKeyAtNoughtElement(<span class="literal">final</span> String[][]DATA,<span class="literal">final</span> String ITEM_TO_FIND,<span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_DATA){
+ 62         String record[]= <span class="literal">new</span> String[WIDTH_OF_DATA];
+ 63         <span class="literal">if</span>(DATA.length==0){
+ 64             <span class="literal">return</span> record;
+ 65         }
+ 66         <span class="literal">int</span> first = 0;
+ 67         <span class="literal">int</span> last = DATA.length-1;
+ 68         <span class="literal">int</span> mid;
+ 69         <span class="literal">int</span> comparison;
+ 70         String primaryKeyBuffer;
+ 71         <span class="literal">do</span>{
+ 72             mid = (first+last)/2;
+ 73             primaryKeyBuffer=DATA[mid][0];
+ 74             <span class="comment">//if pk precedes itemToFind less than 0 </span>
+ 75             comparison = primaryKeyBuffer.compareTo(ITEM_TO_FIND);
+ 76             <span class="literal">if</span>(comparison==0){
+ 77                 <span class="literal">for</span>(<span class="literal">int</span> element=0;element&lt;record.length;element++){
+ 78                     record[element]=DATA[mid][element];
+ 79                 }
+ 80                 <span class="literal">break</span>;
+ 81             }<span class="literal">else</span> <span class="literal">if</span>(comparison&gt;0){
+ 82                 last = mid-1;
+ 83             }<span class="literal">else</span>{
+ 84                 first = mid + 1;
+ 85             }
+ 86         }<span class="literal">while</span>(last&gt;=first);
+ 87         <span class="literal">return</span> record;
+ 88     }
+ 89      <span class="comment">/**</span>
+ 90 <span class="comment">     * </span><span class="ST0">Performs</span> <span class="ST0">a</span> <span class="ST0">binary</span> <span class="ST0">search</span> <span class="ST0">on</span> <span class="ST0">the</span><span class="ST0"> 2</span><span class="ST0">d</span> <span class="ST0">array</span> <span class="ST0">inputted</span><span class="ST0">.</span> <span class="comment">It</span> <span class="comment">searches</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">itemToFind</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">assumes</span> <span class="comment">this</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">primary</span> <span class="comment">key</span> <span class="comment">at</span> <span class="comment">the</span> <span class="comment">nought</span> <span class="comment">element</span>
+ 91 <span class="comment">     * </span><span class="comment">of</span> <span class="comment">every</span> <span class="comment">row</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">uses</span> <span class="comment">binary</span> <span class="comment">search</span> <span class="comment">and</span> <span class="comment">assumes</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">nought</span> <span class="comment">element</span> <span class="comment">of</span> <span class="comment">every</span> <span class="comment">row</span> <span class="comment">is</span> <span class="comment">an</span> <span class="comment">integer</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">asssumes</span> <span class="comment">that</span> <span class="comment">data</span> <span class="comment">is</span> <span class="comment">sorted</span> <span class="comment">by</span> <span class="comment">integer</span>
+ 92 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">DATA</span> <span class="comment">The</span> <span class="comment">data</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">searched</span> <span class="comment">through</span><span class="comment">.</span>
+ 93 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">ITEM_TO_FIND</span> <span class="comment">The</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">find</span>
+ 94 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">WIDTH_OF_DATA</span> <span class="comment">The</span> <span class="comment">width</span> <span class="comment">of</span> <span class="comment">one</span> <span class="comment">record</span>
+ 95 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">the</span> <span class="comment">field</span> <span class="comment">containing</span> <span class="comment">the</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">find</span><span class="comment">.</span> <span class="comment">If</span> <span class="comment">no</span> <span class="comment">item</span> <span class="comment">is</span> <span class="comment">found</span><span class="comment">, </span><span class="comment">this</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">a</span> <span class="comment">null</span> <span class="comment">array</span> <span class="comment">of</span> <span class="comment">width</span> <span class="comment">equal</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">width</span> <span class="comment">of</span> <span class="comment">a</span> <span class="comment">record</span><span class="comment">.</span>
+ 96      <span class="comment">*/</span>
+ 97     <span class="literal">public</span> <span class="literal">static</span> String[] searchForRecordWithPrimaryKeyAtNoughtElementInt(<span class="literal">final</span> String[][]DATA,<span class="literal">final</span> <span class="literal">int</span> ITEM_TO_FIND, <span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_DATA){
+ 98         String record[]= <span class="literal">new</span> String[WIDTH_OF_DATA];
+ 99         <span class="literal">if</span>(DATA.length==0){
+100             <span class="literal">return</span> record;
+101         }
+102         <span class="literal">int</span> first = 0;
+103         <span class="literal">int</span> last = DATA.length-1;
+104         <span class="literal">int</span> mid;
+105         <span class="literal">int</span> primaryKeyBuffer;
+106         <span class="literal">do</span>{
+107             mid = (first+last)/2;
+108             primaryKeyBuffer=Integer.parseInt(DATA[mid][0]);
+109             <span class="literal">if</span>(primaryKeyBuffer==ITEM_TO_FIND){
+110                 <span class="literal">for</span>(<span class="literal">int</span> element=0;element&lt;record.length;element++){
+111                     record[element]=DATA[mid][element];
+112                 }
+113                 <span class="literal">break</span>;
+114             }<span class="literal">else</span> <span class="literal">if</span>(primaryKeyBuffer&gt;ITEM_TO_FIND){
+115                 last = mid-1;
+116             }<span class="literal">else</span>{
+117                 first = mid + 1;
+118             }
+119         }<span class="literal">while</span>(last&gt;=first);
+120         <span class="literal">return</span> record;        
+121     } 
+122     <span class="comment">/**</span>
+123 <span class="comment">     * </span><span class="ST0">Performs</span> <span class="ST0">a</span> <span class="ST0">binary</span> <span class="ST0">search</span> <span class="ST0">on</span> <span class="ST0">the</span><span class="ST0"> 2</span><span class="ST0">d</span> <span class="ST0">array</span> <span class="ST0">inputted</span><span class="ST0">.</span> <span class="comment">It</span> <span class="comment">searches</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">itemToFind</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">assumes</span> <span class="comment">this</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">primary</span> <span class="comment">key</span> <span class="comment">at</span> <span class="comment">the</span> <span class="comment">nought</span> <span class="comment">element</span>
+124 <span class="comment">     * </span><span class="comment">of</span> <span class="comment">every</span> <span class="comment">row</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">uses</span> <span class="comment">binary</span> <span class="comment">search</span> <span class="comment">and</span> <span class="comment">assumes</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">nought</span> <span class="comment">element</span> <span class="comment">of</span> <span class="comment">every</span> <span class="comment">row</span> <span class="comment">is</span> <span class="comment">an</span> <span class="comment">integer</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">assumes</span> <span class="comment">that</span> <span class="comment">data</span> <span class="comment">is</span> <span class="comment">sorted</span> <span class="comment">by</span> <span class="comment">integer</span>
+125 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">DATA</span> <span class="comment">The</span> <span class="comment">data</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">searched</span> <span class="comment">through</span><span class="comment">.</span>
+126 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">ITEM_TO_FIND</span> <span class="comment">The</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">find</span>
+127 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">row</span> <span class="comment">number</span> <span class="comment">is</span> <span class="comment">returned</span> <span class="comment">if</span> <span class="comment">not</span><span class="comment">, -1 </span><span class="comment">is</span> <span class="comment">returned</span>
+128      <span class="comment">*/</span>
+129     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">int</span> searchForRecordIndexInt(<span class="literal">final</span> String[][]DATA,<span class="literal">final</span> <span class="literal">int</span> ITEM_TO_FIND){
+130         <span class="literal">if</span>(DATA.length==0){
+131             <span class="literal">return</span> INDEX_NOT_FOUND;
+132         }
+133         <span class="literal">int</span> first = 0;
+134         <span class="literal">int</span> last = DATA.length-1;
+135         <span class="literal">int</span> mid;
+136         <span class="literal">int</span> primaryKeyBuffer;
+137         <span class="literal">do</span>{
+138             mid = (first+last)/2;
+139             primaryKeyBuffer=Integer.parseInt(DATA[mid][0]);
+140             <span class="literal">if</span>(primaryKeyBuffer==ITEM_TO_FIND){
+141                 <span class="literal">return</span> mid;
+142             }<span class="literal">else</span> <span class="literal">if</span>(primaryKeyBuffer&gt;ITEM_TO_FIND){
+143                 last = mid-1;
+144             }<span class="literal">else</span>{
+145                 first = mid + 1;
+146             }
+147         }<span class="literal">while</span>(last&gt;=first);
+148         <span class="literal">return</span> INDEX_NOT_FOUND;           
+149     }
+150     <span class="comment">/**</span>
+151 <span class="comment">     * </span><span class="ST0">Performs</span> <span class="ST0">a</span> <span class="ST0">binary</span> <span class="ST0">search</span> <span class="ST0">on</span> <span class="ST0">the</span><span class="ST0"> 2</span><span class="ST0">d</span> <span class="ST0">array</span> <span class="ST0">inputted</span><span class="ST0">.</span> <span class="comment">It</span> <span class="comment">searches</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">itemToFind</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">assumes</span> <span class="comment">this</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">primary</span> <span class="comment">key</span> <span class="comment">at</span> <span class="comment">the</span> <span class="comment">nought</span> <span class="comment">element</span>
+152 <span class="comment">     * </span><span class="comment">of</span> <span class="comment">every</span> <span class="comment">row</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">uses</span> <span class="comment">binary</span> <span class="comment">search</span> <span class="comment">and</span> <span class="comment">assumes</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">data</span> <span class="comment">is</span> <span class="comment">lexographically</span> <span class="comment">sorted</span><span class="comment">.</span>
+153 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">DATA</span> <span class="comment">The</span> <span class="comment">data</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">searched</span> <span class="comment">through</span><span class="comment">.</span>
+154 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">ITEM_TO_FIND</span> <span class="comment">The</span> <span class="comment">item</span> <span class="comment">to</span> <span class="comment">find</span>
+155 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">row</span> <span class="comment">number</span> <span class="comment">is</span> <span class="comment">returned</span> <span class="comment">if</span> <span class="comment">not</span><span class="comment">, -1 </span><span class="comment">is</span> <span class="comment">returned</span>
+156      <span class="comment">*/</span>
+157     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">int</span> searchForRecordIndex(<span class="literal">final</span> String[][]DATA,<span class="literal">final</span> String ITEM_TO_FIND){
+158         <span class="literal">if</span>(DATA.length==0){
+159             <span class="literal">return</span> INDEX_NOT_FOUND;
+160         }
+161         <span class="literal">int</span> first = 0;
+162         <span class="literal">int</span> last = DATA.length-1;
+163         <span class="literal">int</span> mid;
+164         <span class="literal">int</span> comparison;
+165         String primaryKeyBuffer;
+166         <span class="literal">do</span>{
+167             mid = (first+last)/2;
+168             primaryKeyBuffer=DATA[mid][0];
+169             <span class="comment">//if pk precedes itemToFind less than 0 </span>
+170             comparison = primaryKeyBuffer.compareTo(ITEM_TO_FIND);
+171             <span class="literal">if</span>(comparison==0){
+172                 <span class="literal">return</span> mid;
+173             }<span class="literal">else</span> <span class="literal">if</span>(comparison&gt;0){
+174                 last = mid-1;
+175             }<span class="literal">else</span>{
+176                 first = mid + 1;
+177             }
+178         }<span class="literal">while</span>(last&gt;=first);
+179         <span class="literal">return</span> INDEX_NOT_FOUND;       
+180     }
+181 }
+182 
+</pre></body>
+</html>

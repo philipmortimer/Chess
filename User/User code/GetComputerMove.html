@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>GetComputerMove.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\GetComputerMove.java</td></tr></table>
+<pre>
+ 1 <span class="comment">/*</span>
+ 2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+ 3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+ 4 <span class="comment"> * and open the template in the editor.</span>
+ 5 <span class="comment"> */</span>
+ 6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+ 7 
+ 8 
+ 9 <span class="comment">/**</span>
+10 <span class="comment"> * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">thread</span> <span class="ST0">which</span> <span class="ST0">gets</span> <span class="ST0">the</span> <span class="ST0">computer</span> <span class="ST0">move</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">game</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">is</span> <span class="comment">done</span> <span class="comment">as</span> <span class="comment">its</span> <span class="comment">own</span> <span class="comment">thread</span> <span class="comment">to</span> <span class="comment">allow</span> <span class="comment">the</span> <span class="comment">form</span> <span class="comment">to</span> <span class="comment">render</span> <span class="comment">whilst</span> <span class="comment">the</span> <span class="comment">computer</span> <span class="comment">move</span> <span class="comment">is</span> <span class="comment">retrieved</span><span class="comment">.</span>
+11 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+12  <span class="comment">*/</span>
+13 <span class="literal">public</span> <span class="literal">class</span> GetComputerMove <span class="literal">extends</span> Thread{
+14     ChessBoardOffline b;<span class="comment">//stores the chess board form</span>
+15     ChessGame game;<span class="comment">//stores the chess game</span>
+16     <span class="literal">int</span> lvl;<span class="comment">//stores the computer level</span>
+17     <span class="comment">/**</span>
+18 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">object</span> <span class="ST0">that</span> <span class="ST0">gets</span> <span class="ST0">and</span> <span class="ST0">make</span> <span class="ST0">the</span> <span class="ST0">computer</span> <span class="ST0">move</span> <span class="ST0">in</span> <span class="ST0">an</span> <span class="ST0">offline</span> <span class="ST0">chess</span> <span class="ST0">game</span><span class="ST0">.</span>
+19 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gam</span> <span class="comment">The</span> <span class="comment">chess</span> <span class="comment">game</span> <span class="comment">object</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">in</span> <span class="comment">question</span>
+20 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">board</span> <span class="comment">The</span> <span class="comment">chess</span> <span class="comment">board</span> <span class="comment">form</span> <span class="comment">for</span> <span class="comment">which</span> <span class="comment">the</span> <span class="comment">move</span> <span class="comment">is</span> <span class="comment">being</span> <span class="comment">retrieved</span><span class="comment">.</span>
+21 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">lvl</span> <span class="comment">The</span> <span class="comment">difficulty</span> <span class="comment">level</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">computer</span>
+22      <span class="comment">*/</span>
+23     <span class="literal">public</span> GetComputerMove(ChessGame gam, ChessBoardOffline board,<span class="literal">int</span> lvl){
+24         <span class="comment">//sets the parameters as object variables</span>
+25         b=board;game=gam;<span class="literal">this</span>.lvl=lvl;
+26     }
+27     @Override
+28     <span class="comment">/**</span>
+29 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">computer</span> <span class="ST0">move</span> <span class="ST0">and</span> <span class="ST0">adds</span> <span class="ST0">it</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">board</span> <span class="ST0">form</span><span class="ST0">.</span>
+30      <span class="comment">*/</span>
+31        <span class="literal">public</span> <span class="literal">void</span> run() {
+32            <span class="literal">try</span>{
+33             <span class="comment">//gets move and updates board</span>
+34             game.addState(game.getComputerMove(lvl));
+35             b.currentIndex++;
+36             b.updateBoard();
+37             b.playMoveMadeSound();
+38             b.checkForTerminalState();
+39            }<span class="literal">catch</span>(Exception e){<span class="comment">//when checkmate is reached, this method may still be called</span>
+40                
+41            }
+42        }
+43 }
+44 
+</pre></body>
+</html>

@@ -1,0 +1,1014 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Queue.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development Server System\src\philipm\cs5\software\development\server\system\Queue.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.server.system;
+  7 
+  8 <span class="literal">import</span> java.io.BufferedWriter;
+  9 <span class="literal">import</span> java.io.FileWriter;
+ 10 <span class="literal">import</span> java.io.IOException;
+ 11 <span class="literal">import</span> java.util.ArrayList;
+ 12 <span class="literal">import</span> java.util.Random;
+ 13 <span class="literal">import</span> philipm.cs5.software.development.user.system.InputPackages;
+ 14 
+ 15 <span class="comment">/**</span>
+ 16 <span class="comment"> * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">Queue</span> <span class="ST0">which</span> <span class="ST0">handle</span> <span class="ST0">the</span> <span class="ST0">server</span><span class="ST0">&#39;</span><span class="ST0">s</span> <span class="ST0">requests</span> <span class="ST0">to</span> <span class="ST0">write</span> <span class="ST0">to</span> <span class="ST0">files</span> <span class="ST0">and</span> <span class="ST0">change</span> <span class="ST0">arrays</span><span class="ST0">.</span> <span class="comment">Essentially</span><span class="comment">, </span><span class="comment">this</span> <span class="comment">object</span>
+ 17 <span class="comment"> * </span><span class="comment">allows</span> <span class="comment">threads</span> <span class="comment">from</span> <span class="comment">an</span> <span class="comment">unknown</span> <span class="comment">number</span> <span class="comment">of</span> <span class="comment">client</span><span class="comment">&#39;</span><span class="comment">s</span> <span class="comment">to</span> <span class="comment">interact</span> <span class="comment">with</span> <span class="comment">a</span> <span class="comment">server</span> <span class="comment">sequentially</span><span class="comment">.</span> <span class="comment">All</span> <span class="comment">processing</span> <span class="comment">is</span> <span class="comment">performed</span> <span class="comment">on</span> <span class="comment">one</span> <span class="comment">thread</span>
+ 18 <span class="comment"> * </span><span class="comment">to</span> <span class="comment">avoid</span> <span class="comment">issues</span> <span class="comment">that</span> <span class="comment">may</span> <span class="comment">arise</span> <span class="comment">from</span> <span class="comment">two</span> <span class="comment">threads</span> <span class="comment">writing</span> <span class="comment">simultaneously</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">same</span> <span class="comment">file</span><span class="comment">.</span> <span class="comment">This</span> <span class="comment">is</span> <span class="comment">justified</span> <span class="comment">as</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">base</span> <span class="comment">is</span> <span class="comment">very</span> <span class="comment">small</span><span class="comment">.</span>
+ 19 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 20  <span class="comment">*/</span>
+ 21 <span class="literal">public</span> <span class="literal">class</span> Queue <span class="literal">implements</span> Runnable{
+ 22     <span class="literal">private</span> InputPackages packages[];<span class="comment">//stores the queue of input packages</span>
+ 23     <span class="literal">private</span> <span class="literal">final</span> Server SERVER;<span class="comment">//stores the server</span>
+ 24     <span class="literal">private</span> <span class="literal">boolean</span> keepThreadRunning=<span class="literal">true</span>;<span class="comment">//stores whether thread should keep running</span>
+ 25     <span class="literal">private</span> <span class="literal">boolean</span> isRunning=<span class="literal">true</span>;
+ 26     <span class="comment">/**</span>
+ 27 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">queue</span> <span class="ST0">object</span>
+ 28 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">server</span> <span class="comment">The</span> <span class="comment">server</span>
+ 29      <span class="comment">*/</span>
+ 30     <span class="literal">public</span> Queue (Server server){
+ 31         <span class="literal">this</span>.SERVER=server;
+ 32         packages = <span class="literal">new</span> InputPackages[0];
+ 33     }
+ 34     @Override
+ 35     <span class="literal">public</span> <span class="literal">void</span> run(){
+ 36         <span class="comment">//exectutes all tasks until thread is ended - these tasks are write operations</span>
+ 37             <span class="literal">while</span>(getKeepThreadRunning()){
+ 38                 <span class="literal">if</span>(getPackages().length&gt;0){<span class="comment">//performs any tasks needed to execute</span>
+ 39                     handlePackage();
+ 40                 }
+ 41             }
+ 42         setIsRunningFalse();
+ 43     }
+ 44     <span class="comment">/**</span>
+ 45 <span class="comment">     * </span><span class="comment">Sets</span> <span class="comment">the</span> <span class="comment">variable</span> <span class="comment">is</span> <span class="comment">running</span> <span class="comment">to</span> <span class="comment">false</span>
+ 46      <span class="comment">*/</span>
+ 47     <span class="literal">private</span> <span class="literal">synchronized</span>  <span class="literal">void</span> setIsRunningFalse(){
+ 48         isRunning=<span class="literal">false</span>;
+ 49     }
+ 50     <span class="comment">/**</span>
+ 51 <span class="comment">     * </span><span class="ST0">Searches</span> <span class="ST0">for</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">files</span><span class="ST0">.</span> <span class="comment">Returns</span> <span class="comment">a</span> <span class="comment">UserInfo</span> <span class="comment">object</span> <span class="comment">with</span> <span class="comment">appropriate</span> <span class="comment">details</span>
+ 52 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">username</span> <span class="comment">The</span> <span class="comment">desired</span> <span class="comment">username</span>
+ 53 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">password</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">inputted</span> <span class="comment">password</span>
+ 54 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">UserInfo</span> <span class="comment">object</span>
+ 55      <span class="comment">*/</span>
+ 56     <span class="literal">public</span> <span class="literal">synchronized</span> UserInfo getUserDetailsAndTryLogInWithUsername(String username, String password){
+ 57         String record[]= Search.searchForRecordWithPrimaryKeyAtNoughtElement(SERVER.userFile, username,UserInfo.WIDTH_OF_USER_DETAILS_FILE);<span class="comment">//searches for user record</span>
+ 58         <span class="literal">return</span> <span class="literal">new</span> UserInfo(record,password);
+ 59     } 
+ 60     <span class="comment">/**</span>
+ 61 <span class="comment">     * </span><span class="ST0">Looks</span> <span class="ST0">for</span> <span class="ST0">a</span> <span class="ST0">user</span> <span class="ST0">with</span> <span class="ST0">email</span> <span class="ST0">address</span> <span class="ST0">and</span> <span class="ST0">attempts</span> <span class="ST0">to</span> <span class="ST0">log</span> <span class="ST0">them</span> <span class="ST0">in</span><span class="ST0">.</span>
+ 62 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">email</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span>
+ 63 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">password</span> <span class="comment">The</span> <span class="comment">password</span>
+ 64 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">A</span> <span class="comment">UserInfo</span> <span class="comment">object</span> <span class="comment">that</span> <span class="comment">stores</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">data</span>
+ 65      <span class="comment">*/</span>
+ 66     <span class="literal">public</span> <span class="literal">synchronized</span>  UserInfo getEmailAddressAndTryLogIn(String email,String password){
+ 67         String emailLinkRecord[] = Search.searchForRecordWithPrimaryKeyAtNoughtElement(SERVER.emailLinkFile, email,UserInfo.WIDTH_OF_EMAIL_LINK_FILE);
+ 68         <span class="literal">if</span>(emailLinkRecord[0]==<span class="literal">null</span>){<span class="comment">//if email address is not found, an appropriate UserInfo instance is returned</span>
+ 69             <span class="literal">return</span> UserInfo.CreateUserInfoEmailNotFound();
+ 70         }<span class="literal">else</span>{
+ 71             <span class="literal">return</span> getUserDetailsAndTryLogInWithUsername(emailLinkRecord[1], password);<span class="comment">//attempts to log in with found username</span>
+ 72         }
+ 73     }
+ 74     <span class="comment">/**</span>
+ 75 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">all</span> <span class="ST0">games</span> <span class="ST0">that</span> <span class="ST0">contain</span> <span class="ST0">the</span> <span class="ST0">specified</span> <span class="ST0">user</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">includes</span> <span class="comment">games</span> <span class="comment">that</span> <span class="comment">are</span> <span class="comment">pending</span> <span class="comment">approval</span>
+ 76 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">name</span>
+ 77 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">All</span> <span class="comment">games</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">user</span><span class="comment">.</span> <span class="comment">The</span> <span class="comment">array</span> <span class="comment">will</span> <span class="comment">always</span> <span class="comment">be</span> <span class="comment">of</span> <span class="comment">length</span><span class="comment"> 3, </span><span class="comment">even</span> <span class="comment">if</span> <span class="comment">no</span> <span class="comment">games</span> <span class="comment">exist</span>
+ 78      <span class="comment">*/</span>
+ 79     <span class="literal">public</span> <span class="literal">synchronized</span> String[][] getAllGamesWithUser(String userName){
+ 80         String[][]game = <span class="literal">new</span> String[3][Server.WIDTH_OF_ONLINE_FILE];
+ 81         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;3;y++){
+ 82             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+ 83                 game[y][x]=<span class="string">&quot;&quot;</span>;
+ 84             }
+ 85         }
+ 86         <span class="literal">int</span> i=0;<span class="comment">//stores the element of the game array being accessed</span>
+ 87         <span class="comment">//performs a linear search through file and adds game data where appropriate</span>
+ 88         <span class="literal">for</span>(<span class="literal">int</span> gameIndex=0;gameIndex&lt;SERVER.onlineGames.length;gameIndex++){
+ 89             <span class="literal">if</span>((userName.equals(SERVER.onlineGames[gameIndex][1])&amp;&amp;SERVER.onlineGames[gameIndex][8].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>))||(userName.equals(SERVER.onlineGames[gameIndex][2]) &amp;&amp; SERVER.onlineGames[gameIndex][9].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>))){
+ 90                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+ 91                     game[i][x]=SERVER.onlineGames[gameIndex][x];
+ 92                 }
+ 93                 <span class="literal">if</span>(i==2){
+ 94                     <span class="literal">break</span>;
+ 95                 }
+ 96                 i++;
+ 97             }
+ 98         }
+ 99         <span class="literal">return</span> game;
+100     }
+101     <span class="comment">/**</span>
+102 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">has</span> <span class="ST0">requested</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">club</span>
+103 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+104 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">True</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">has</span><span class="comment">, </span><span class="comment">otherwise</span> <span class="comment">false</span><span class="comment">.</span>
+105      <span class="comment">*/</span>
+106     <span class="literal">public</span> <span class="literal">synchronized</span> <span class="literal">boolean</span> hasUserRequestedToJoinClub(String userName){
+107         <span class="comment">//attempts to find user</span>
+108         <span class="literal">int</span> indexOfRecord=Search.searchForRecordIndex(SERVER.userFile, userName);
+109         <span class="literal">if</span>(indexOfRecord==Search.INDEX_NOT_FOUND){
+110             <span class="literal">return</span> <span class="literal">false</span>;
+111         }
+112       
+113         <span class="comment">//checks to see if user has requested to join the club</span>
+114         <span class="literal">return</span> SERVER.userFile[indexOfRecord][16].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>);
+115     }
+116     <span class="comment">/**</span>
+117 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">club</span> <span class="ST0">contact</span> <span class="ST0">information</span>
+118 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">contact</span> <span class="comment">details</span>
+119      <span class="comment">*/</span>
+120     <span class="literal">public</span> <span class="literal">synchronized</span>  String[] getClubContactInfo(){
+121         <span class="literal">return</span> SERVER.clubContactDetails;
+122         
+123     }
+124     <span class="comment">/**</span>
+125 <span class="comment">     * </span><span class="ST0">Makes</span> <span class="ST0">a</span> <span class="ST0">user</span> <span class="ST0">who</span> <span class="ST0">is</span> <span class="ST0">not</span> <span class="ST0">a</span> <span class="ST0">club</span> <span class="ST0">member</span> <span class="ST0">or</span> <span class="ST0">leader</span> <span class="ST0">a</span> <span class="ST0">member</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span>
+126 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">playerName</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">player</span>
+127      <span class="comment">*/</span>
+128     <span class="literal">public</span> <span class="literal">synchronized</span> <span class="literal">void</span> makeNonMemberNonLeaderUserClubMember(String playerName){
+129         <span class="comment">//searches for the user record in the user file</span>
+130         <span class="literal">int</span> index= Search.searchForRecordIndex(SERVER.userFile, playerName);
+131         <span class="literal">if</span>(index==Search.INDEX_NOT_FOUND){
+132             <span class="literal">return</span>;
+133         }
+134         <span class="comment">//updates the variable indicating whether the user is a club member</span>
+135         SERVER.userFile[index][14]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;SERVER.userFile[index][13]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+136         <span class="comment">//writes change to text file</span>
+137         SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);
+138         <span class="comment">//adds user to fixtures if relevant</span>
+139         <span class="literal">try</span>{
+140             Fixture.addPlayerToFixtures(playerName, getAllClubMembers());
+141         }<span class="literal">catch</span>(Exception e){
+142             System.out.println(<span class="string">&quot;</span><span class="string">Possible non fatal adding user to chess club: </span><span class="string">&quot;</span>+e);
+143             <span class="literal">return</span>;
+144         }
+145     }
+146     <span class="comment">/**</span>
+147 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">variable</span> <span class="ST0">that</span> <span class="ST0">indicates</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">thread</span> <span class="ST0">should</span> <span class="ST0">continue</span> <span class="ST0">to</span> <span class="ST0">run</span>
+148 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">variable</span>
+149      <span class="comment">*/</span>
+150     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">boolean</span> getKeepThreadRunning(){
+151         <span class="literal">return</span> keepThreadRunning;
+152     }
+153     <span class="comment">/**</span>
+154 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">queue</span> <span class="ST0">of</span> <span class="ST0">tasks</span>
+155 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">queue</span>
+156      <span class="comment">*/</span>
+157     <span class="literal">private</span> <span class="literal">synchronized</span> InputPackages[] getPackages(){
+158         <span class="literal">return</span> packages;
+159     }
+160     <span class="comment">/**</span>
+161 <span class="comment">     * </span><span class="comment">Sets</span> <span class="comment">the</span> <span class="comment">variable</span> <span class="comment">to</span> <span class="comment">false</span><span class="comment"> - </span><span class="comment">indicating</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">thread</span> <span class="comment">should</span> <span class="comment">not</span> <span class="comment">continue</span> <span class="comment">to</span> <span class="comment">run</span>
+162      <span class="comment">*/</span>
+163     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> setKeepRunningFalse(){
+164         keepThreadRunning=<span class="literal">false</span>;
+165     }
+166     <span class="comment">/**</span>
+167 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">thread</span> <span class="ST0">is</span> <span class="ST0">currently</span> <span class="ST0">alive</span>
+168 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">thread</span> <span class="comment">is</span> <span class="comment">running</span>
+169      <span class="comment">*/</span>
+170     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">boolean</span> getIsRunning(){
+171         <span class="literal">return</span> isRunning;
+172     }
+173     <span class="comment">/**</span>
+174 <span class="comment">     * </span><span class="comment">Removes</span> <span class="comment">a</span> <span class="comment">single</span> <span class="comment">package</span> <span class="comment">from</span> <span class="comment">the</span> <span class="comment">queue</span> <span class="comment">and</span> <span class="comment">handles</span> <span class="comment">it</span>
+175      <span class="comment">*/</span>
+176     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> handlePackage(){
+177         String command;
+178         InputPackages message;
+179         message=removeFromQueue();
+180         command=message.getActionName();
+181         <span class="comment">//gets the action command from the packages and performs the appropriate corresponding task</span>
+182         <span class="literal">switch</span> (command) {
+183             <span class="literal">case</span> InputPackages.CREATE_ACCOUNT:
+184                 createAccount(message.getUserRecod(), message.getUserName(), message.getEmail());
+185                 <span class="literal">break</span>;
+186             <span class="literal">case</span> InputPackages.CREATE_RANDOM_GAME:
+187                 handleRequestForNewOnlineRandomGame(message.getPackageToSend()[1]);
+188                 <span class="literal">break</span>;
+189             <span class="literal">case</span> InputPackages.DELETE_GAME:
+190                 deleteGame(Integer.parseInt(message.getPackageToSend()[1]), Double.parseDouble(message.getPackageToSend()[2]));
+191                 <span class="literal">break</span>;
+192             <span class="literal">case</span> InputPackages.UPDATED_ONLINE_GAME_RECORD:
+193                 String record[]=<span class="literal">new</span> String[Server.WIDTH_OF_ONLINE_FILE];
+194                 <span class="literal">for</span>(<span class="literal">int</span> i=1;i&lt;message.getPackageToSend().length;i++){
+195                     record[i-1]=message.getPackageToSend()[i];
+196                 }   updateOnlineGameRecord(record);
+197                 <span class="literal">break</span>;
+198             <span class="literal">case</span> InputPackages.CHANGE_STATUS_REQUEST_TO_JOIN_CLUB:
+199                 updateRequestToJoinClubStatus(message.getPackageToSend()[1]);
+200                 <span class="literal">break</span>;
+201             <span class="literal">case</span> InputPackages.REMOVE_USER_FROM_CHESS_CLUB:
+202                 removeUserFromChessClub(message.getPackageToSend()[1]);
+203                 <span class="literal">break</span>;
+204             <span class="literal">case</span> InputPackages.UPDATED_FIXTURES_AND_RESULTS:
+205                 updateFixturesAndResults(message.getFixturesAndResultsArray());
+206                 <span class="literal">break</span>;
+207             <span class="literal">case</span> InputPackages.CREATE_NEW_SEASON:
+208                 createNewSeason();
+209                 <span class="literal">break</span>;
+210             <span class="literal">case</span> InputPackages.SET_CONTACT_DETAILS:
+211                 setContactDetails(message.getPackageToSend()[1],message.getPackageToSend()[2]);
+212                 <span class="literal">break</span>;
+213             <span class="literal">case</span> InputPackages.REMOVE_REQUEST_JOIN_CLUB:
+214                 withdrawRequestToJoin(message.getPackageToSend()[1]);
+215                 <span class="literal">break</span>;
+216             <span class="literal">case</span> InputPackages.ADD_USER_TO_CLUB:
+217                 makeUserAClubMember(message.getPackageToSend()[1]);
+218                 <span class="literal">break</span>;
+219             <span class="literal">case</span> InputPackages.UPDATE_USER_INFO_FILE_RECORD:
+220                 String newRecord[]=<span class="literal">new</span> String[UserInfo.WIDTH_OF_USER_DETAILS_FILE];
+221                 <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;newRecord.length;i++){
+222                     newRecord[i]=message.getPackageToSend()[i+1];
+223                 }   updateUserFileRecord(newRecord);
+224                 <span class="literal">break</span>;
+225             <span class="literal">case</span> InputPackages.REMOVE_NON_MEMBER_USER:
+226                 removeNonMemberUser(message.getPackageToSend()[1]);
+227                 <span class="literal">break</span>;
+228             <span class="literal">default</span>:
+229                 <span class="literal">break</span>;
+230         }
+231     }
+232     <span class="comment">/**</span>
+233 <span class="comment">     * </span><span class="ST0">Deletes</span> <span class="ST0">a</span> <span class="ST0">user</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">database</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">user</span> <span class="comment">must</span> <span class="comment">not</span> <span class="comment">be</span> <span class="comment">a</span> <span class="comment">member</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">West</span> <span class="comment">Cross</span> <span class="comment">Chess</span> <span class="comment">Club</span><span class="comment">.</span>
+234 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">to</span> <span class="comment">remove</span>
+235      <span class="comment">*/</span>
+236     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> removeNonMemberUser(String userName){
+237         <span class="literal">int</span> index=Search.searchForRecordIndex(SERVER.userFile, userName);
+238         <span class="literal">if</span>(index!=Search.INDEX_NOT_FOUND){
+239             <span class="comment">//removes user from user file - by creating a new array that does not include their user record.</span>
+240             String newUserFile[][]=<span class="literal">new</span> String[SERVER.userFile.length-1][UserInfo.WIDTH_OF_USER_DETAILS_FILE];
+241             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;index;i++){
+242                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+243                     newUserFile[i][x]=SERVER.userFile[i][x];
+244                 }
+245             }
+246             <span class="literal">for</span>(<span class="literal">int</span> i=index+1;i&lt;SERVER.userFile.length;i++){
+247                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+248                     newUserFile[i-1][x]=SERVER.userFile[i][x];
+249                 }                
+250             }
+251             SERVER.userFile=newUserFile;
+252             SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);
+253         }
+254         <span class="comment">//removes user from email link file if appropriate</span>
+255         <span class="literal">int</span> indexOfEmail=-1;
+256         <span class="literal">for</span>(<span class="literal">int</span> record=0;record&lt;SERVER.emailLinkFile.length;record++){
+257             <span class="literal">if</span>(SERVER.emailLinkFile[record][1].equals(userName)){
+258                 indexOfEmail=record;
+259                 <span class="literal">break</span>;
+260             }
+261         }
+262         <span class="literal">if</span>(indexOfEmail!=-1){
+263             <span class="comment">//updates email file</span>
+264             String[][] newEmailFile=<span class="literal">new</span> String[SERVER.emailLinkFile.length-1][UserInfo.WIDTH_OF_EMAIL_LINK_FILE];
+265             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;indexOfEmail;i++){
+266                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_EMAIL_LINK_FILE;x++){
+267                     newEmailFile[i][x]=SERVER.emailLinkFile[i][x];
+268                 }
+269             }
+270             <span class="literal">for</span>(<span class="literal">int</span> i=indexOfEmail+1;i&lt;SERVER.emailLinkFile.length;i++){
+271                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_EMAIL_LINK_FILE;x++){
+272                     newEmailFile[i-1][x]=SERVER.emailLinkFile[i][x];
+273                 }                
+274             }
+275             SERVER.emailLinkFile=newEmailFile;
+276             SERVER.writeArrayToFileWithSplit(SERVER.emailLinkFile, Server.EMAIL_FILE_NAME);
+277         }
+278         <span class="comment">//removes user from online games. This is done by appending all games that are not from the user to an ArrayList.</span>
+279         ArrayList&lt;String[]&gt; onlineGamesNew=<span class="literal">new</span> ArrayList&lt;String[]&gt;(SERVER.onlineGames.length);
+280         String[]recordBuffer;
+281         <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;SERVER.onlineGames.length;game++){
+282             <span class="comment">//checks to see if user is in the game</span>
+283             <span class="literal">if</span>((SERVER.onlineGames[game][1].equals(userName) || SERVER.onlineGames[game][2].equals(userName)) ==<span class="literal">false</span>){
+284                 recordBuffer=<span class="literal">new</span> String[Server.WIDTH_OF_ONLINE_FILE];
+285                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;recordBuffer.length;x++){
+286                     recordBuffer[x]=SERVER.onlineGames[game][x];
+287                 }
+288                 onlineGamesNew.add(recordBuffer);
+289             }
+290         }
+291         <span class="comment">//creates a new online game array from the array list</span>
+292         String newOnlineGameArray[][]=<span class="literal">new</span> String[onlineGamesNew.size()][Server.WIDTH_OF_ONLINE_FILE];
+293         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;newOnlineGameArray.length;i++){
+294             recordBuffer=onlineGamesNew.get(i);
+295             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+296                 newOnlineGameArray[i][x]=recordBuffer[x];
+297             }
+298         }
+299         <span class="comment">//changes are saved</span>
+300         SERVER.onlineGames=newOnlineGameArray;
+301         SERVER.writeArrayToFileWithSplit(SERVER.onlineGames, Server.ONLINE_GAMES_FILE);
+302     }
+303     <span class="comment">/**</span>
+304 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">record</span> <span class="ST0">to</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">array</span><span class="ST0">.</span>
+305 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">newRecord</span> <span class="comment">The</span> <span class="comment">new</span> <span class="comment">record</span>
+306      <span class="comment">*/</span>
+307     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> updateUserFileRecord(String []newRecord){
+308         <span class="literal">int</span> index=Search.searchForRecordIndex(SERVER.userFile, newRecord[0]);<span class="comment">//locates user</span>
+309         <span class="literal">if</span>(index==Search.INDEX_NOT_FOUND){
+310             <span class="literal">return</span>;
+311         }
+312         <span class="comment">//updates data</span>
+313         <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+314             SERVER.userFile[index][x]=newRecord[x];
+315         }
+316         <span class="comment">//writes the new array to the text file</span>
+317         SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);
+318     }
+319     <span class="comment">/**</span>
+320 <span class="comment">     * </span><span class="ST0">Makes</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">a</span> <span class="ST0">club</span> <span class="ST0">member</span>
+321 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span> 
+322      <span class="comment">*/</span>
+323     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> makeUserAClubMember(String userName){
+324         <span class="literal">int</span> userIndex=Search.searchForRecordIndex(SERVER.userFile, userName);<span class="comment">//find the user in the user file</span>
+325         <span class="literal">if</span>(userIndex==Search.INDEX_NOT_FOUND){
+326             <span class="literal">return</span>;
+327         }
+328         <span class="comment">//updates variables to indicate that they are a club member who is not requesting to join the club and who is not the leader</span>
+329         SERVER.userFile[userIndex][16]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;SERVER.userFile[userIndex][14]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+330         SERVER.userFile[userIndex][13]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+331         <span class="literal">try</span>{
+332             Fixture.addPlayerToFixtures(userName, getAllClubMembers());<span class="comment">//adds the players to the fixtures</span>
+333         }<span class="literal">catch</span>(Exception e){
+334             System.out.println(<span class="string">&quot;</span><span class="string">Error when adding user to club: </span><span class="string">&quot;</span>+e);
+335         }
+336         
+337     }
+338     <span class="comment">/**</span>
+339 <span class="comment">     * </span><span class="ST0">Withdraws</span> <span class="ST0">a</span> <span class="ST0">user</span><span class="ST0">&#39;</span><span class="ST0">s</span> <span class="ST0">request</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">West</span> <span class="ST0">Cross</span> <span class="ST0">Chess</span> <span class="ST0">Club</span>
+340 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">who</span><span class="comment">&#39;</span><span class="comment">s</span> <span class="comment">request</span> <span class="comment">is</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">withdrawn</span>
+341      <span class="comment">*/</span>
+342     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> withdrawRequestToJoin(String userName){
+343         <span class="literal">int</span> userIndex=Search.searchForRecordIndex(SERVER.userFile, userName);<span class="comment">//locates user in user file</span>
+344         <span class="literal">if</span>(userIndex==Search.INDEX_NOT_FOUND){
+345             <span class="literal">return</span>;
+346         }
+347         SERVER.userFile[userIndex][16]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;<span class="comment">//updates variable indicating that they are not requesting to join the club</span>
+348         SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);<span class="comment">//writes change to text file</span>
+349     }
+350     <span class="comment">/**</span>
+351 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">data</span> <span class="ST0">of</span> <span class="ST0">every</span> <span class="ST0">non</span> <span class="ST0">club</span> <span class="ST0">member</span><span class="ST0">.</span><span class="comment"> (</span><span class="comment">I</span><span class="comment">.</span><span class="comment">e</span><span class="comment">.</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">file</span> <span class="comment">record</span> <span class="comment">of</span> <span class="comment">every</span> <span class="comment">non</span> <span class="comment">chess</span> <span class="comment">club</span> <span class="comment">member</span><span class="comment">)</span><span class="comment">.</span>
+352 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">data</span>
+353      <span class="comment">*/</span>
+354     <span class="literal">public</span> <span class="literal">synchronized</span> String[][] getAllNonMemberDetails(){
+355         <span class="comment">//searches through every user in the user file to see if they have requested to join the club.</span>
+356         String currentUser[];
+357         ArrayList&lt;String[]&gt; allNonMembers=<span class="literal">new</span> ArrayList&lt;String[]&gt;();
+358         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;SERVER.userFile.length;user++){
+359             <span class="literal">if</span>(SERVER.userFile[user][14].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>)){
+360                 currentUser=<span class="literal">new</span> String[UserInfo.WIDTH_OF_USER_DETAILS_FILE];
+361                 <span class="comment">//copies array</span>
+362                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;currentUser.length;x++){
+363                     currentUser[x]=SERVER.userFile[user][x];
+364                 }
+365                 allNonMembers.add(currentUser);<span class="comment">//adds user to array list</span>
+366             }
+367         }
+368         String[][]nonMem = <span class="literal">new</span> String[allNonMembers.size()][UserInfo.WIDTH_OF_USER_DETAILS_FILE];<span class="comment">//converts array list to an array</span>
+369         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;nonMem.length;user++){
+370             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+371                 nonMem[user][x]=allNonMembers.get(user)[x];
+372             }
+373         }
+374         <span class="literal">return</span> nonMem;        
+375     }
+376     <span class="comment">/**</span>
+377 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">data</span> <span class="ST0">of</span> <span class="ST0">every</span> <span class="ST0">club</span> <span class="ST0">member</span><span class="ST0">.</span><span class="comment"> (</span><span class="comment">I</span><span class="comment">.</span><span class="comment">e</span><span class="comment">.</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">file</span> <span class="comment">record</span> <span class="comment">of</span> <span class="comment">every</span> <span class="comment">chess</span> <span class="comment">club</span> <span class="comment">member</span><span class="comment">)</span><span class="comment">.</span>
+378 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">data</span>
+379      <span class="comment">*/</span>
+380     <span class="literal">public</span> <span class="literal">synchronized</span> String[][] getAllClubMemberDetails(){
+381         <span class="comment">//searches through every user in the user file to see if they have requested to join the club.</span>
+382         String currentUser[];
+383         ArrayList&lt;String[]&gt; allMembers=<span class="literal">new</span> ArrayList&lt;String[]&gt;();
+384         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;SERVER.userFile.length;user++){
+385             <span class="literal">if</span>(SERVER.userFile[user][14].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){
+386                 currentUser=<span class="literal">new</span> String[UserInfo.WIDTH_OF_USER_DETAILS_FILE];
+387                 <span class="comment">//copies array</span>
+388                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;currentUser.length;x++){
+389                     currentUser[x]=SERVER.userFile[user][x];
+390                 }
+391                 allMembers.add(currentUser);<span class="comment">//adds user to ArrayList</span>
+392             }
+393         }
+394         String[][]mem = <span class="literal">new</span> String[allMembers.size()][UserInfo.WIDTH_OF_USER_DETAILS_FILE];<span class="comment">//converts array list to a 2d array</span>
+395         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;mem.length;user++){
+396             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+397                 mem[user][x]=allMembers.get(user)[x];
+398             }
+399         }
+400         <span class="literal">return</span> mem;        
+401     }
+402     <span class="comment">/**</span>
+403 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">club</span> <span class="ST0">contact</span> <span class="ST0">information</span><span class="ST0">.</span>
+404 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">phoneNumber</span> <span class="comment">The</span> <span class="comment">new</span> <span class="comment">phone</span> <span class="comment">number</span>
+405 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">emailAddress</span> <span class="comment">The</span> <span class="comment">new</span> <span class="comment">email</span> <span class="comment">address</span>
+406      <span class="comment">*/</span>
+407     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> setContactDetails(String phoneNumber, String emailAddress){
+408         <span class="literal">try</span>{
+409             <span class="comment">//writes the changes to the files</span>
+410             FileWriter writePhone = <span class="literal">new</span> FileWriter(Server.CLUB_CONTACT_PHONE_NUMBER_FILE,<span class="literal">false</span>);
+411             BufferedWriter buffWritePhone = <span class="literal">new</span> BufferedWriter(writePhone);
+412             buffWritePhone.write(phoneNumber);
+413             buffWritePhone.flush();writePhone.flush();buffWritePhone.close();writePhone.close();<span class="comment">//flushes and closes writers</span>
+414             FileWriter writeEmail = <span class="literal">new</span> FileWriter(Server.CLUB_CONTACT_EMAIL_FILE,<span class="literal">false</span>);
+415             BufferedWriter buffWriteEmail = <span class="literal">new</span> BufferedWriter(writeEmail);
+416             buffWriteEmail.write(emailAddress);
+417             buffWriteEmail.flush();writeEmail.flush();buffWriteEmail.close();writeEmail.close();<span class="comment">//flushes and closes writers</span>
+418             <span class="comment">//updates the array</span>
+419             SERVER.clubContactDetails[0]=phoneNumber;SERVER.clubContactDetails[1]=emailAddress;
+420         }<span class="literal">catch</span>(IOException e){
+421             System.out.println(<span class="string">&quot;</span><span class="string">Possible error when set club contact details: </span><span class="string">&quot;</span>+e);
+422         }
+423     }
+424     <span class="comment">/**</span>
+425 <span class="comment">     * </span><span class="ST0">Generates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">season</span> <span class="ST0">of</span> <span class="ST0">games</span> <span class="ST0">for</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span>
+426      <span class="comment">*/</span>
+427     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> createNewSeason(){
+428         <span class="literal">try</span>{
+429             Fixture.createdNewFixturesFromStart(getAllClubMembers());<span class="comment">//generates the new season</span>
+430         }<span class="literal">catch</span>(Exception e){
+431             System.out.println(<span class="string">&quot;</span><span class="string">Possible non fatal error when creating new season: </span><span class="string">&quot;</span>+e);
+432         }
+433     }
+434     <span class="comment">/**</span>
+435 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">fixtures</span> <span class="ST0">and</span> <span class="ST0">results</span><span class="ST0">.</span>
+436 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">fixturesAndResults</span> <span class="comment">The</span> <span class="comment">updated</span> <span class="comment">value</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">fixtures</span> <span class="comment">and</span> <span class="comment">results</span>
+437      <span class="comment">*/</span>
+438     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> updateFixturesAndResults(String[][][]fixturesAndResults){
+439         <span class="literal">try</span>{
+440          Fixture.writeToFile(fixturesAndResults, Fixture.getListOfPeopleToAddedDuringSeason());
+441         }<span class="literal">catch</span>(IOException e){
+442             System.out.println(<span class="string">&quot;</span><span class="string">Possibly non fatal error when updating fixtures: </span><span class="string">&quot;</span>+e);
+443         }
+444     }
+445     <span class="comment">/**</span>
+446 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">all</span> <span class="ST0">requests</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">method</span> <span class="comment">returns</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">file</span> <span class="comment">record</span>  <span class="comment">of</span> <span class="comment">every</span> <span class="comment">user</span> <span class="comment">who</span> <span class="comment">has</span> <span class="comment">requested</span> <span class="comment">to</span> <span class="comment">join</span> <span class="comment">the</span> <span class="comment">club</span><span class="comment">.</span>
+447 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">requests</span> <span class="comment">to</span> <span class="comment">join</span> <span class="comment">the</span> <span class="comment">club</span>
+448      <span class="comment">*/</span>
+449     <span class="literal">public</span> <span class="literal">synchronized</span> String [][]getAllRequestsToJoinClub(){
+450         <span class="comment">//searches through every user in the user file to see if they have requested to join the club.</span>
+451         String currentUser[];
+452         ArrayList&lt;String[]&gt; allRequests=<span class="literal">new</span> ArrayList&lt;String[]&gt;();
+453         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;SERVER.userFile.length;user++){
+454             <span class="literal">if</span>(SERVER.userFile[user][16].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){
+455                 currentUser=<span class="literal">new</span> String[UserInfo.WIDTH_OF_USER_DETAILS_FILE];
+456                 <span class="comment">//copies array</span>
+457                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;currentUser.length;x++){
+458                     currentUser[x]=SERVER.userFile[user][x];
+459                 }
+460                 allRequests.add(currentUser);
+461             }
+462         }
+463         String[][]req = <span class="literal">new</span> String[allRequests.size()][UserInfo.WIDTH_OF_USER_DETAILS_FILE];<span class="comment">//converts array list into a 2d array of requests</span>
+464         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;req.length;user++){
+465             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+466                 req[user][x]=allRequests.get(user)[x];
+467             }
+468         }
+469         <span class="literal">return</span> req;
+470     }
+471     <span class="comment">/**</span>
+472 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">email</span> <span class="ST0">address</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">chosen</span> <span class="ST0">user</span>
+473 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+474 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">as</span> <span class="comment">a</span> <span class="comment">string</span> <span class="comment">array</span> <span class="comment">of</span> <span class="comment">length</span><span class="comment"> 1</span><span class="comment">.</span> <span class="comment">Element</span> <span class="comment">nought</span><span class="comment"> (</span><span class="comment">the</span> <span class="comment">only</span> <span class="comment">element</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">array</span><span class="comment">) </span><span class="comment">stores</span> <span class="comment">the</span> <span class="comment">email</span> <span class="comment">address</span><span class="comment">.</span>
+475      <span class="comment">*/</span>
+476     <span class="literal">public</span> <span class="literal">synchronized</span> String[]getEmailOfUser(String userName){
+477         String user []=<span class="literal">new</span> String[1];user[0]=<span class="string">&quot;&quot;</span>;
+478         <span class="literal">for</span>(<span class="literal">int</span> person=0;person&lt;SERVER.emailLinkFile.length;person++){<span class="comment">//searches sequentially through file to find email address</span>
+479             <span class="literal">if</span>(SERVER.emailLinkFile[person][1].equals(userName)){
+480                 user[0]=SERVER.emailLinkFile[person][0];
+481                 <span class="literal">return</span> user;
+482             }
+483         }
+484         <span class="literal">return</span> user;
+485     }
+486     <span class="comment">/**</span>
+487 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">chosen</span> <span class="ST0">user</span> <span class="ST0">as</span> <span class="ST0">the</span> <span class="ST0">club</span> <span class="ST0">leader</span> <span class="ST0">and</span> <span class="ST0">member</span><span class="ST0">.</span>
+488 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+489 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">error</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">inputted</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">found</span> <span class="comment">in</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">records</span>
+490      <span class="comment">*/</span>
+491     <span class="literal">public</span> <span class="literal">synchronized</span> <span class="literal">void</span> setUserAsLeaderAndMember(String userName) <span class="literal">throws</span> Exception{
+492         <span class="literal">int</span> index=Search.searchForRecordIndex(SERVER.userFile, userName);<span class="comment">//find user in user file</span>
+493         <span class="literal">if</span>(index==Search.INDEX_NOT_FOUND){<span class="comment">//if user is not found, an appropriate error message is returned</span>
+494             <span class="literal">throw</span> <span class="literal">new</span> Exception(<span class="string">&quot;</span><span class="string">User to be leader was not found.</span><span class="string">&quot;</span>);
+495         }
+496         <span class="literal">try</span>{
+497             <span class="literal">if</span>(SERVER.userFile[index][14].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>)){<span class="comment">//adds club leader to fixtures if they are not already a member</span>
+498                 Fixture.addPlayerToFixtures(userName, getAllClubMembers());
+499             }
+500         }<span class="literal">catch</span>(Exception e){
+501             
+502         }
+503         <span class="comment">//updates data</span>
+504         <span class="comment">//sets all users in file to not being the leader</span>
+505         <span class="literal">for</span>(<span class="literal">int</span> user=0;user&lt;SERVER.userFile.length;user++){
+506             SERVER.userFile[user][13]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+507         }
+508         SERVER.userFile[index][16]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;<span class="comment">//sets user as a leader and club member who is not requesting to join the club</span>
+509         SERVER.userFile[index][13]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;SERVER.userFile[index][14]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+510         SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);<span class="comment">//updates text file</span>
+511     }
+512     <span class="comment">/**</span>
+513 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">people</span> <span class="ST0">added</span> <span class="ST0">midway</span> <span class="ST0">through</span> <span class="ST0">the</span> <span class="ST0">season</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">club</span><span class="ST0">.</span>
+514 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">list</span> <span class="comment">of</span> <span class="comment">people</span>
+515      <span class="comment">*/</span>
+516     <span class="literal">public</span> <span class="literal">synchronized</span> String[]getPeopleAddedMidwayThroughSeason(){
+517         <span class="literal">try</span>{
+518             <span class="literal">return</span> Fixture.getListOfPeopleToAddedDuringSeason();
+519         }<span class="literal">catch</span>(IOException e){
+520             <span class="literal">return</span> <span class="literal">new</span> String[0];
+521         }
+522     }
+523     <span class="comment">/**</span>
+524 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">all</span> <span class="ST0">fixtures</span> <span class="ST0">and</span> <span class="ST0">results</span><span class="ST0">.</span> <span class="comment">Returns</span> <span class="comment">an</span> <span class="comment">empty</span> <span class="comment">string</span> <span class="comment">array</span> <span class="comment">if</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">.</span> <span class="comment">An</span> <span class="comment">error</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">fixtures</span> <span class="comment">have</span> <span class="comment">not</span> <span class="comment">yet</span> <span class="comment">been</span> <span class="comment">generated</span><span class="comment">.</span>
+525 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">results</span> <span class="comment">and</span> <span class="comment">fixtures</span>
+526      <span class="comment">*/</span>
+527     <span class="literal">public</span> <span class="literal">synchronized</span> String[][][]getAllFixturesAndResults(){
+528         <span class="literal">try</span>{
+529             <span class="literal">return</span> Fixture.loadFixturesArray();
+530         }<span class="literal">catch</span>(Exception e){
+531            <span class="literal">return</span> <span class="literal">new</span> String[0][0][0];
+532         }
+533     }
+534     <span class="comment">/**</span>
+535 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">all</span> <span class="ST0">members</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">returned</span> <span class="comment">in</span> <span class="comment">lexographical</span> <span class="comment">order</span><span class="comment"> (</span><span class="comment">i</span><span class="comment">.</span><span class="comment">e</span><span class="comment">.</span><span class="comment">, </span><span class="comment">the</span> <span class="comment">array</span> <span class="comment">is</span> <span class="comment">sorted</span><span class="comment">)</span>
+536 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">All</span> <span class="comment">members</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">chess</span> <span class="comment">club</span>
+537      <span class="comment">*/</span>
+538     <span class="literal">public</span> <span class="literal">synchronized</span> String[]getAllClubMembers(){
+539         <span class="comment">//loops through user file to find club members</span>
+540         ArrayList&lt;String&gt; allMembers=<span class="literal">new</span> ArrayList&lt;String&gt;();
+541         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;SERVER.userFile.length;i++){
+542             <span class="literal">if</span>(SERVER.userFile[i][14].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){
+543                 allMembers.add(SERVER.userFile[i][0]);<span class="comment">//adds member to list</span>
+544             }
+545         }
+546         <span class="literal">return</span> allMembers.toArray(<span class="literal">new</span> String[0]);<span class="comment">//converts array list to String array</span>
+547     }
+548     <span class="comment">/**</span>
+549 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">current</span> <span class="ST0">league</span> <span class="ST0">table</span>
+550 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">league</span> <span class="comment">table</span>
+551      <span class="comment">*/</span>
+552     <span class="literal">public</span> <span class="literal">synchronized</span> String[][]getLeagueTable(){
+553         <span class="comment">//table is in the form: username, wins, draws, losses, points, isPartOfLeague</span>
+554         String[]clubMembers=getAllClubMembers();<span class="comment">//gets club members in a sorted array</span>
+555         <span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_TABLE=6;
+556         String[][]leagueTable=<span class="literal">new</span> String[clubMembers.length][WIDTH_OF_TABLE];
+557         <span class="literal">int</span> whiteIndex;
+558         <span class="literal">int</span> blackIndex;
+559         <span class="comment">//intialises values of table</span>
+560         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;leagueTable.length;i++){
+561             leagueTable[i][0]=clubMembers[i];
+562             leagueTable[i][1]=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>;leagueTable[i][2]=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>;leagueTable[i][3]=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>;leagueTable[i][4]=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>;
+563             leagueTable[i][5]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+564         }
+565         <span class="literal">try</span>{
+566             String[][][]fixtures=Fixture.loadFixturesArray();<span class="comment">//loads fixture array</span>
+567             <span class="comment">//loops through all played games and updates array accordingly. Calculating points and number of wins, draws and losses for each player</span>
+568             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+569                 <span class="literal">for</span>(<span class="literal">int</span> match=0;match&lt;fixtures[0][0].length;match++){
+570                     <span class="literal">if</span>(!(fixtures[round][2][match].equals(Fixture.BYE_GAME_STATE) || fixtures[round][2][match].equals(Fixture.GAME_NOT_YET_PLAYED))){<span class="comment">//if the game has been played and is not a bye game, the league table is updated</span>
+571                         whiteIndex=Search.searchForRecordIndex(leagueTable, fixtures[round][0][match]);<span class="comment">//searches for white player in list of players in club</span>
+572                         blackIndex=Search.searchForRecordIndex(leagueTable, fixtures[round][1][match]);<span class="comment">//searches for black player in list of players in club</span>
+573                         <span class="literal">if</span>(fixtures[round][2][match].equals(Fixture.GAME_DRAW)){<span class="comment">//indicates that both players have drawn the game</span>
+574                             leagueTable[whiteIndex][2]=String.valueOf(Integer.parseInt(leagueTable[whiteIndex][2])+1);
+575                             leagueTable[whiteIndex][4]=String.valueOf(Integer.parseInt(leagueTable[whiteIndex][4])+1);
+576                             leagueTable[whiteIndex][5]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+577                             leagueTable[blackIndex][2]=String.valueOf(Integer.parseInt(leagueTable[blackIndex][2])+1);
+578                             leagueTable[blackIndex][4]=String.valueOf(Integer.parseInt(leagueTable[blackIndex][4])+1);
+579                             leagueTable[blackIndex][5]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+580                         }<span class="literal">else</span> <span class="literal">if</span>(fixtures[round][2][match].equals(Fixture.GAME_WHITE_WIN)){<span class="comment">//updates league table for white win</span>
+581                             leagueTable[whiteIndex][1]=String.valueOf(Integer.parseInt(leagueTable[whiteIndex][1])+1);
+582                             leagueTable[whiteIndex][4]=String.valueOf(Integer.parseInt(leagueTable[whiteIndex][4])+3);
+583                             leagueTable[whiteIndex][5]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+584                             leagueTable[blackIndex][3]=String.valueOf(Integer.parseInt(leagueTable[blackIndex][3])+1);
+585                             leagueTable[blackIndex][5]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>; 
+586                         }<span class="literal">else</span> <span class="literal">if</span>(fixtures[round][2][match].equals(Fixture.GAME_BLACK_WIN)){<span class="comment">//updates league table for black win</span>
+587                             leagueTable[whiteIndex][3]=String.valueOf(Integer.parseInt(leagueTable[whiteIndex][3])+1);
+588                             leagueTable[whiteIndex][5]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+589                             leagueTable[blackIndex][1]=String.valueOf(Integer.parseInt(leagueTable[blackIndex][1])+1);
+590                             leagueTable[blackIndex][4]=String.valueOf(Integer.parseInt(leagueTable[blackIndex][4])+3);
+591                             leagueTable[blackIndex][5]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;                            
+592                         }
+593                     }
+594                 }
+595             }
+596             <span class="comment">//sorts the league table in order of points</span>
+597             String[][]pointsAndPointer=<span class="literal">new</span> String[leagueTable.length][2];<span class="comment">//this array stores the points of a user and an index pointing to said user</span>
+598             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;pointsAndPointer.length;i++){
+599                 pointsAndPointer[i][0]=leagueTable[i][4];
+600                 pointsAndPointer[i][1]=String.valueOf(i);
+601             }
+602             <span class="comment">//sorts array    </span>
+603             Sort.quickSortUsingIntAtFirstElement(pointsAndPointer);  
+604             <span class="comment">//league table is generated in points order. Those with the least points are stored at index 0.</span>
+605             String [][]newLeagueTable=<span class="literal">new</span> String[leagueTable.length][WIDTH_OF_TABLE];
+606             <span class="literal">int</span> indexPointer;
+607             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;leagueTable.length;i++){
+608                 indexPointer=Integer.parseInt(pointsAndPointer[i][1]);
+609                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;WIDTH_OF_TABLE;x++){
+610                     newLeagueTable[i][x]=leagueTable[indexPointer][x];
+611                 }
+612             }
+613             <span class="comment">//reverses array so player with most points is at top</span>
+614             String temp;
+615             <span class="literal">for</span>(<span class="literal">int</span> i = 0; i &lt; newLeagueTable.length / 2; i++){
+616                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;WIDTH_OF_TABLE;x++){
+617                     temp=newLeagueTable[i][x];
+618                     newLeagueTable[i][x]=newLeagueTable[newLeagueTable.length - i - 1][x];
+619                     newLeagueTable[newLeagueTable.length - i - 1][x]=temp;
+620                 }
+621             }
+622             <span class="literal">return</span> newLeagueTable;<span class="comment">//returns league table</span>
+623         }<span class="literal">catch</span>(Exception e){
+624             System.out.println(<span class="string">&quot;</span><span class="string">Error when getting league table: </span><span class="string">&quot;</span>+e);
+625             <span class="literal">return</span> <span class="literal">new</span> String[0][0];
+626         }
+627     }
+628     <span class="comment">/**</span>
+629 <span class="comment">     * </span><span class="ST0">Removes</span> <span class="ST0">the</span> <span class="ST0">chosen</span> <span class="ST0">user</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">West</span> <span class="ST0">Cross</span> <span class="ST0">Chess</span> <span class="ST0">Club</span>
+630 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span>
+631      <span class="comment">*/</span>
+632     <span class="literal">private</span> <span class="literal">synchronized</span>  <span class="literal">void</span> removeUserFromChessClub(String userName){
+633         <span class="comment">//searches for the user record in the user file</span>
+634         <span class="literal">int</span> index= Search.searchForRecordIndex(SERVER.userFile, userName);
+635         <span class="literal">if</span>(index==Search.INDEX_NOT_FOUND){
+636             <span class="literal">return</span>;
+637         }
+638         <span class="comment">//updates the variable indicating whether the user is a club member</span>
+639         SERVER.userFile[index][14]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;SERVER.userFile[index][13]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+640         <span class="comment">//writes change to text file</span>
+641         SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);
+642         <span class="comment">//removes user from fixtures if approrpaite</span>
+643         <span class="literal">try</span>{
+644             Fixture.removePlayerFromFixtures(userName);
+645         }<span class="literal">catch</span>(Exception e){
+646             System.out.println(<span class="string">&quot;</span><span class="string">Possible non fatal error when removing user from chess club: </span><span class="string">&quot;</span>+e);
+647             <span class="literal">return</span>;
+648         }
+649         
+650     }
+651     <span class="comment">/**</span>
+652 <span class="comment">     * </span><span class="ST0">Changes</span> <span class="ST0">status</span> <span class="ST0">of</span> <span class="ST0">request</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">club</span>
+653 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span>
+654      <span class="comment">*/</span>
+655     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> updateRequestToJoinClubStatus(String userName){
+656         <span class="comment">//attempts to find user in user file</span>
+657         <span class="literal">int</span> index = Search.searchForRecordIndex(SERVER.userFile, userName);
+658         <span class="literal">if</span>(index==Search.INDEX_NOT_FOUND){
+659             <span class="literal">return</span>;
+660         }
+661         <span class="comment">//updates status</span>
+662         <span class="literal">if</span>(SERVER.userFile[index][16].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){
+663             SERVER.userFile[index][16]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+664         }<span class="literal">else</span>{
+665             SERVER.userFile[index][16]=<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>;
+666         }
+667         <span class="comment">//writes array to text file</span>
+668         SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);
+669     }
+670     <span class="comment">/**</span>
+671 <span class="comment">     * </span><span class="ST0">Searches</span> <span class="ST0">for</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">id</span> <span class="ST0">and</span> <span class="ST0">deletes</span> <span class="ST0">it</span> <span class="ST0">if</span> <span class="ST0">is</span> <span class="ST0">found</span><span class="ST0">.</span> <span class="comment">Note</span><span class="comment">, </span><span class="comment">this</span> <span class="comment">method</span> <span class="comment">deletes</span> <span class="comment">the</span> <span class="comment">record</span> <span class="comment">so</span> <span class="comment">it</span> <span class="comment">must</span> <span class="comment">be</span> <span class="comment">ensured</span> <span class="comment">that</span> <span class="comment">both</span> <span class="comment">users</span> <span class="comment">have</span> <span class="comment">actually</span> <span class="comment">seen</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">results</span> <span class="comment">before</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">deleted</span>
+672 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">GAME_ID</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">id</span> <span class="comment">to</span> <span class="comment">delete</span>
+673 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">RESULT</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">result</span><span class="comment">.</span><span class="comment"> 1 </span><span class="comment">indicates</span> <span class="comment">that</span> <span class="comment">player</span> <span class="comment">one</span> <span class="comment">won</span><span class="comment">, 0</span><span class="comment">.</span><span class="comment">5 </span><span class="comment">indicates</span> <span class="comment">a</span> <span class="comment">draw</span> <span class="comment">and</span><span class="comment"> 0 </span><span class="comment">indicates</span> <span class="comment">that</span> <span class="comment">player</span> <span class="comment">two</span> <span class="comment">won</span>
+674      <span class="comment">*/</span>
+675     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> deleteGame(<span class="literal">final</span> <span class="literal">int</span> GAME_ID,<span class="literal">final</span> <span class="literal">double</span> RESULT){
+676         <span class="comment">//checks to ensure that game has not already been deleted</span>
+677         <span class="literal">int</span> playerOneElo;<span class="comment">//stores the first player&#39;s ELO score</span>
+678         <span class="literal">int</span> playerTwoElo;<span class="comment">//stores player two&#39;s ELO score</span>
+679         <span class="literal">double</span> resultPlayerOne=0.5;<span class="comment">//stores the result from player one&#39;s perspective</span>
+680         <span class="literal">double</span> resultPlayerTwo=0.5;<span class="comment">//stores the result from player two&#39;s perspective</span>
+681         <span class="literal">double</span> probabilityPlayerOneWins;<span class="comment">//stores the probability that player one wins</span>
+682         <span class="literal">double</span> probabilityPlayerTwoWins;<span class="comment">//stores the probability that player two wins</span>
+683         <span class="literal">int</span> recordIndex=Search.searchForRecordIndexInt(SERVER.onlineGames, GAME_ID);<span class="comment">//gets index where record is located</span>
+684         <span class="literal">if</span>(recordIndex==Search.INDEX_NOT_FOUND){
+685             <span class="literal">return</span>;<span class="comment">//games has already been deleted and hence this method is not needed</span>
+686         }
+687         <span class="comment">//if a game that has not yet been accepted is being deleted, one of the username may be blank. In this case, no ELO update is needed</span>
+688         <span class="literal">if</span>((SERVER.onlineGames[recordIndex][1]==<span class="literal">null</span> || SERVER.onlineGames[recordIndex][2]==<span class="literal">null</span> ||SERVER.onlineGames[recordIndex][1].equals(<span class="string">&quot;&quot;</span>)||SERVER.onlineGames[recordIndex][2].equals(<span class="string">&quot;&quot;</span>))==<span class="literal">false</span>){
+689             <span class="literal">int</span> playerOneRecord=Search.searchForRecordIndex( SERVER.userFile, SERVER.onlineGames[recordIndex][1]);
+690             <span class="literal">int</span> playerTwoRecord=Search.searchForRecordIndex( SERVER.userFile, SERVER.onlineGames[recordIndex][2]);
+691             <span class="literal">if</span>(playerOneRecord==Search.INDEX_NOT_FOUND||playerTwoRecord==Search.INDEX_NOT_FOUND){
+692                 <span class="literal">return</span>;
+693             }
+694             <span class="comment">//gets the current ELO ratings of the players</span>
+695             playerOneElo=Integer.parseInt(SERVER.userFile[playerOneRecord][15]);
+696             playerTwoElo=Integer.parseInt(SERVER.userFile[playerTwoRecord][15]);
+697             <span class="comment">//updates ELO values of users involved</span>
+698             <span class="comment">//gets score of game</span>
+699             <span class="literal">if</span>(RESULT==1){
+700                 resultPlayerTwo=0;
+701                 resultPlayerOne=1;
+702             }<span class="literal">else</span> <span class="literal">if</span>(RESULT==0){
+703                 resultPlayerTwo=1;
+704                 resultPlayerOne=0;
+705             }
+706             <span class="comment">//implements ELO algorithm</span>
+707             probabilityPlayerOneWins=1.0/(1.0+Math.pow(10.0, (playerTwoElo-playerOneElo)/400.0));
+708             probabilityPlayerTwoWins=1.0/(1.0+Math.pow(10.0, (playerOneElo-playerTwoElo)/400.0));
+709             playerOneElo=(<span class="literal">int</span>)Math.round(playerOneElo+24.0*(resultPlayerOne-probabilityPlayerOneWins));
+710             playerTwoElo=(<span class="literal">int</span>)Math.round(playerTwoElo+24.0*(resultPlayerTwo-probabilityPlayerTwoWins));
+711             <span class="comment">//updates elo results and writes it to array and file</span>
+712             SERVER.userFile[playerOneRecord][15]=String.valueOf(playerOneElo);
+713             SERVER.userFile[playerTwoRecord][15]=String.valueOf(playerTwoElo);
+714             SERVER.writeArrayToFileWithSplit(SERVER.userFile, Server.USER_FILE_NAME);            
+715         }
+716         <span class="comment">//now the game details are deleted from the file</span>
+717         String newOnlineGameFile[][]=<span class="literal">new</span> String[SERVER.onlineGames.length-1][Server.WIDTH_OF_ONLINE_FILE];
+718         <span class="comment">//copies the array to a new one, simply deleteing the old record</span>
+719         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;recordIndex;i++){
+720             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+721                 newOnlineGameFile[i][x]=SERVER.onlineGames[i][x];
+722             }
+723         }
+724         <span class="literal">for</span>(<span class="literal">int</span> i=recordIndex+1;i&lt;SERVER.onlineGames.length;i++){
+725             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+726                 newOnlineGameFile[i-1][x]=SERVER.onlineGames[i][x];
+727             }
+728         }
+729         <span class="comment">//sets the array to the updated file</span>
+730         SERVER.onlineGames=newOnlineGameFile;
+731         <span class="comment">//writes the new file to a text file</span>
+732         SERVER.writeArrayToFileWithSplit(SERVER.onlineGames, Server.ONLINE_GAMES_FILE);
+733     }
+734     <span class="comment">/**</span>
+735 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">a</span> <span class="ST0">record</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">online</span> <span class="ST0">game</span> <span class="ST0">file</span><span class="ST0">.</span> <span class="comment">If</span> <span class="comment">the</span> <span class="comment">record</span> <span class="comment">can</span><span class="comment">&#39;</span><span class="comment">t</span> <span class="comment">be</span> <span class="comment">found</span><span class="comment">, </span><span class="comment">nothing</span> <span class="comment">happens</span><span class="comment">.</span>
+736 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">newRecordValue</span> <span class="comment">The</span> <span class="comment">new</span> <span class="comment">record</span> <span class="comment">that</span> <span class="comment">should</span> <span class="comment">replace</span> <span class="comment">the</span> <span class="comment">current</span> <span class="comment">one</span><span class="comment">.</span>
+737      <span class="comment">*/</span>
+738     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> updateOnlineGameRecord(String[]newRecordValue){
+739         <span class="literal">int</span> indexOfRecord=Search.searchForRecordIndexInt(SERVER.onlineGames, Integer.parseInt(newRecordValue[0]));<span class="comment">//searches for record</span>
+740         <span class="literal">if</span>(indexOfRecord==Search.INDEX_NOT_FOUND){<span class="comment">//if the item is not found, nothing happens</span>
+741             <span class="literal">return</span>;
+742         }
+743         
+744         <span class="comment">//updates record</span>
+745         <span class="literal">for</span>(<span class="literal">int</span> itemInFile=0;itemInFile&lt;Server.WIDTH_OF_ONLINE_FILE;itemInFile++){
+746             SERVER.onlineGames[indexOfRecord][itemInFile]=newRecordValue[itemInFile];
+747         }
+748         SERVER.writeArrayToFileWithSplit(SERVER.onlineGames, Server.ONLINE_GAMES_FILE);<span class="comment">//writes new array to file</span>
+749         <span class="literal">if</span>(newRecordValue[9].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)&amp;&amp; newRecordValue[8].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>)){<span class="comment">//deletes the game if appropraite</span>
+750             deleteGame(Integer.parseInt(newRecordValue[0]), Double.parseDouble(newRecordValue[11]));
+751             <span class="literal">return</span>;
+752         }
+753     }
+754     <span class="comment">/**</span>
+755 <span class="comment">     * </span><span class="comment">Stops</span> <span class="comment">the</span> <span class="comment">queue</span> <span class="comment">thread</span> <span class="comment">and</span> <span class="comment">finishes</span> <span class="comment">all</span> <span class="comment">remaining</span> <span class="comment">tasks</span>
+756      <span class="comment">*/</span>
+757     <span class="literal">public</span>  <span class="literal">void</span> stopThread(){
+758         setKeepRunningFalse();
+759         <span class="literal">while</span>(getIsRunning()){<span class="comment">//waits for the thread to finish</span>
+760         }
+761         <span class="literal">while</span>(getPackages().length&gt;0){<span class="comment">//finishes remaining tasks queued</span>
+762             handlePackage();
+763         }
+764     }
+765     <span class="comment">/**</span>
+766 <span class="comment">     * </span><span class="ST0">Adds</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">account</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">file</span><span class="ST0">.</span>
+767 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">record</span> <span class="comment">The</span> <span class="comment">entire</span> <span class="comment">entry</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">added</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">file</span>
+768 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+769 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">emailAddress</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span>
+770      <span class="comment">*/</span>
+771     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> createAccount(String record[],String userName,String emailAddress){
+772         <span class="literal">if</span>(Search.searchForRecordWithPrimaryKeyAtNoughtElement(SERVER.userFile, userName,UserInfo.WIDTH_OF_USER_DETAILS_FILE)[0]!=<span class="literal">null</span>||Search.searchForRecordWithPrimaryKeyAtNoughtElement(SERVER.emailLinkFile, emailAddress,UserInfo.WIDTH_OF_EMAIL_LINK_FILE)[0]!=<span class="literal">null</span>){<span class="comment">//checks to ensure account hasn&#39;t already been created</span>
+773             <span class="literal">return</span>;
+774         }
+775         String [][]userNew = <span class="literal">new</span> String[SERVER.userFile.length+1][UserInfo.WIDTH_OF_USER_DETAILS_FILE];
+776         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;SERVER.userFile.length;y++){<span class="comment">//copies old user file to new array</span>
+777             <span class="literal">for</span>(<span class="literal">int</span> x =0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){
+778                 userNew[y][x]=SERVER.userFile[y][x];
+779             }
+780         }
+781         <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;UserInfo.WIDTH_OF_USER_DETAILS_FILE;x++){<span class="comment">//adds new record to new array</span>
+782             userNew[userNew.length-1][x]=record[x];
+783         }
+784         Sort.mergeSort(userNew);<span class="comment">//sorts the user array using merge sort</span>
+785         String [][]emailLinkNew=<span class="literal">new</span> String[SERVER.emailLinkFile.length+1][UserInfo.WIDTH_OF_EMAIL_LINK_FILE];
+786         <span class="literal">for</span>(<span class="literal">int</span> y =0;y&lt;SERVER.emailLinkFile.length;y++){<span class="comment">//copies current email file</span>
+787             <span class="literal">for</span>(<span class="literal">int</span> x =0;x&lt;UserInfo.WIDTH_OF_EMAIL_LINK_FILE;x++){
+788                 emailLinkNew[y][x]=SERVER.emailLinkFile[y][x];
+789             }
+790         }
+791         emailLinkNew[emailLinkNew.length-1][0]=emailAddress;emailLinkNew[emailLinkNew.length-1][1]=userName;<span class="comment">//adds new record to file</span>
+792         Sort.mergeSort(emailLinkNew);
+793         SERVER.writeArrayToFileWithSplit(userNew, Server.USER_FILE_NAME);SERVER.writeArrayToFileWithSplit(emailLinkNew, Server.EMAIL_FILE_NAME);
+794         SERVER.userFile=userNew;SERVER.emailLinkFile=emailLinkNew;
+795     }        
+796     <span class="comment">/**</span>
+797 <span class="comment">     * </span><span class="ST0">Adds</span> <span class="ST0">the</span> <span class="ST0">input</span> <span class="ST0">package</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">queue</span>
+798 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">pack</span> <span class="comment">The</span> <span class="comment">input</span> <span class="comment">package</span> <span class="comment">to</span> <span class="comment">add</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">queue</span>
+799      <span class="comment">*/</span>
+800     <span class="literal">public</span> <span class="literal">synchronized</span>  <span class="literal">void</span> addInputPackageTask(InputPackages pack){
+801         <span class="literal">if</span>(!getKeepThreadRunning()){<span class="comment">//doesnt allow any more packages to be added to the queue once the thread is closed</span>
+802             <span class="literal">return</span>;
+803         }
+804         InputPackages newPack[]=<span class="literal">new</span> InputPackages[packages.length+1];
+805         <span class="comment">//copies old packages to new array</span>
+806         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;packages.length;i++){
+807             newPack[i]=packages[i];
+808         }
+809         <span class="comment">//adds most recent package to end of array</span>
+810         newPack[packages.length]=pack;
+811         packages=newPack;
+812     }
+813     <span class="comment">/**</span>
+814 <span class="comment">     * </span><span class="ST0">Removes</span> <span class="ST0">an</span> <span class="ST0">InputPackage</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">queue</span> <span class="ST0">and</span> <span class="ST0">returns</span> <span class="ST0">it</span>
+815 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">input</span> <span class="comment">package</span> <span class="comment">removed</span>
+816      <span class="comment">*/</span>
+817     <span class="literal">private</span> <span class="literal">synchronized</span> InputPackages removeFromQueue(){
+818         InputPackages[]newPack=<span class="literal">new</span> InputPackages[packages.length-1];
+819         <span class="literal">for</span>(<span class="literal">int</span> i=1;i&lt;packages.length;i++){<span class="comment">//creates new array</span>
+820             newPack[i-1]=packages[i];
+821         }
+822         InputPackages pack=packages[0];
+823         packages=newPack;
+824         <span class="literal">return</span> pack;
+825     }
+826     <span class="comment">/**</span>
+827 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">online</span> <span class="ST0">game</span> <span class="ST0">and</span> <span class="ST0">adds</span> <span class="ST0">it</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">system</span>
+828 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">opponentOne</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">opponent</span> 
+829 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">opponentTwo</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">other</span> <span class="comment">opponent</span><span class="comment"> - </span><span class="comment">leave</span> <span class="comment">this</span> <span class="comment">blank</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">opponent</span> <span class="comment">name</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">yet</span> <span class="comment">known</span>
+830 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isUnlimitedTime</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">uses</span> <span class="comment">unlimited</span> <span class="comment">time</span> <span class="comment">control</span>
+831 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isTenMins</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">uses</span><span class="comment"> 10 </span><span class="comment">minute</span> <span class="comment">time</span> <span class="comment">control</span>
+832 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isGameForFriendCode</span> <span class="comment">If</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">created</span> <span class="comment">required</span> <span class="comment">a</span> <span class="comment">friend</span> <span class="comment">code</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">enterer</span>
+833 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isPlayerOneWhite</span> <span class="comment">Stores</span> <span class="comment">whether</span> <span class="comment">player</span> <span class="comment">one</span> <span class="comment">is</span> <span class="comment">white</span> <span class="comment">or</span> <span class="comment">not</span>
+834 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">id</span>
+835      <span class="comment">*/</span>
+836     <span class="literal">private</span> <span class="literal">synchronized</span> String createNewOnlineGame(String opponentOne, String opponentTwo, <span class="literal">boolean</span> isUnlimitedTime, <span class="literal">boolean</span> isTenMins,<span class="literal">boolean</span> isGameForFriendCode,<span class="literal">boolean</span> isPlayerOneWhite){
+837         <span class="comment">//file is stored: gameId, opponentOne, opponentTwo, gameDetails (FENS(s)), timePlayed, timeLeftWhite, timeLeftBlack, is a friend code needed, has playerOne seen, hasPlayerTwoseen win, isPlayerOneWhite, gameState, drawP1?,drawp2?</span>
+838         String[] record=<span class="literal">new</span> String[Server.WIDTH_OF_ONLINE_FILE];<span class="comment">//stores the record to write to the game file</span>
+839         String gameId=<span class="string">&quot;&quot;</span>;<span class="comment">//stores the gameId</span>
+840         record[1]=opponentOne;record[2]=opponentTwo;record[3]=Server.STARTING_BOARD_FEN;record[4]=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>;record[7]=String.valueOf(isGameForFriendCode);
+841         record[8]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;record[9]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;record[10]=String.valueOf(isPlayerOneWhite);record[11]=<span class="string">&quot;</span><span class="string">-1</span><span class="string">&quot;</span>;record[12]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;record[13]=<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>;
+842         <span class="comment">//sets time left for each player</span>
+843         <span class="literal">if</span>(isUnlimitedTime){
+844             record[5]=<span class="string">&quot;</span><span class="string">-100</span><span class="string">&quot;</span>;record[6]=<span class="string">&quot;</span><span class="string">-100</span><span class="string">&quot;</span>;
+845         }<span class="literal">else</span> <span class="literal">if</span>(isTenMins){
+846             record[5]=<span class="string">&quot;</span><span class="string">600</span><span class="string">&quot;</span>;record[6]=<span class="string">&quot;</span><span class="string">600</span><span class="string">&quot;</span>;
+847         }<span class="literal">else</span>{
+848             record[5]=<span class="string">&quot;</span><span class="string">300</span><span class="string">&quot;</span>;record[6]=<span class="string">&quot;</span><span class="string">300</span><span class="string">&quot;</span>;
+849         }
+850         <span class="literal">if</span>(SERVER.onlineGames.length==0){<span class="comment">//the first game to be added is done like this</span>
+851             SERVER.onlineGames=<span class="literal">new</span> String[1][Server.WIDTH_OF_ONLINE_FILE];
+852             gameId=<span class="string">&quot;</span><span class="string">000000</span><span class="string">&quot;</span>;
+853             record[0]=gameId;
+854             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+855                 SERVER.onlineGames[0][x]=record[x];
+856             }
+857         }<span class="literal">else</span>{
+858             <span class="comment">//gets the game id by looping sequentially through the file and finding the next available integer game id</span>
+859             <span class="comment">//as the file is sorted, if the end of the file is reached, the game is simply the current id plus one</span>
+860             <span class="literal">boolean</span> hasFileEndBeenReachedWithoutId=<span class="literal">true</span>;
+861             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;SERVER.onlineGames.length;i++){
+862                 <span class="literal">if</span>(Integer.parseInt(SERVER.onlineGames[i][0])!=i){
+863                     <span class="comment">//ensures that the integer is not less than six characters</span>
+864                     gameId=String.valueOf(i);
+865                     <span class="literal">while</span>(gameId.length()&lt;6){
+866                         gameId=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>+gameId;
+867                     }
+868                     record[0]=gameId;
+869                     hasFileEndBeenReachedWithoutId=<span class="literal">false</span>;
+870                     <span class="literal">break</span>;
+871                 }
+872             }
+873             <span class="literal">if</span>(hasFileEndBeenReachedWithoutId){<span class="comment">//if the end of the file is reached without an id being assigned this code runs</span>
+874                 gameId=String.valueOf(SERVER.onlineGames.length);
+875                 <span class="literal">while</span>(gameId.length()&lt;6){
+876                     gameId=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>+gameId;
+877                 }
+878                 record[0]=gameId;
+879             }
+880             <span class="comment">//updates onlineGames Array</span>
+881             String newOnlineGames[][]=<span class="literal">new</span> String[SERVER.onlineGames.length+1][Server.WIDTH_OF_ONLINE_FILE];
+882             <span class="comment">//copies old file to new one</span>
+883             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;SERVER.onlineGames.length;i++){
+884                 <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+885                     newOnlineGames[i][x]=SERVER.onlineGames[i][x];
+886                 }
+887             }
+888             <span class="comment">//adds new record</span>
+889             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;Server.WIDTH_OF_ONLINE_FILE;x++){
+890                 newOnlineGames[SERVER.onlineGames.length][x]=record[x];
+891             }
+892             <span class="comment">//sort file</span>
+893             Sort.quickSortUsingIntAtFirstElement(newOnlineGames);
+894             SERVER.onlineGames=newOnlineGames;
+895         }
+896         SERVER.writeArrayToFileWithSplit(SERVER.onlineGames, Server.ONLINE_GAMES_FILE);<span class="comment">//updates the text file</span>
+897         <span class="literal">return</span> gameId;<span class="comment">//returns the game id</span>
+898     }
+899     <span class="comment">/**</span>
+900 <span class="comment">     * </span><span class="ST0">Handles</span> <span class="ST0">the</span> <span class="ST0">request</span> <span class="ST0">to</span> <span class="ST0">play</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">random</span> <span class="ST0">online</span> <span class="ST0">game</span><span class="ST0">.</span>
+901 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">player</span> <span class="comment">making</span> <span class="comment">the</span> <span class="comment">request</span>
+902      <span class="comment">*/</span>
+903     <span class="literal">private</span> <span class="literal">synchronized</span> <span class="literal">void</span> handleRequestForNewOnlineRandomGame(String userName){
+904         <span class="comment">//checks to see if any requests for online random games exsist - if they do then the user is assigned to one of these requests</span>
+905         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;SERVER.onlineGames.length;y++){
+906             <span class="literal">if</span>(SERVER.onlineGames[y][7].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>)&amp;&amp;SERVER.onlineGames[y][2].equals(<span class="string">&quot;&quot;</span>)&amp;&amp;!SERVER.onlineGames[y][1].equals(userName)){<span class="comment">//checks to see if a random game has already been created but not accpeted by another player</span>
+907                 SERVER.onlineGames[y][2]=userName;
+908                 SERVER.writeArrayToFileWithSplit(SERVER.onlineGames, Server.ONLINE_GAMES_FILE);<span class="comment">//updates the text file</span>
+909                 <span class="literal">return</span>;
+910             }
+911         }
+912         <span class="comment">//if no existing play request is found, a new one must be created</span>
+913         Random rnd = <span class="literal">new</span> Random();
+914         <span class="literal">int</span> randNum=rnd.nextInt(3);
+915         <span class="literal">boolean</span> isPlayerOneWhite=Math.random()&gt;=0.5;
+916         <span class="comment">//a random time control is chosen for the new game</span>
+917         <span class="literal">switch</span> (randNum) {
+918             <span class="literal">case</span> 0:
+919                 createNewOnlineGame(userName, <span class="string">&quot;&quot;</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">false</span>,isPlayerOneWhite);
+920                 <span class="literal">break</span>;
+921             <span class="literal">case</span> 1:
+922                 createNewOnlineGame(userName, <span class="string">&quot;&quot;</span>, <span class="literal">false</span>, <span class="literal">true</span>, <span class="literal">false</span>,isPlayerOneWhite);
+923                 <span class="literal">break</span>;
+924             <span class="literal">default</span>:
+925                 createNewOnlineGame(userName, <span class="string">&quot;&quot;</span>, <span class="literal">false</span>, <span class="literal">false</span>, <span class="literal">false</span>,isPlayerOneWhite);
+926                 <span class="literal">break</span>;
+927         }
+928         
+929     }
+930     <span class="comment">/**</span>
+931 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">online</span> <span class="ST0">game</span> <span class="ST0">against</span> <span class="ST0">a</span> <span class="ST0">friend</span><span class="ST0">, </span><span class="ST0">checking</span> <span class="ST0">that</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">can</span> <span class="ST0">legally</span> <span class="ST0">be</span> <span class="ST0">created</span>
+932 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">playerOne</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">player</span> <span class="comment">one</span>
+933 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">playerTwo</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">player</span> <span class="comment">two</span><span class="comment"> -&quot;&quot; </span><span class="comment">should</span> <span class="comment">be</span> <span class="comment">input</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">code</span> <span class="comment">is</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">shared</span>
+934 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">timeControl</span> <span class="comment">The</span> <span class="comment">time</span> <span class="comment">control</span> <span class="comment">used</span>
+935 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">code</span><span class="comment">.</span><span class="comment"> &quot;-1&quot; </span><span class="comment">is</span> <span class="comment">returned</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">can</span><span class="comment">&#39;</span><span class="comment">t</span> <span class="comment">be</span> <span class="comment">created</span>
+936      <span class="comment">*/</span>
+937     <span class="literal">public</span> <span class="literal">synchronized</span> String createOnlineGameAgainstFriend(String playerOne,String playerTwo,String timeControl){
+938         <span class="comment">//checks to ensure that game can legally be created</span>
+939         <span class="literal">if</span>(!getAllGamesWithUser(playerOne)[2][0].equals(<span class="string">&quot;&quot;</span>) ||(!playerTwo.equals(<span class="string">&quot;&quot;</span>)&amp;&amp;!getAllGamesWithUser(playerTwo)[2][0].equals(<span class="string">&quot;&quot;</span>))){
+940             <span class="literal">return</span> <span class="string">&quot;</span><span class="string">-1</span><span class="string">&quot;</span>;
+941         }
+942         <span class="comment">//adds game to file</span>
+943         <span class="literal">switch</span> (timeControl) {
+944             <span class="literal">case</span> <span class="string">&quot;</span><span class="string">-100</span><span class="string">&quot;</span>:
+945                 <span class="literal">return</span>(createNewOnlineGame(playerOne, playerTwo, <span class="literal">true</span>, <span class="literal">false</span>, playerTwo.equals(<span class="string">&quot;&quot;</span>), Math.random()&gt;=0.5));
+946             <span class="literal">case</span> <span class="string">&quot;</span><span class="string">600</span><span class="string">&quot;</span>:
+947                 <span class="literal">return</span>(createNewOnlineGame(playerOne, playerTwo, <span class="literal">false</span>, <span class="literal">true</span>, playerTwo.equals(<span class="string">&quot;&quot;</span>), Math.random()&gt;=0.5));
+948             <span class="literal">default</span>:
+949                 <span class="literal">return</span>(createNewOnlineGame(playerOne, playerTwo, <span class="literal">false</span>, <span class="literal">false</span>, playerTwo.equals(<span class="string">&quot;&quot;</span>), Math.random()&gt;=0.5));
+950         }
+951     }
+952     <span class="comment">/**</span>
+953 <span class="comment">     * </span><span class="ST0">Attempts</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">an</span> <span class="ST0">existing</span> <span class="ST0">game</span> <span class="ST0">using</span> <span class="ST0">the</span> <span class="ST0">code</span>
+954 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">player</span> <span class="comment">attempting</span> <span class="comment">to</span> <span class="comment">join</span>
+955 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gameCode</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">code</span>
+956 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">was</span> <span class="comment">joined</span>
+957      <span class="comment">*/</span>
+958     <span class="literal">public</span> <span class="literal">synchronized</span> <span class="literal">boolean</span> joinGameUsingFriendCode(String userName,<span class="literal">int</span> gameCode){
+959         <span class="literal">int</span> recordIndex=Search.searchForRecordIndexInt(SERVER.onlineGames, gameCode);<span class="comment">//attempts to locate game</span>
+960         <span class="literal">if</span>(recordIndex==Search.INDEX_NOT_FOUND){
+961             <span class="literal">return</span> <span class="literal">false</span>;
+962         }
+963         <span class="literal">if</span>(SERVER.onlineGames[recordIndex][1].equals(userName)){<span class="comment">//ensures that user can&#39;t join a game against themselves</span>
+964             <span class="literal">return</span> <span class="literal">false</span>;
+965         }
+966         <span class="literal">if</span>(SERVER.onlineGames[recordIndex][7].equals(<span class="string">&quot;</span><span class="string">false</span><span class="string">&quot;</span>)){<span class="comment">//prevents the user from joining a random game</span>
+967             <span class="literal">return</span> <span class="literal">false</span>;
+968         }
+969         <span class="comment">//allows the user to join the game</span>
+970         SERVER.onlineGames[recordIndex][2]=userName;
+971         SERVER.writeArrayToFileWithSplit(SERVER.onlineGames, Server.ONLINE_GAMES_FILE);
+972         <span class="literal">return</span> <span class="literal">true</span>;
+973     }
+974     <span class="comment">/**</span>
+975 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">data</span> <span class="ST0">requested</span>
+976 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gameCode</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">code</span>
+977 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">data</span>
+978      <span class="comment">*/</span>
+979     <span class="literal">public</span> <span class="literal">synchronized</span> String []getGameRecord(<span class="literal">int</span> gameCode){
+980         String []record=<span class="literal">new</span> String[Server.WIDTH_OF_ONLINE_FILE];
+981         <span class="literal">int</span> index=Search.searchForRecordIndexInt(SERVER.onlineGames, gameCode);
+982         <span class="literal">if</span>(index==-1){
+983             <span class="literal">return</span> record;
+984         }
+985         <span class="comment">//copies record to new array</span>
+986         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;record.length;i++){
+987             record[i]=SERVER.onlineGames[index][i];
+988         }
+989         <span class="literal">return</span> record;
+990     }
+991 }
+992 
+</pre></body>
+</html>

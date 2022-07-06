@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Menu.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.ST3 {color: #ce7b00; background-color: #dfdfdf}
+.literal {color: #0000e6}
+.ST2 {color: #0000e6; background-color: #dfdfdf}
+.comment {color: #969696}
+.guarded {background-color: #dfdfdf}
+.ST1 {color: #969696; background-color: #dfdfdf}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\Menu.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+  7 
+  8 <span class="literal">import</span> javax.swing.JOptionPane;
+  9 
+ 10 <span class="comment">/**</span>
+ 11 <span class="comment"> * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">menu</span> <span class="ST0">form</span> <span class="ST0">that</span> <span class="ST0">allows</span> <span class="ST0">a</span> <span class="ST0">user</span> <span class="ST0">to</span> <span class="ST0">access</span> <span class="ST0">various</span> <span class="ST0">parts</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">system</span>
+ 12 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 13  <span class="comment">*/</span>
+ 14 <span class="literal">public</span> <span class="literal">class</span> Menu <span class="literal">extends</span> javax.swing.JFrame {
+ 15     SessionInfo session;<span class="comment">//the session information of the current user</span>
+ 16     <span class="comment">/**</span>
+ 17 <span class="comment">     * </span><span class="comment">Creates</span> <span class="comment">new</span> <span class="comment">form</span> <span class="comment">Menu</span>
+ 18      <span class="comment">*/</span>
+ 19     <span class="literal">private</span> Menu() {
+ 20         initComponents();
+ 21     }
+ 22     <span class="comment">/**</span>
+ 23 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">new</span> <span class="ST0">form</span> <span class="ST0">Menu</span>
+ 24 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">sess</span> <span class="comment">The</span> <span class="comment">session</span> <span class="comment">information</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">current</span> <span class="comment">user</span>
+ 25      <span class="comment">*/</span>
+ 26     <span class="literal">public</span> Menu(SessionInfo sess){<span class="comment">//overloading is used to store session info and run the form</span>
+ 27         session =sess;
+ 28         initComponents();
+ 29         <span class="comment">//sets the username label depending on the session information</span>
+ 30         <span class="literal">if</span>(sess.getIsGuest()){
+ 31             logInInfoLbl.setText(<span class="string">&quot;</span><span class="string">You are currently logged in as a Guest.</span><span class="string">&quot;</span>);
+ 32             onlineBtn.setEnabled(<span class="literal">false</span>);
+ 33         }<span class="literal">else</span>{
+ 34             logInInfoLbl.setText(<span class="string">&quot;</span><span class="string">Username: </span><span class="string">&quot;</span>+sess.getUsername());
+ 35         }
+ 36     }
+ 37     <span class="comment">/**</span>
+ 38 <span class="comment">     * </span><span class="ST0">This</span> <span class="ST0">method</span> <span class="ST0">is</span> <span class="ST0">called</span> <span class="ST0">from</span> <span class="ST0">within</span> <span class="ST0">the</span> <span class="ST0">constructor</span> <span class="ST0">to</span> <span class="ST0">initialize</span> <span class="ST0">the</span> <span class="ST0">form</span><span class="ST0">.</span>
+ 39 <span class="comment">     * </span><span class="comment">WARNING</span><span class="comment">: </span><span class="comment">Do</span> <span class="comment">NOT</span> <span class="comment">modify</span> <span class="comment">this</span> <span class="comment">code</span><span class="comment">.</span> <span class="comment">The</span> <span class="comment">content</span> <span class="comment">of</span> <span class="comment">this</span> <span class="comment">method</span> <span class="comment">is</span> <span class="comment">always</span>
+ 40 <span class="comment">     * </span><span class="comment">regenerated</span> <span class="comment">by</span> <span class="comment">the</span> <span class="comment">Form</span> <span class="comment">Editor</span><span class="comment">.</span>
+ 41      <span class="comment">*/</span>
+ 42     @SuppressWarnings(<span class="string">&quot;</span><span class="string">unchecked</span><span class="string">&quot;</span>)
+ 43     <span class="ST1">// &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Generated Code&quot;&gt;                          </span>
+ 44     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">initComponents</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 45 
+ 46         <span class="guarded">jPanel1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JPanel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 47         <span class="guarded">jLabel1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 48         <span class="guarded">chessClubBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 49         <span class="guarded">onlineBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 50         <span class="guarded">offlineBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 51         <span class="guarded">logOutBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 52         <span class="guarded">Exit</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 53         <span class="guarded">logInInfoLbl</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+ 54 
+ 55         <span class="guarded">setDefaultCloseOperation</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">WindowConstants</span><span class="guarded">.</span><span class="guarded">EXIT_ON_CLOSE</span><span class="guarded">)</span><span class="guarded">;</span>
+ 56         <span class="guarded">setTitle</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Menu</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 57 
+ 58         <span class="guarded">jLabel1</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">West Cross Chess Club</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 59         <span class="guarded">jLabel1</span><span class="guarded">.</span><span class="guarded">setToolTipText</span><span class="guarded">(</span><span class="ST3">&quot;&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 60 
+ 61         <span class="guarded">chessClubBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">West Cross Chess Club</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 62         <span class="guarded">chessClubBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 63             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 64                 <span class="guarded">chessClubBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+ 65             <span class="guarded">}</span>
+ 66         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+ 67 
+ 68         <span class="guarded">onlineBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Online</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 69         <span class="guarded">onlineBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 70             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 71                 <span class="guarded">onlineBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+ 72             <span class="guarded">}</span>
+ 73         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+ 74 
+ 75         <span class="guarded">offlineBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Offline</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 76         <span class="guarded">offlineBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 77             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 78                 <span class="guarded">offlineBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+ 79             <span class="guarded">}</span>
+ 80         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+ 81 
+ 82         <span class="guarded">logOutBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Log Out</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 83         <span class="guarded">logOutBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 84             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 85                 <span class="guarded">logOutBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+ 86             <span class="guarded">}</span>
+ 87         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+ 88 
+ 89         <span class="guarded">Exit</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Exit</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 90         <span class="guarded">Exit</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 91             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+ 92                 <span class="guarded">ExitActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+ 93             <span class="guarded">}</span>
+ 94         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+ 95 
+ 96         <span class="guarded">logInInfoLbl</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Username:</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+ 97 
+ 98         <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span> <span class="guarded">jPanel1Layout</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">)</span><span class="guarded">;</span>
+ 99         <span class="guarded">jPanel1</span><span class="guarded">.</span><span class="guarded">setLayout</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">)</span><span class="guarded">;</span>
+100         <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">setHorizontalGroup</span><span class="guarded">(</span>
+101             <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+102             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+103                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+104                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel1</span><span class="guarded">)</span>
+105                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">293</span><span class="guarded">,</span> <span class="guarded">293</span><span class="guarded">,</span> <span class="guarded">293</span><span class="guarded">)</span><span class="guarded">)</span>
+106             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+107                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">43</span><span class="guarded">,</span> <span class="guarded">43</span><span class="guarded">,</span> <span class="guarded">43</span><span class="guarded">)</span>
+108                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">logOutBtn</span><span class="guarded">)</span>
+109                 <span class="guarded">.</span><span class="guarded">addPreferredGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">LayoutStyle</span><span class="guarded">.</span><span class="guarded">ComponentPlacement</span><span class="guarded">.</span><span class="guarded">RELATED</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+110                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">Exit</span><span class="guarded">)</span>
+111                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">88</span><span class="guarded">,</span> <span class="guarded">88</span><span class="guarded">,</span> <span class="guarded">88</span><span class="guarded">)</span><span class="guarded">)</span>
+112             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+113                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+114                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+115                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">286</span><span class="guarded">,</span> <span class="guarded">286</span><span class="guarded">,</span> <span class="guarded">286</span><span class="guarded">)</span>
+116                         <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">,</span> <span class="ST2">false</span><span class="guarded">)</span>
+117                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">chessClubBtn</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+118                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">onlineBtn</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+119                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">offlineBtn</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+120                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+121                         <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">)</span>
+122                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">logInInfoLbl</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">253</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+123                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">271</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span><span class="guarded">)</span>
+124         <span class="guarded">)</span><span class="guarded">;</span>
+125         <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">setVerticalGroup</span><span class="guarded">(</span>
+126             <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+127             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+128                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">29</span><span class="guarded">,</span> <span class="guarded">29</span><span class="guarded">,</span> <span class="guarded">29</span><span class="guarded">)</span>
+129                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">32</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span>
+130                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">6</span><span class="guarded">,</span> <span class="guarded">6</span><span class="guarded">,</span> <span class="guarded">6</span><span class="guarded">)</span>
+131                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">logInInfoLbl</span><span class="guarded">)</span>
+132                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">26</span><span class="guarded">,</span> <span class="guarded">26</span><span class="guarded">,</span> <span class="guarded">26</span><span class="guarded">)</span>
+133                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">chessClubBtn</span><span class="guarded">)</span>
+134                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">51</span><span class="guarded">,</span> <span class="guarded">51</span><span class="guarded">,</span> <span class="guarded">51</span><span class="guarded">)</span>
+135                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">onlineBtn</span><span class="guarded">)</span>
+136                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">56</span><span class="guarded">,</span> <span class="guarded">56</span><span class="guarded">,</span> <span class="guarded">56</span><span class="guarded">)</span>
+137                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">offlineBtn</span><span class="guarded">)</span>
+138                 <span class="guarded">.</span><span class="guarded">addPreferredGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">LayoutStyle</span><span class="guarded">.</span><span class="guarded">ComponentPlacement</span><span class="guarded">.</span><span class="guarded">RELATED</span><span class="guarded">,</span> <span class="guarded">109</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+139                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">BASELINE</span><span class="guarded">)</span>
+140                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">logOutBtn</span><span class="guarded">)</span>
+141                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">Exit</span><span class="guarded">)</span><span class="guarded">)</span>
+142                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">)</span>
+143         <span class="guarded">)</span><span class="guarded">;</span>
+144 
+145         <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span> <span class="guarded">layout</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">(</span><span class="guarded">getContentPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">;</span>
+146         <span class="guarded">getContentPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">setLayout</span><span class="guarded">(</span><span class="guarded">layout</span><span class="guarded">)</span><span class="guarded">;</span>
+147         <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">setHorizontalGroup</span><span class="guarded">(</span>
+148             <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+149             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+150         <span class="guarded">)</span><span class="guarded">;</span>
+151         <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">setVerticalGroup</span><span class="guarded">(</span>
+152             <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+153             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+154         <span class="guarded">)</span><span class="guarded">;</span>
+155 
+156         <span class="guarded">pack</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+157     <span class="guarded">}</span><span class="ST1">// &lt;/editor-fold&gt;                        </span>
+158 
+159     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">ExitActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                     
+160         <span class="comment">//exits sytem upon user confirmation</span>
+161         <span class="literal">int</span> confirm = JOptionPane.showConfirmDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Are you sure you would like to exit?</span><span class="string">&quot;</span>, <span class="string">&quot;</span><span class="string">Exit?</span><span class="string">&quot;</span>, JOptionPane.YES_NO_CANCEL_OPTION);
+162         <span class="literal">if</span>(confirm==JOptionPane.YES_OPTION){
+163             System.exit(0);
+164         }
+165     <span class="guarded">}</span>                                    
+166 
+167     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">logOutBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                          
+168         <span class="comment">// logs user out after confirmation</span>
+169         <span class="literal">int</span> confirm = JOptionPane.showConfirmDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Are you sure you would like to log out?</span><span class="string">&quot;</span>, <span class="string">&quot;</span><span class="string">Log out?</span><span class="string">&quot;</span>, JOptionPane.YES_NO_CANCEL_OPTION);
+170         <span class="literal">if</span>(confirm==JOptionPane.YES_OPTION){
+171             LogIn log = <span class="literal">new</span> LogIn();
+172             log.setVisible(<span class="literal">true</span>);
+173             <span class="literal">this</span>.dispose();
+174         }        
+175     <span class="guarded">}</span>                                         
+176 
+177     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">offlineBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                           
+178         <span class="comment">// takes user to form for offline games</span>
+179         OfflinePlay offline = <span class="literal">new</span> OfflinePlay(session);
+180         offline.setVisible(<span class="literal">true</span>);
+181         <span class="literal">this</span>.dispose();
+182     <span class="guarded">}</span>                                          
+183 
+184     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">onlineBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                          
+185         <span class="comment">//takes user to online game form</span>
+186         OnlineMenu online = <span class="literal">new</span> OnlineMenu(session);
+187         online.setVisible(<span class="literal">true</span>);
+188         <span class="literal">this</span>.dispose();
+189     <span class="guarded">}</span>                                         
+190 
+191     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">chessClubBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                             
+192         <span class="comment">// takes the user to the west cross chess club menu. This form differs depending on what type of user is attempting to access the form</span>
+193         <span class="literal">if</span>(session.getIsGuest()){<span class="comment">//takes the user to the chess club form for guests</span>
+194             WestCrossChessClubGuest chessClubGuest = <span class="literal">new</span> WestCrossChessClubGuest(session);
+195             chessClubGuest.setVisible(<span class="literal">true</span>);
+196             <span class="literal">this</span>.dispose();
+197         }<span class="literal">else</span> <span class="literal">if</span>(session.getIsClubMember()==<span class="literal">false</span>){<span class="comment">//takes the user to the chess club form for non-member users</span>
+198             WestCrossChessClubUser chessClubUser = <span class="literal">new</span> WestCrossChessClubUser(session);
+199             chessClubUser.setVisible(<span class="literal">true</span>);
+200             <span class="literal">this</span>.dispose();            
+201         }<span class="literal">else</span> <span class="literal">if</span>(session.getIsClubMember() &amp;&amp; session.getIsClubLeader()==<span class="literal">false</span>){<span class="comment">//takes the user to the chess club form for member users</span>
+202             WestCrossChessClubMember chessClubMember = <span class="literal">new</span> WestCrossChessClubMember(session);
+203             chessClubMember.setVisible(<span class="literal">true</span>);
+204             <span class="literal">this</span>.dispose();             
+205         }<span class="literal">else</span>{<span class="comment">//takes the user to the chess club form for the chess club leader</span>
+206             WestCrossChessClubLeader chessClubLeader = <span class="literal">new</span> WestCrossChessClubLeader(session);
+207             chessClubLeader.setVisible(<span class="literal">true</span>);
+208             <span class="literal">this</span>.dispose();   
+209         }
+210     <span class="guarded">}</span>                                            
+211 
+212     <span class="comment">/**</span>
+213 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">args</span> <span class="comment">the</span> <span class="comment">command</span> <span class="comment">line</span> <span class="comment">arguments</span>
+214      <span class="comment">*/</span>
+215     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> main(String args[]) {
+216         <span class="comment">/* Set the Nimbus look and feel */</span>
+217         <span class="comment">//&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot; Look and feel setting code (optional) &quot;&gt;</span>
+218         <span class="comment">/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.</span>
+219 <span class="comment">         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html </span>
+220 <span class="comment">         */</span>
+221         <span class="literal">try</span> {
+222             <span class="literal">for</span> (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+223                 <span class="literal">if</span> (<span class="string">&quot;</span><span class="string">Nimbus</span><span class="string">&quot;</span>.equals(info.getName())) {
+224                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
+225                     <span class="literal">break</span>;
+226                 }
+227             }
+228         } <span class="literal">catch</span> (ClassNotFoundException ex) {
+229             java.util.logging.Logger.getLogger(Menu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+230         } <span class="literal">catch</span> (InstantiationException ex) {
+231             java.util.logging.Logger.getLogger(Menu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+232         } <span class="literal">catch</span> (IllegalAccessException ex) {
+233             java.util.logging.Logger.getLogger(Menu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+234         } <span class="literal">catch</span> (javax.swing.UnsupportedLookAndFeelException ex) {
+235             java.util.logging.Logger.getLogger(Menu.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+236         }
+237         <span class="comment">//&lt;/editor-fold&gt;</span>
+238 
+239         <span class="comment">/* Create and display the form */</span>
+240         java.awt.EventQueue.invokeLater(<span class="literal">new</span> Runnable() {
+241             <span class="literal">public</span> <span class="literal">void</span> run() {
+242                 <span class="literal">new</span> Menu().setVisible(<span class="literal">true</span>);
+243             }
+244         });
+245     }
+246 
+247     <span class="ST1">// Variables declaration - do not modify                     </span>
+248     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">Exit</span><span class="guarded">;</span>
+249     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">chessClubBtn</span><span class="guarded">;</span>
+250     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span> <span class="guarded">jLabel1</span><span class="guarded">;</span>
+251     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JPanel</span> <span class="guarded">jPanel1</span><span class="guarded">;</span>
+252     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span> <span class="guarded">logInInfoLbl</span><span class="guarded">;</span>
+253     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">logOutBtn</span><span class="guarded">;</span>
+254     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">offlineBtn</span><span class="guarded">;</span>
+255     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">onlineBtn</span><span class="guarded">;</span>
+256     <span class="ST1">// End of variables declaration                   </span>
+257 }
+258 
+</pre></body>
+</html>

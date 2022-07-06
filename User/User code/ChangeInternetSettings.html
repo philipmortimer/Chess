@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>ChangeInternetSettings.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.ST3 {color: #ce7b00; background-color: #dfdfdf}
+.literal {color: #0000e6}
+.ST2 {color: #0000e6; background-color: #dfdfdf}
+.comment {color: #969696}
+.guarded {background-color: #dfdfdf}
+.ST1 {color: #969696; background-color: #dfdfdf}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\ChangeInternetSettings.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+  7 
+  8 <span class="literal">import</span> java.io.BufferedReader;
+  9 <span class="literal">import</span> java.io.BufferedWriter;
+ 10 <span class="literal">import</span> java.io.FileReader;
+ 11 <span class="literal">import</span> java.io.FileWriter;
+ 12 <span class="literal">import</span> java.io.IOException;
+ 13 <span class="literal">import</span> javax.swing.JOptionPane;
+ 14 
+ 15 <span class="comment">/**</span>
+ 16 <span class="comment"> * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">form</span> <span class="ST0">which</span> <span class="ST0">allows</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">to</span> <span class="ST0">change</span> <span class="ST0">the</span> <span class="ST0">Internet</span> <span class="ST0">settings</span><span class="ST0"> (</span><span class="ST0">i</span><span class="ST0">.</span><span class="ST0">e</span><span class="ST0">.</span> <span class="comment">the</span> <span class="comment">server</span> <span class="comment">address</span> <span class="comment">and</span> <span class="comment">port</span> <span class="comment">number</span><span class="comment">)</span><span class="comment">.</span>
+ 17 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 18  <span class="comment">*/</span>
+ 19 <span class="literal">public</span> <span class="literal">class</span> ChangeInternetSettings <span class="literal">extends</span> javax.swing.JFrame {
+ 20 
+ 21     <span class="comment">/**</span>
+ 22 <span class="comment">     * </span><span class="comment">Creates</span> <span class="comment">new</span> <span class="comment">form</span> <span class="comment">ChangeInternetSettings</span>
+ 23      <span class="comment">*/</span>
+ 24     <span class="literal">private</span> <span class="literal">boolean</span> isInEditMode=<span class="literal">false</span>;<span class="comment">//stores whether the values are currently being edited</span>
+ 25     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String DEFAULT_PORT_NUMBER=<span class="string">&quot;</span><span class="string">80</span><span class="string">&quot;</span>;<span class="comment">//stores default port number</span>
+ 26     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String DEFUALT_SERVER_ADDRESS=<span class="string">&quot;</span><span class="string">86.129.93.149</span><span class="string">&quot;</span>;<span class="comment">//stores defualt address of server</span>
+ 27     <span class="literal">private</span> String bufferPortNumber;<span class="comment">//stores the most recent port number</span>
+ 28     <span class="literal">private</span> String bufferServerAddress;<span class="comment">//stores the most recent server address</span>
+ 29     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String PORT_NUMBER_FILE_NAME=<span class="string">&quot;</span><span class="string">portNumber.txt</span><span class="string">&quot;</span>;
+ 30     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String SERVER_ADDRESS_FILE_NAME=<span class="string">&quot;</span><span class="string">serverAddress.txt</span><span class="string">&quot;</span>;
+ 31     <span class="literal">public</span> ChangeInternetSettings() {
+ 32         <span class="comment">//initilaises components and updates form based on stored address and port number</span>
+ 33         initComponents();
+ 34         updateFormBasedOnWhetherInEditingMode();
+ 35         loadPortNumAndServerAddressOnForm();
+ 36         bufferPortNumber=portNumberTxt.getText();bufferServerAddress=serverAddressTxt.getText();
+ 37     }
+ 38     <span class="comment">/**</span>
+ 39 <span class="comment">     * </span><span class="comment">Loads</span> <span class="comment">the</span> <span class="comment">port</span> <span class="comment">number</span> <span class="comment">and</span> <span class="comment">server</span> <span class="comment">address</span> <span class="comment">onto</span> <span class="comment">the</span> <span class="comment">form</span>
+ 40      <span class="comment">*/</span>
+ 41     <span class="literal">private</span> <span class="literal">void</span> loadPortNumAndServerAddressOnForm(){
+ 42         portNumberTxt.setText(getPortNumberString());
+ 43         serverAddressTxt.setText(getServerAddressNonStatic());
+ 44     }
+ 45     <span class="comment">/**</span>
+ 46 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">port</span> <span class="ST0">number</span> <span class="ST0">as</span> <span class="ST0">a</span> <span class="ST0">string</span>
+ 47 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">returns</span> <span class="comment">the</span> <span class="comment">port</span> <span class="comment">number</span> <span class="comment">stored</span> <span class="comment">in</span> <span class="comment">the</span> <span class="comment">text</span> <span class="comment">file</span><span class="comment">.</span> <span class="comment">An</span> <span class="comment">empty</span> <span class="comment">string</span> <span class="comment">is</span> <span class="comment">returned</span> <span class="comment">if</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">.</span>
+ 48      <span class="comment">*/</span>
+ 49     <span class="literal">public</span> String getPortNumberString(){
+ 50         <span class="literal">try</span>{
+ 51             FileReader read = <span class="literal">new</span> FileReader(PORT_NUMBER_FILE_NAME);<span class="comment">//reads the port number from the file</span>
+ 52             BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+ 53             String ret = buffRead.readLine();
+ 54             buffRead.close();read.close();
+ 55             <span class="literal">return</span> ret;
+ 56         }<span class="literal">catch</span>(IOException e){
+ 57             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">An error occured with </span><span class="string">&quot;</span>+PORT_NUMBER_FILE_NAME, <span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>, JOptionPane.OK_OPTION);
+ 58         }
+ 59         <span class="literal">return</span> <span class="string">&quot;&quot;</span>;
+ 60     }
+ 61     <span class="comment">/**</span>
+ 62 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">port</span> <span class="ST0">number</span>
+ 63 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">port</span> <span class="comment">number</span> <span class="comment">as</span> <span class="comment">an</span> <span class="comment">integer</span><span class="comment">.</span> <span class="comment">If</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">, </span><span class="comment">an</span> <span class="comment">error</span> <span class="comment">message</span> <span class="comment">is</span> <span class="comment">displayed</span> <span class="comment">and</span><span class="comment"> -1 </span><span class="comment">is</span> <span class="comment">returned</span><span class="comment">.</span>
+ 64      <span class="comment">*/</span>
+ 65     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">int</span> getPortNumber(){
+ 66         <span class="literal">try</span>{
+ 67             FileReader read = <span class="literal">new</span> FileReader(PORT_NUMBER_FILE_NAME);<span class="comment">//reads the port number from the file</span>
+ 68             BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+ 69             String portStr=buffRead.readLine();
+ 70             buffRead.close();read.close();
+ 71             <span class="literal">try</span>{
+ 72                 <span class="literal">int</span> port = Integer.parseInt(portStr);
+ 73                 <span class="literal">return</span> port;
+ 74             }<span class="literal">catch</span>(NumberFormatException ex){
+ 75                 JOptionPane.showMessageDialog(<span class="literal">null</span>, <span class="string">&quot;</span><span class="string">The port number stored is not an integer. Please fix this by going into settings.</span><span class="string">&quot;</span>, <span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>, JOptionPane.OK_OPTION);
+ 76                 <span class="literal">return</span> -1;
+ 77             }
+ 78         }<span class="literal">catch</span>(IOException e){
+ 79             JOptionPane.showMessageDialog(<span class="literal">null</span>, <span class="string">&quot;</span><span class="string">An error occured with </span><span class="string">&quot;</span>+PORT_NUMBER_FILE_NAME+<span class="string">&quot;</span><span class="string">. Error details: </span><span class="string">&quot;</span>+e, <span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>, JOptionPane.OK_OPTION);
+ 80         }
+ 81         <span class="literal">return</span> -1;
+ 82     }
+ 83     <span class="comment">/**</span>
+ 84 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">server</span> <span class="ST0">address</span>
+ 85 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">server</span> <span class="comment">address</span><span class="comment">.</span> <span class="comment">If</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">, </span><span class="comment">an</span> <span class="comment">appropriate</span> <span class="comment">message</span> <span class="comment">is</span> <span class="comment">displayed</span> <span class="comment">and</span> <span class="comment">an</span> <span class="comment">empty</span> <span class="comment">string</span> <span class="comment">is</span> <span class="comment">returned</span><span class="comment">.</span>
+ 86      <span class="comment">*/</span>
+ 87     <span class="literal">public</span> <span class="literal">static</span> String getServerAddress(){
+ 88         <span class="literal">try</span>{
+ 89             FileReader read = <span class="literal">new</span> FileReader(SERVER_ADDRESS_FILE_NAME);<span class="comment">//reads the server address from the file</span>
+ 90             BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+ 91             String ret = buffRead.readLine();
+ 92             buffRead.close();read.close();
+ 93             <span class="literal">return</span> ret;
+ 94         }<span class="literal">catch</span>(IOException e){
+ 95             JOptionPane.showMessageDialog(<span class="literal">null</span>, <span class="string">&quot;</span><span class="string">An error occured with </span><span class="string">&quot;</span>+SERVER_ADDRESS_FILE_NAME+<span class="string">&quot;</span><span class="string">. Error details: </span><span class="string">&quot;</span>+e, <span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>, JOptionPane.OK_OPTION);
+ 96             <span class="literal">return</span> <span class="string">&quot;&quot;</span>;
+ 97         }
+ 98     }
+ 99     <span class="comment">/**</span>
+100 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">server</span> <span class="ST0">address</span>
+101 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">server</span> <span class="comment">address</span><span class="comment">.</span> <span class="comment">If</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">, </span><span class="comment">an</span> <span class="comment">appropriate</span> <span class="comment">message</span> <span class="comment">is</span> <span class="comment">displayed</span> <span class="comment">and</span> <span class="comment">an</span> <span class="comment">empty</span> <span class="comment">string</span> <span class="comment">is</span> <span class="comment">returned</span><span class="comment">.</span>
+102      <span class="comment">*/</span>
+103     <span class="literal">private</span> String getServerAddressNonStatic(){
+104         <span class="literal">try</span>{
+105             FileReader read = <span class="literal">new</span> FileReader(SERVER_ADDRESS_FILE_NAME);<span class="comment">//reads the server address from the file</span>
+106             BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+107             String ret = buffRead.readLine();
+108             buffRead.close();read.close();
+109             <span class="literal">return</span> ret;
+110         }<span class="literal">catch</span>(IOException e){
+111             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">An error occured with </span><span class="string">&quot;</span>+SERVER_ADDRESS_FILE_NAME+<span class="string">&quot;</span><span class="string">. Error details: </span><span class="string">&quot;</span>+e, <span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>, JOptionPane.OK_OPTION);
+112             <span class="literal">return</span> <span class="string">&quot;&quot;</span>;
+113         }        
+114     }
+115     <span class="comment">/**</span>
+116 <span class="comment">     * </span><span class="comment">Alters</span> <span class="comment">relevant</span> <span class="comment">attributes</span> <span class="comment">of</span> <span class="comment">various</span> <span class="comment">buttons</span> <span class="comment">and</span> <span class="comment">text</span> <span class="comment">fields</span> <span class="comment">based</span> <span class="comment">on</span> <span class="comment">whether</span> <span class="comment">the</span> <span class="comment">system</span> <span class="comment">is</span> <span class="comment">currently</span> <span class="comment">in</span> <span class="comment">editing</span> <span class="comment">mode</span>
+117      <span class="comment">*/</span>
+118     <span class="literal">private</span> <span class="literal">void</span> updateFormBasedOnWhetherInEditingMode(){
+119         editBtn.setEnabled(!isInEditMode);editBtn.setVisible(!isInEditMode);
+120         cancelBtn.setEnabled(isInEditMode);cancelBtn.setVisible(isInEditMode);
+121         saveChangesBtn.setEnabled(isInEditMode);saveChangesBtn.setVisible(isInEditMode);
+122         revertToDefaultBtn.setEnabled(isInEditMode);revertToDefaultBtn.setVisible(isInEditMode);
+123         portNumberTxt.setEditable(isInEditMode);serverAddressTxt.setEditable(isInEditMode);
+124     }
+125     <span class="comment">/**</span>
+126 <span class="comment">     * </span><span class="ST0">This</span> <span class="ST0">method</span> <span class="ST0">is</span> <span class="ST0">called</span> <span class="ST0">from</span> <span class="ST0">within</span> <span class="ST0">the</span> <span class="ST0">constructor</span> <span class="ST0">to</span> <span class="ST0">initialize</span> <span class="ST0">the</span> <span class="ST0">form</span><span class="ST0">.</span>
+127 <span class="comment">     * </span><span class="comment">WARNING</span><span class="comment">: </span><span class="comment">Do</span> <span class="comment">NOT</span> <span class="comment">modify</span> <span class="comment">this</span> <span class="comment">code</span><span class="comment">.</span> <span class="comment">The</span> <span class="comment">content</span> <span class="comment">of</span> <span class="comment">this</span> <span class="comment">method</span> <span class="comment">is</span> <span class="comment">always</span>
+128 <span class="comment">     * </span><span class="comment">regenerated</span> <span class="comment">by</span> <span class="comment">the</span> <span class="comment">Form</span> <span class="comment">Editor</span><span class="comment">.</span>
+129      <span class="comment">*/</span>
+130     @SuppressWarnings(<span class="string">&quot;</span><span class="string">unchecked</span><span class="string">&quot;</span>)
+131     <span class="ST1">// &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Generated Code&quot;&gt;                          </span>
+132     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">initComponents</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+133 
+134         <span class="guarded">jPanel1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JPanel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+135         <span class="guarded">jLabel1</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+136         <span class="guarded">portNumberTxt</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JTextField</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+137         <span class="guarded">jLabel2</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+138         <span class="guarded">serverAddressTxt</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JTextField</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+139         <span class="guarded">backBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+140         <span class="guarded">cancelBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+141         <span class="guarded">saveChangesBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+142         <span class="guarded">editBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+143         <span class="guarded">revertToDefaultBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+144         <span class="guarded">moreInfoBtn</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+145 
+146         <span class="guarded">setDefaultCloseOperation</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">WindowConstants</span><span class="guarded">.</span><span class="guarded">EXIT_ON_CLOSE</span><span class="guarded">)</span><span class="guarded">;</span>
+147         <span class="guarded">setTitle</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Change Online Settings</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+148 
+149         <span class="guarded">jLabel1</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Port Number</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+150 
+151         <span class="guarded">portNumberTxt</span><span class="guarded">.</span><span class="guarded">setEditable</span><span class="guarded">(</span><span class="ST2">false</span><span class="guarded">)</span><span class="guarded">;</span>
+152 
+153         <span class="guarded">jLabel2</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Server Address</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+154 
+155         <span class="guarded">serverAddressTxt</span><span class="guarded">.</span><span class="guarded">setEditable</span><span class="guarded">(</span><span class="ST2">false</span><span class="guarded">)</span><span class="guarded">;</span>
+156 
+157         <span class="guarded">backBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Back</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+158         <span class="guarded">backBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+159             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+160                 <span class="guarded">backBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+161             <span class="guarded">}</span>
+162         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+163 
+164         <span class="guarded">cancelBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Cancel Changes</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+165         <span class="guarded">cancelBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+166             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+167                 <span class="guarded">cancelBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+168             <span class="guarded">}</span>
+169         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+170 
+171         <span class="guarded">saveChangesBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Save Changes</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+172         <span class="guarded">saveChangesBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+173             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+174                 <span class="guarded">saveChangesBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+175             <span class="guarded">}</span>
+176         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+177 
+178         <span class="guarded">editBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Edit</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+179         <span class="guarded">editBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+180             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+181                 <span class="guarded">editBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+182             <span class="guarded">}</span>
+183         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+184 
+185         <span class="guarded">revertToDefaultBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Revert to Default Values</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+186         <span class="guarded">revertToDefaultBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+187             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+188                 <span class="guarded">revertToDefaultBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+189             <span class="guarded">}</span>
+190         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+191 
+192         <span class="guarded">moreInfoBtn</span><span class="guarded">.</span><span class="guarded">setText</span><span class="guarded">(</span><span class="ST3">&quot;</span><span class="ST3">Further Information</span><span class="ST3">&quot;</span><span class="guarded">)</span><span class="guarded">;</span>
+193         <span class="guarded">moreInfoBtn</span><span class="guarded">.</span><span class="guarded">addActionListener</span><span class="guarded">(</span><span class="ST2">new</span> <span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionListener</span><span class="guarded">(</span><span class="guarded">)</span> <span class="guarded">{</span>
+194             <span class="ST2">public</span> <span class="ST2">void</span> <span class="guarded">actionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>
+195                 <span class="guarded">moreInfoBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">evt</span><span class="guarded">)</span><span class="guarded">;</span>
+196             <span class="guarded">}</span>
+197         <span class="guarded">}</span><span class="guarded">)</span><span class="guarded">;</span>
+198 
+199         <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span> <span class="guarded">jPanel1Layout</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">)</span><span class="guarded">;</span>
+200         <span class="guarded">jPanel1</span><span class="guarded">.</span><span class="guarded">setLayout</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">)</span><span class="guarded">;</span>
+201         <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">setHorizontalGroup</span><span class="guarded">(</span>
+202             <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+203             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+204                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">)</span>
+205                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+206                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+207                         <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+208                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel1</span><span class="guarded">)</span>
+209                             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel2</span><span class="guarded">)</span>
+210                             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+211                                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">14</span><span class="guarded">,</span> <span class="guarded">14</span><span class="guarded">,</span> <span class="guarded">14</span><span class="guarded">)</span>
+212                                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">backBtn</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+213                         <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+214                             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+215                                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">46</span><span class="guarded">,</span> <span class="guarded">46</span><span class="guarded">,</span> <span class="guarded">46</span><span class="guarded">)</span>
+216                                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+217                                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">portNumberTxt</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">224</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span>
+218                                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">serverAddressTxt</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">250</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+219                             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+220                                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">87</span><span class="guarded">,</span> <span class="guarded">87</span><span class="guarded">,</span> <span class="guarded">87</span><span class="guarded">)</span>
+221                                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">editBtn</span><span class="guarded">)</span>
+222                                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">56</span><span class="guarded">,</span> <span class="guarded">56</span><span class="guarded">,</span> <span class="guarded">56</span><span class="guarded">)</span>
+223                                 <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">moreInfoBtn</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+224                     <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+225                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">14</span><span class="guarded">,</span> <span class="guarded">14</span><span class="guarded">,</span> <span class="guarded">14</span><span class="guarded">)</span>
+226                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">cancelBtn</span><span class="guarded">)</span>
+227                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">29</span><span class="guarded">,</span> <span class="guarded">29</span><span class="guarded">,</span> <span class="guarded">29</span><span class="guarded">)</span>
+228                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">saveChangesBtn</span><span class="guarded">)</span>
+229                         <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">,</span> <span class="guarded">18</span><span class="guarded">)</span>
+230                         <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">revertToDefaultBtn</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">)</span>
+231                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span><span class="guarded">)</span>
+232         <span class="guarded">)</span><span class="guarded">;</span>
+233         <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">setVerticalGroup</span><span class="guarded">(</span>
+234             <span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+235             <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createSequentialGroup</span><span class="guarded">(</span><span class="guarded">)</span>
+236                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">38</span><span class="guarded">,</span> <span class="guarded">38</span><span class="guarded">,</span> <span class="guarded">38</span><span class="guarded">)</span>
+237                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">BASELINE</span><span class="guarded">)</span>
+238                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel1</span><span class="guarded">)</span>
+239                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">portNumberTxt</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span><span class="guarded">)</span>
+240                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">45</span><span class="guarded">,</span> <span class="guarded">45</span><span class="guarded">,</span> <span class="guarded">45</span><span class="guarded">)</span>
+241                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">TRAILING</span><span class="guarded">)</span>
+242                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jLabel2</span><span class="guarded">)</span>
+243                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">serverAddressTxt</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">PREFERRED_SIZE</span><span class="guarded">)</span><span class="guarded">)</span>
+244                 <span class="guarded">.</span><span class="guarded">addPreferredGap</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">LayoutStyle</span><span class="guarded">.</span><span class="guarded">ComponentPlacement</span><span class="guarded">.</span><span class="guarded">RELATED</span><span class="guarded">,</span> <span class="guarded">86</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+245                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">BASELINE</span><span class="guarded">)</span>
+246                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">cancelBtn</span><span class="guarded">)</span>
+247                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">saveChangesBtn</span><span class="guarded">)</span>
+248                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">revertToDefaultBtn</span><span class="guarded">)</span><span class="guarded">)</span>
+249                 <span class="guarded">.</span><span class="guarded">addGap</span><span class="guarded">(</span><span class="guarded">23</span><span class="guarded">,</span> <span class="guarded">23</span><span class="guarded">,</span> <span class="guarded">23</span><span class="guarded">)</span>
+250                 <span class="guarded">.</span><span class="guarded">addGroup</span><span class="guarded">(</span><span class="guarded">jPanel1Layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">BASELINE</span><span class="guarded">)</span>
+251                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">backBtn</span><span class="guarded">)</span>
+252                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">editBtn</span><span class="guarded">)</span>
+253                     <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">moreInfoBtn</span><span class="guarded">)</span><span class="guarded">)</span>
+254                 <span class="guarded">.</span><span class="guarded">addContainerGap</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">)</span>
+255         <span class="guarded">)</span><span class="guarded">;</span>
+256 
+257         <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span> <span class="guarded">layout</span> <span class="guarded">=</span> <span class="ST2">new</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">(</span><span class="guarded">getContentPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">)</span><span class="guarded">;</span>
+258         <span class="guarded">getContentPane</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">.</span><span class="guarded">setLayout</span><span class="guarded">(</span><span class="guarded">layout</span><span class="guarded">)</span><span class="guarded">;</span>
+259         <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">setHorizontalGroup</span><span class="guarded">(</span>
+260             <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+261             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+262         <span class="guarded">)</span><span class="guarded">;</span>
+263         <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">setVerticalGroup</span><span class="guarded">(</span>
+264             <span class="guarded">layout</span><span class="guarded">.</span><span class="guarded">createParallelGroup</span><span class="guarded">(</span><span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">Alignment</span><span class="guarded">.</span><span class="guarded">LEADING</span><span class="guarded">)</span>
+265             <span class="guarded">.</span><span class="guarded">addComponent</span><span class="guarded">(</span><span class="guarded">jPanel1</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">GroupLayout</span><span class="guarded">.</span><span class="guarded">DEFAULT_SIZE</span><span class="guarded">,</span> <span class="guarded">Short</span><span class="guarded">.</span><span class="guarded">MAX_VALUE</span><span class="guarded">)</span>
+266         <span class="guarded">)</span><span class="guarded">;</span>
+267 
+268         <span class="guarded">pack</span><span class="guarded">(</span><span class="guarded">)</span><span class="guarded">;</span>
+269     <span class="guarded">}</span><span class="ST1">// &lt;/editor-fold&gt;                        </span>
+270     <span class="comment">/**</span>
+271 <span class="comment">     * </span><span class="ST0">changes</span> <span class="ST0">the</span> <span class="ST0">editing</span> <span class="ST0">mode</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">form</span> <span class="ST0">and</span> <span class="ST0">updates</span> <span class="ST0">the</span> <span class="ST0">form</span> <span class="ST0">accordingly</span>
+272 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">evt</span> <span class="comment">The</span> <span class="comment">edit</span> <span class="comment">button</span> <span class="comment">being</span> <span class="comment">pressed</span>
+273      <span class="comment">*/</span>
+274     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">editBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                        
+275         <span class="comment">//updates editing mode and form accordingly</span>
+276         bufferPortNumber=portNumberTxt.getText();bufferServerAddress=serverAddressTxt.getText();
+277         isInEditMode=!isInEditMode;
+278         updateFormBasedOnWhetherInEditingMode();
+279     <span class="guarded">}</span>                                       
+280     <span class="comment">/**</span>
+281 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">port</span> <span class="ST0">number</span> <span class="ST0">and</span> <span class="ST0">server</span> <span class="ST0">address</span> <span class="ST0">text</span> <span class="ST0">fields</span> <span class="ST0">to</span> <span class="ST0">their</span> <span class="ST0">default</span> <span class="ST0">values</span>
+282 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">evt</span> <span class="comment">The</span> <span class="comment">revert</span> <span class="comment">button</span> <span class="comment">being</span> <span class="comment">pressed</span>
+283      <span class="comment">*/</span>
+284     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">revertToDefaultBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                                   
+285        <span class="comment">//reverts the server to the hard coded default values</span>
+286         portNumberTxt.setText(DEFAULT_PORT_NUMBER);
+287         serverAddressTxt.setText(DEFUALT_SERVER_ADDRESS);
+288     <span class="guarded">}</span>                                                  
+289     <span class="comment">/**</span>
+290 <span class="comment">     * </span><span class="ST0">Displays</span> <span class="ST0">further</span> <span class="ST0">information</span> <span class="ST0">about</span> <span class="ST0">what</span> <span class="ST0">port</span> <span class="ST0">number</span> <span class="ST0">and</span> <span class="ST0">server</span> <span class="ST0">address</span> <span class="ST0">mean</span> <span class="ST0">and</span> <span class="ST0">how</span> <span class="ST0">a</span> <span class="ST0">user</span> <span class="ST0">may</span> <span class="ST0">go</span> <span class="ST0">about</span> <span class="ST0">fixing</span> <span class="ST0">issues</span> <span class="ST0">involving</span> <span class="ST0">these</span><span class="ST0">.</span>
+291 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">evt</span> <span class="comment">The</span> <span class="comment">more</span> <span class="comment">information</span> <span class="comment">button</span> <span class="comment">being</span> <span class="comment">pressed</span>
+292      <span class="comment">*/</span>
+293     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">moreInfoBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                            
+294         <span class="comment">//displays some info on what the port number and server address actually mean.</span>
+295         JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">The port number and server address are what allow users to access online features. Please speak to the server owner to find the correct details. Normally, this will be the chess club leader. </span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Further Information</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+296     <span class="guarded">}</span>                                           
+297 <span class="comment">/**</span>
+298 <span class="comment"> * </span><span class="ST0">Saves</span> <span class="ST0">the</span> <span class="ST0">inputted</span> <span class="ST0">changes</span> <span class="ST0">after</span> <span class="ST0">appropriate</span> <span class="ST0">validation</span><span class="ST0">.</span>
+299 <span class="comment"> * </span><span class="ST0">@param</span> <span class="comment">evt</span> <span class="comment">The</span> <span class="comment">save</span> <span class="comment">button</span> <span class="comment">being</span> <span class="comment">pressed</span>
+300  <span class="comment">*/</span>
+301     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">saveChangesBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                               
+302         <span class="literal">try</span>{
+303             <span class="literal">int</span> port = Integer.parseInt(portNumberTxt.getText());
+304             <span class="literal">if</span>(port&lt;=0){<span class="comment">//range check</span>
+305                 JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">The port number must be a positive integer greater than zero.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+306                 <span class="literal">return</span>;
+307             }
+308         }<span class="literal">catch</span>(NumberFormatException ex){<span class="comment">//type check</span>
+309             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">The port number must be a positive integer greater than zero.</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+310             <span class="literal">return</span>;
+311         }
+312         <span class="literal">try</span>{
+313             FileWriter writePort = <span class="literal">new</span> FileWriter(PORT_NUMBER_FILE_NAME,<span class="literal">false</span>);<span class="comment">//writes port number and server address to their files</span>
+314             BufferedWriter buffWritePort = <span class="literal">new</span> BufferedWriter(writePort);
+315             buffWritePort.write(portNumberTxt.getText());
+316             buffWritePort.flush();writePort.flush();
+317             buffWritePort.close();writePort.close();
+318             FileWriter writeServ = <span class="literal">new</span> FileWriter(SERVER_ADDRESS_FILE_NAME,<span class="literal">false</span>);
+319             BufferedWriter buffWriteServ = <span class="literal">new</span> BufferedWriter(writeServ);
+320             buffWriteServ.write(serverAddressTxt.getText());
+321             buffWriteServ.flush();writeServ.flush();
+322             buffWriteServ.close();writeServ.close();
+323         }<span class="literal">catch</span>(IOException e){
+324             JOptionPane.showMessageDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">An unexpected error occured with either </span><span class="string">&quot;</span>+SERVER_ADDRESS_FILE_NAME+<span class="string">&quot;</span><span class="string"> or </span><span class="string">&quot;</span>+PORT_NUMBER_FILE_NAME+<span class="string">&quot;</span><span class="string">. Error Details </span><span class="string">&quot;</span>+e,<span class="string">&quot;</span><span class="string">Error</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+325         }
+326         isInEditMode=!isInEditMode;updateFormBasedOnWhetherInEditingMode();<span class="comment">//changes editing mode and updates form accordingly</span>
+327     <span class="guarded">}</span>                                              
+328     <span class="comment">/**</span>
+329 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">text</span> <span class="ST0">fields</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">values</span> <span class="ST0">they</span> <span class="ST0">were</span> <span class="ST0">set</span> <span class="ST0">at</span> <span class="ST0">before</span> <span class="ST0">editing</span> <span class="ST0">mode</span> <span class="ST0">was</span> <span class="ST0">activated</span>
+330 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">evt</span> <span class="comment">The</span> <span class="comment">cancel</span> <span class="comment">button</span> <span class="comment">being</span> <span class="comment">pressed</span>
+331      <span class="comment">*/</span>
+332     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">cancelBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                          
+333         <span class="comment">//exits editing mode and reverts the values on the form to what they were before editing began</span>
+334         isInEditMode=!isInEditMode;updateFormBasedOnWhetherInEditingMode();
+335         portNumberTxt.setText(bufferPortNumber);serverAddressTxt.setText(bufferServerAddress);
+336     <span class="guarded">}</span>                                         
+337 
+338     <span class="ST2">private</span> <span class="ST2">void</span> <span class="guarded">backBtnActionPerformed</span><span class="guarded">(</span><span class="guarded">java</span><span class="guarded">.</span><span class="guarded">awt</span><span class="guarded">.</span><span class="guarded">event</span><span class="guarded">.</span><span class="guarded">ActionEvent</span> <span class="guarded">evt</span><span class="guarded">)</span> <span class="guarded">{</span>                                        
+339         <span class="comment">//takes the user back to the log in page, reminding them that they may wish to save any changes made first.</span>
+340         <span class="literal">if</span>(isInEditMode){
+341             <span class="literal">int</span> confirm= JOptionPane.showConfirmDialog(<span class="literal">this</span>, <span class="string">&quot;</span><span class="string">Are you sure you would like to go back. Your unsaved changes will be lost if you go back now. Are you sure you would like to continue?</span><span class="string">&quot;</span>,<span class="string">&quot;</span><span class="string">Continue</span><span class="string">&quot;</span>,JOptionPane.OK_OPTION);
+342             <span class="literal">if</span>(confirm==JOptionPane.YES_OPTION){
+343                 LogIn log = <span class="literal">new</span> LogIn();
+344                 log.setVisible(<span class="literal">true</span>);
+345                 <span class="literal">this</span>.dispose();
+346             }<span class="literal">else</span>{
+347                 <span class="literal">return</span>;
+348             }
+349         }<span class="literal">else</span>{
+350             LogIn log = <span class="literal">new</span> LogIn();
+351             log.setVisible(<span class="literal">true</span>);
+352             <span class="literal">this</span>.dispose();            
+353         }
+354     <span class="guarded">}</span>                                       
+355 
+356     <span class="comment">/**</span>
+357 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">args</span> <span class="comment">the</span> <span class="comment">command</span> <span class="comment">line</span> <span class="comment">arguments</span>
+358      <span class="comment">*/</span>
+359     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> main(String args[]) {
+360         <span class="comment">/* Set the Nimbus look and feel */</span>
+361         <span class="comment">//&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot; Look and feel setting code (optional) &quot;&gt;</span>
+362         <span class="comment">/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.</span>
+363 <span class="comment">         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html </span>
+364 <span class="comment">         */</span>
+365         <span class="literal">try</span> {
+366             <span class="literal">for</span> (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+367                 <span class="literal">if</span> (<span class="string">&quot;</span><span class="string">Nimbus</span><span class="string">&quot;</span>.equals(info.getName())) {
+368                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
+369                     <span class="literal">break</span>;
+370                 }
+371             }
+372         } <span class="literal">catch</span> (ClassNotFoundException ex) {
+373             java.util.logging.Logger.getLogger(ChangeInternetSettings.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+374         } <span class="literal">catch</span> (InstantiationException ex) {
+375             java.util.logging.Logger.getLogger(ChangeInternetSettings.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+376         } <span class="literal">catch</span> (IllegalAccessException ex) {
+377             java.util.logging.Logger.getLogger(ChangeInternetSettings.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+378         } <span class="literal">catch</span> (javax.swing.UnsupportedLookAndFeelException ex) {
+379             java.util.logging.Logger.getLogger(ChangeInternetSettings.<span class="literal">class</span>.getName()).log(java.util.logging.Level.SEVERE, <span class="literal">null</span>, ex);
+380         }
+381         <span class="comment">//&lt;/editor-fold&gt;</span>
+382 
+383         <span class="comment">/* Create and display the form */</span>
+384         java.awt.EventQueue.invokeLater(<span class="literal">new</span> Runnable() {
+385             <span class="literal">public</span> <span class="literal">void</span> run() {
+386                 <span class="literal">new</span> ChangeInternetSettings().setVisible(<span class="literal">true</span>);
+387             }
+388         });
+389     }
+390 
+391     <span class="ST1">// Variables declaration - do not modify                     </span>
+392     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">backBtn</span><span class="guarded">;</span>
+393     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">cancelBtn</span><span class="guarded">;</span>
+394     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">editBtn</span><span class="guarded">;</span>
+395     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span> <span class="guarded">jLabel1</span><span class="guarded">;</span>
+396     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JLabel</span> <span class="guarded">jLabel2</span><span class="guarded">;</span>
+397     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JPanel</span> <span class="guarded">jPanel1</span><span class="guarded">;</span>
+398     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">moreInfoBtn</span><span class="guarded">;</span>
+399     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JTextField</span> <span class="guarded">portNumberTxt</span><span class="guarded">;</span>
+400     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">revertToDefaultBtn</span><span class="guarded">;</span>
+401     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JButton</span> <span class="guarded">saveChangesBtn</span><span class="guarded">;</span>
+402     <span class="ST2">private</span> <span class="guarded">javax</span><span class="guarded">.</span><span class="guarded">swing</span><span class="guarded">.</span><span class="guarded">JTextField</span> <span class="guarded">serverAddressTxt</span><span class="guarded">;</span>
+403     <span class="ST1">// End of variables declaration                   </span>
+404 }
+405 
+</pre></body>
+</html>

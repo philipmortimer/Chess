@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>UserInfo.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\server\system\UserInfo.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.server.system;
+  7 
+  8 <span class="literal">import</span> java.io.Serializable;
+  9 
+ 10 <span class="comment">/**</span>
+ 11 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">class</span> <span class="ST0">that</span> <span class="ST0">creates</span> <span class="ST0">a</span> <span class="ST0">UserInfo</span> <span class="ST0">Object</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">object</span> <span class="comment">is</span> <span class="comment">Serializable</span><span class="comment">, </span><span class="comment">allowing</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">sent</span> <span class="comment">across</span> <span class="comment">a</span> <span class="comment">stream</span><span class="comment">.</span>
+ 12 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 13  <span class="comment">*/</span>
+ 14 <span class="literal">public</span> <span class="literal">class</span> UserInfo <span class="literal">implements</span> Serializable{
+ 15     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_USER_DETAILS_FILE=17;<span class="comment">//stores the width of the user file</span>
+ 16     <span class="literal">private</span> String[]userDetails;<span class="comment">//stores the user record</span>
+ 17     <span class="literal">private</span> <span class="literal">boolean</span> isPasswordCorrect=<span class="literal">false</span>;<span class="comment">//stores whether the password is correct</span>
+ 18     <span class="literal">private</span> <span class="literal">boolean</span> userFound;<span class="comment">//stores whether the user with a given name was found in the user file</span>
+ 19     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_EMAIL_LINK_FILE=2;<span class="comment">//stores the width of the email link file</span>
+ 20     <span class="literal">public</span> <span class="literal">static</span>  <span class="literal">transient</span> <span class="literal">final</span> String GUEST_ID=<span class="string">&quot;</span><span class="string">GUEST_ID9239923</span><span class="string">&quot;</span>;<span class="comment">//stores the guest id</span>
+ 21     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">transient</span> <span class="literal">final</span> String GUEST_ID_EMAIL=<span class="string">&quot;</span><span class="string">GuestEmail9932d3@l.com</span><span class="string">&quot;</span>;<span class="comment">//stores the guest email address</span>
+ 22     <span class="literal">private</span> <span class="literal">boolean</span> emailAddressFound=<span class="literal">true</span>;<span class="comment">//stores whether the email address was found</span>
+ 23     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String SPLIT_ITEM=<span class="string">&quot;</span><span class="string">;lO9</span><span class="string">&quot;</span>;<span class="comment">//used to split data items</span>
+ 24     <span class="comment">/*structure of user text FILE:</span>
+ 25 <span class="comment">    Username, password, first name, surname, postcode, addressline one, address line two, address line three, address line four, discord username, discord number, date of birth, phone number, isClubLeader, isClubMember, ELO, hasUserRequestedToJoinClub</span>
+ 26 <span class="comment">    */</span>
+ 27     <span class="comment">/**</span>
+ 28 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">User</span> <span class="ST0">with</span> <span class="ST0">the</span> <span class="ST0">record</span> <span class="ST0">found</span> <span class="ST0">and</span> <span class="ST0">the</span> <span class="ST0">password</span> <span class="ST0">entered</span>
+ 29 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">record</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">file</span> <span class="comment">record</span>
+ 30 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userEnteredPasssword</span> <span class="comment">The</span> <span class="comment">password</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">entered</span> <span class="comment">to</span> <span class="comment">access</span> <span class="comment">the</span> <span class="comment">account</span>
+ 31      <span class="comment">*/</span>
+ 32     <span class="literal">public</span> UserInfo(String[]record,String userEnteredPasssword){
+ 33         userFound = record[0]!=<span class="literal">null</span>;<span class="comment">//updates whether the user was found</span>
+ 34         userDetails = record;<span class="comment">//stores the record</span>
+ 35         <span class="literal">if</span>(userFound){
+ 36             <span class="comment">//checks to see if the password is correct</span>
+ 37             isPasswordCorrect=userEnteredPasssword.equals(record[1]);
+ 38         }
+ 39     }
+ 40     <span class="comment">/**</span>
+ 41 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">UserInfo</span> <span class="ST0">object</span> <span class="ST0">that</span> <span class="ST0">indicates</span> <span class="ST0">that</span> <span class="ST0">the</span> <span class="ST0">chosen</span> <span class="ST0">email</span> <span class="ST0">address</span> <span class="ST0">was</span> <span class="ST0">not</span> <span class="ST0">found</span><span class="ST0">.</span>
+ 42 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">UserInfoObject</span>
+ 43      <span class="comment">*/</span>
+ 44     <span class="literal">public</span> <span class="literal">static</span> UserInfo CreateUserInfoEmailNotFound(){
+ 45         <span class="literal">return</span> <span class="literal">new</span> UserInfo();
+ 46     }
+ 47     <span class="comment">/**</span>
+ 48 <span class="comment">     * </span><span class="comment">Called</span> <span class="comment">privately</span> <span class="comment">to</span> <span class="comment">create</span> <span class="comment">a</span> <span class="comment">user</span> <span class="comment">info</span> <span class="comment">when</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">found</span>
+ 49      <span class="comment">*/</span>
+ 50     <span class="literal">private</span> UserInfo(){
+ 51         emailAddressFound=<span class="literal">false</span>;
+ 52     }
+ 53     <span class="comment">/**</span>
+ 54 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">email</span> <span class="ST0">address</span> <span class="ST0">was</span> <span class="ST0">found</span>
+ 55 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">whether</span> <span class="comment">the</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">was</span> <span class="comment">found</span>
+ 56      <span class="comment">*/</span>
+ 57     <span class="literal">public</span> <span class="literal">boolean</span> getEmailAddressFound(){
+ 58         <span class="literal">return</span> emailAddressFound;
+ 59     }
+ 60     <span class="comment">/**</span>
+ 61 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">password</span> <span class="ST0">associated</span> <span class="ST0">with</span> <span class="ST0">the</span> <span class="ST0">user</span>
+ 62 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Returns</span> <span class="comment">the</span> <span class="comment">password</span>
+ 63      <span class="comment">*/</span>
+ 64     <span class="literal">public</span> String getPassword(){
+ 65         <span class="literal">return</span> userDetails[1];
+ 66     }
+ 67     <span class="comment">/**</span>
+ 68 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">was</span> <span class="ST0">found</span>
+ 69 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">whether</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">was</span> <span class="comment">found</span>
+ 70      <span class="comment">*/</span>
+ 71     <span class="literal">public</span> <span class="literal">boolean</span> getUserFound(){
+ 72         <span class="literal">return</span> userFound;
+ 73     }
+ 74     <span class="comment">/**</span>
+ 75 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">password</span> <span class="ST0">entered</span> <span class="ST0">was</span> <span class="ST0">correct</span>
+ 76 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">whether</span> <span class="comment">the</span> <span class="comment">password</span> <span class="comment">entered</span> <span class="comment">was</span> <span class="comment">correct</span>
+ 77      <span class="comment">*/</span>
+ 78     <span class="literal">public</span> <span class="literal">boolean</span> getIsPasswordCorrect(){
+ 79         <span class="literal">return</span> isPasswordCorrect;
+ 80     }
+ 81     <span class="comment">/**</span>
+ 82 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">name</span> <span class="ST0">stored</span><span class="ST0">.</span>
+ 83 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">username</span>
+ 84      <span class="comment">*/</span>
+ 85     <span class="literal">public</span> String getUserName(){
+ 86         <span class="literal">return</span> userDetails[0];
+ 87     }
+ 88     <span class="comment">/**</span>
+ 89 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">club</span> <span class="ST0">member</span><span class="ST0">.</span>
+ 90 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">is</span>  <span class="comment">a</span> <span class="comment">club</span> <span class="comment">member</span>
+ 91      <span class="comment">*/</span>
+ 92     <span class="literal">public</span> <span class="literal">boolean</span> getIsClubMember(){
+ 93         <span class="literal">return</span> userDetails[14].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>);
+ 94     }
+ 95     <span class="comment">/**</span>
+ 96 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">is</span> <span class="ST0">the</span> <span class="ST0">club</span> <span class="ST0">leader</span> <span class="ST0">or</span> <span class="ST0">not</span>
+ 97 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">is</span> <span class="comment">club</span> <span class="comment">leader</span> <span class="comment">or</span> <span class="comment">not</span><span class="comment">.</span>
+ 98      <span class="comment">*/</span>
+ 99     <span class="literal">public</span> <span class="literal">boolean</span> getIsClubLeader(){
+100         <span class="literal">return</span> userDetails[13].equals(<span class="string">&quot;</span><span class="string">true</span><span class="string">&quot;</span>);
+101     }
+102     <span class="comment">/**</span>
+103 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">the</span> <span class="ST0">ELO</span> <span class="ST0">rating</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">user</span>
+104 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">ELO</span> <span class="comment">rating</span>
+105      <span class="comment">*/</span>
+106     <span class="literal">public</span> <span class="literal">int</span> getElo(){
+107         <span class="literal">return</span> Integer.parseInt(userDetails[15]);
+108     }
+109 }
+110 
+</pre></body>
+</html>

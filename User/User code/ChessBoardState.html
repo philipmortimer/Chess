@@ -1,0 +1,739 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>ChessBoardState.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\ChessBoardState.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+  7 
+  8 <span class="comment">/**</span>
+  9 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">class</span> <span class="ST0">is</span> <span class="ST0">used</span> <span class="ST0">to</span> <span class="ST0">store</span> <span class="ST0">all</span> <span class="ST0">data</span> <span class="ST0">needed</span> <span class="ST0">for</span> <span class="ST0">a</span> <span class="ST0">single</span> <span class="ST0">board</span> <span class="ST0">state</span>
+ 10 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 11  <span class="comment">*/</span>
+ 12 <span class="literal">public</span> <span class="literal">class</span> ChessBoardState {
+ 13     <span class="literal">public</span> <span class="literal">final</span> <span class="literal">int</span> BOARD[][]= <span class="literal">new</span> <span class="literal">int</span>[8][8];<span class="comment">//stores chess board  white always starts at bottom</span>
+ 14     <span class="literal">public</span> <span class="literal">boolean</span> IS_BLACK_TURN_TO_PLAY_NEXT;<span class="comment">//stores which colour is to move next</span>
+ 15     <span class="literal">public</span> <span class="literal">final</span> <span class="literal">boolean</span>[] CASTLING_RIGHTS=<span class="literal">new</span> <span class="literal">boolean</span>[4];<span class="comment">//stores the castling rights. Stored in format: White kingside, white queenside, black kingside, black queenside</span>
+ 16     <span class="literal">public</span> <span class="literal">final</span> <span class="literal">int</span> FULL_MOVE_NUMBER;<span class="comment">//the numbe of moves black has made. This value starts at one</span>
+ 17     <span class="literal">public</span> <span class="literal">final</span> <span class="literal">int</span> HALF_MOVE_CLOCK;<span class="comment">//the number of moves made since a piece was capture or a pawn advanced a square. This is used to enforce the fifty move rule. This value starts at 0</span>
+ 18     <span class="literal">public</span> <span class="literal">final</span>  <span class="literal">int</span>[]SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT;<span class="comment">//stores sqaure that can be captured via en passant. Has a length of 0 if no such squares are available</span>
+ 19     <span class="literal">private</span>  String fenString;<span class="comment">//stores fen string of board state</span>
+ 20     <span class="literal">private</span> <span class="literal">boolean</span> isDraw;<span class="comment">//stores whether the state is a draw. Note this must be set externally</span>
+ 21     <span class="literal">private</span> <span class="literal">boolean</span> isWin;<span class="comment">//stores whether state is a win for player currently moving. Note this must be set externally</span>
+ 22     <span class="literal">private</span> <span class="literal">boolean</span> isLoss;<span class="comment">//stores whether state is a loss for player currently moving. Note this must be set externally </span>
+ 23     <span class="literal">private</span> <span class="literal">boolean</span> hasFenBeenCreated=<span class="literal">false</span>;
+ 24     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> WHITE_MULTIPLIER=1;<span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> BLACK_MULTIPLIER=-1;
+ 25     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> ROOK_VALUE=5;<span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> BISHOP_VALUE =4;<span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> KNIGHT_VALUE=3;
+ 26     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> PAWN_VALUE=1;
+ 27     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> QUEEN_VALUE=8;<span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> KING_VALUE=100; <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> EMPTY_VALUE=0;
+ 28     <span class="comment">/**</span>
+ 29 <span class="comment">     * </span><span class="ST0">Takes</span> <span class="ST0">the</span> <span class="ST0">FEN</span> <span class="ST0">String</span><span class="ST0"> (</span><span class="ST0">standard</span> <span class="ST0">representation</span> <span class="ST0">of</span> <span class="ST0">chess</span> <span class="ST0">board</span> <span class="ST0">as</span> <span class="ST0">input</span><span class="comment">)</span>
+ 30 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">fenString</span> <span class="comment">The</span> <span class="comment">FEN</span> <span class="comment">string</span><span class="comment">.</span> <span class="comment">For</span> <span class="comment">explanation</span> <span class="comment">of</span> <span class="comment">FEN</span> <span class="comment">format</span><span class="comment">, </span><span class="comment">view</span> <span class="comment">https</span><span class="comment">://</span><span class="comment">www</span><span class="comment">.</span><span class="comment">chess</span><span class="comment">.</span><span class="comment">com</span><span class="comment">/</span><span class="comment">terms</span><span class="comment">/</span><span class="comment">fen</span><span class="comment">-</span><span class="comment">chess</span>
+ 31      <span class="comment">*/</span>
+ 32     <span class="literal">public</span> ChessBoardState (String fenString){
+ 33         <span class="literal">this</span>.fenString=fenString;hasFenBeenCreated=<span class="literal">true</span>;
+ 34         String[]fenSplit = fenString.split(<span class="string">&quot;</span> <span class="string">&quot;</span>);<span class="comment">//splits the FEN String into its fields</span>
+ 35         <span class="comment">//generates board based on FEN String</span>
+ 36         String board[]=fenSplit[0].split(<span class="string">&quot;</span><span class="string">/</span><span class="string">&quot;</span>);<span class="comment">//splits the board data into ranks</span>
+ 37         <span class="literal">int</span> xIndex;<span class="comment">//stores current x index of piece</span>
+ 38         <span class="comment">//converts fen representation of board to an 8 by 8 two dimensional array which represents the board</span>
+ 39         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){<span class="comment">//generates board data for each rank</span>
+ 40             xIndex=0;
+ 41             <span class="literal">for</span>(<span class="literal">int</span> ch=0;ch&lt;board[y].length();ch++){
+ 42                 <span class="literal">switch</span> (board[y].charAt(ch)) {
+ 43                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">r</span><span class="string">&#39;</span>:
+ 44                         BOARD[y][xIndex]=BLACK_MULTIPLIER*ROOK_VALUE;
+ 45                         xIndex++;
+ 46                         <span class="literal">break</span>;
+ 47                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">n</span><span class="string">&#39;</span>:
+ 48                         BOARD[y][xIndex]=BLACK_MULTIPLIER*KNIGHT_VALUE;
+ 49                         xIndex++;
+ 50                         <span class="literal">break</span>;
+ 51                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">b</span><span class="string">&#39;</span>:
+ 52                         BOARD[y][xIndex]=BLACK_MULTIPLIER*BISHOP_VALUE;
+ 53                         xIndex++;
+ 54                         <span class="literal">break</span>;
+ 55                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">q</span><span class="string">&#39;</span>:
+ 56                         BOARD[y][xIndex]=BLACK_MULTIPLIER*QUEEN_VALUE;
+ 57                         xIndex++;
+ 58                         <span class="literal">break</span>;
+ 59                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">k</span><span class="string">&#39;</span>:
+ 60                         BOARD[y][xIndex]=BLACK_MULTIPLIER*KING_VALUE;
+ 61                         xIndex++;
+ 62                         <span class="literal">break</span>;
+ 63                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">p</span><span class="string">&#39;</span>:
+ 64                         BOARD[y][xIndex]=BLACK_MULTIPLIER*PAWN_VALUE;
+ 65                         xIndex++;
+ 66                         <span class="literal">break</span>;
+ 67                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">N</span><span class="string">&#39;</span>:
+ 68                         BOARD[y][xIndex]=WHITE_MULTIPLIER*KNIGHT_VALUE;
+ 69                         xIndex++;
+ 70                         <span class="literal">break</span>;
+ 71                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">B</span><span class="string">&#39;</span>:
+ 72                         BOARD[y][xIndex]=WHITE_MULTIPLIER*BISHOP_VALUE;
+ 73                         xIndex++;
+ 74                         <span class="literal">break</span>;
+ 75                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">Q</span><span class="string">&#39;</span>:
+ 76                         BOARD[y][xIndex]=WHITE_MULTIPLIER*QUEEN_VALUE;
+ 77                         xIndex++;
+ 78                         <span class="literal">break</span>;
+ 79                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">K</span><span class="string">&#39;</span>:
+ 80                         BOARD[y][xIndex]=WHITE_MULTIPLIER*KING_VALUE;
+ 81                         xIndex++;
+ 82                         <span class="literal">break</span>;
+ 83                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">R</span><span class="string">&#39;</span>:
+ 84                         BOARD[y][xIndex]=WHITE_MULTIPLIER*ROOK_VALUE;
+ 85                         xIndex++;
+ 86                         <span class="literal">break</span>;
+ 87                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">P</span><span class="string">&#39;</span>:
+ 88                         BOARD[y][xIndex]=WHITE_MULTIPLIER*PAWN_VALUE;
+ 89                         xIndex++;
+ 90                         <span class="literal">break</span>;
+ 91                     <span class="literal">default</span>:
+ 92                         <span class="literal">for</span>(<span class="literal">int</span> emp=0;emp&lt;Character.getNumericValue(board[y].charAt(ch));emp++){
+ 93                             BOARD[y][xIndex]=EMPTY_VALUE;
+ 94                             xIndex++;
+ 95                         }   <span class="literal">break</span>;
+ 96                 }
+ 97             }
+ 98         }
+ 99         IS_BLACK_TURN_TO_PLAY_NEXT=fenSplit[1].equals(<span class="string">&quot;</span><span class="string">b</span><span class="string">&quot;</span>);<span class="comment">//gets who&#39;s move it is</span>
+100         <span class="comment">//gets castling rights</span>
+101         <span class="comment">//stored in format White kingside, white queenside, black kingside, black queenside</span>
+102         CASTLING_RIGHTS[0]=<span class="literal">false</span>;CASTLING_RIGHTS[1]=<span class="literal">false</span>;CASTLING_RIGHTS[2]=<span class="literal">false</span>;CASTLING_RIGHTS[3]=<span class="literal">false</span>;
+103         <span class="literal">if</span>(!fenSplit[2].equals(<span class="string">&quot;</span><span class="string">-</span><span class="string">&quot;</span>)){
+104             <span class="literal">for</span>(<span class="literal">int</span> ch =0;ch&lt;fenSplit[2].length();ch++){
+105                 <span class="literal">switch</span> (fenSplit[2].charAt(ch)) {
+106                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">K</span><span class="string">&#39;</span>:
+107                         CASTLING_RIGHTS[0]=<span class="literal">true</span>;
+108                         <span class="literal">break</span>;
+109                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">Q</span><span class="string">&#39;</span>:
+110                         CASTLING_RIGHTS[1]=<span class="literal">true</span>;
+111                         <span class="literal">break</span>;
+112                     <span class="literal">case</span> <span class="string">&#39;</span><span class="string">k</span><span class="string">&#39;</span>:
+113                         CASTLING_RIGHTS[2]=<span class="literal">true</span>;
+114                         <span class="literal">break</span>;
+115                     <span class="literal">default</span>:
+116                         CASTLING_RIGHTS[3]=<span class="literal">true</span>;
+117                         <span class="literal">break</span>;
+118                 }
+119             }
+120         }
+121         <span class="comment">//gets possible en passant targets</span>
+122         <span class="literal">if</span>(fenSplit[3].equals(<span class="string">&quot;</span><span class="string">-</span><span class="string">&quot;</span>)){
+123             SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT=<span class="literal">new</span> <span class="literal">int</span>[0];<span class="comment">//no available squares</span>
+124         }<span class="literal">else</span>{
+125             SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT = getYAndXOfSquare(fenSplit[3]);<span class="comment">//one available en passant square</span>
+126         }
+127         <span class="comment">//gets half move clock</span>
+128         HALF_MOVE_CLOCK=Integer.parseInt(fenSplit[4]);
+129         <span class="comment">//gets full move number</span>
+130         FULL_MOVE_NUMBER=Integer.parseInt(fenSplit[5]);
+131     }
+132     <span class="comment">/**</span>
+133 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">chess</span> <span class="ST0">board</span> <span class="ST0">state</span>
+134 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gameBoard</span> <span class="comment">The</span> <span class="comment">board</span> <span class="comment">array</span>
+135 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">castlingRights</span> <span class="comment">The</span> <span class="comment">castling</span> <span class="comment">rights</span><span class="comment">.</span> <span class="comment">In</span> <span class="comment">the</span> <span class="comment">form</span><span class="comment">, </span><span class="comment">white</span> <span class="comment">kingside</span><span class="comment">, </span><span class="comment">white</span> <span class="comment">queen</span> <span class="comment">side</span><span class="comment">, </span><span class="comment">black</span> <span class="comment">kingside</span><span class="comment">, </span><span class="comment">black</span> <span class="comment">queen</span> <span class="comment">side</span>
+136 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isBlackToPlayNext</span> <span class="comment">whether</span> <span class="comment">black</span> <span class="comment">is</span> <span class="comment">to</span> <span class="comment">make</span> <span class="comment">the</span> <span class="comment">next</span> <span class="comment">move</span>
+137 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">fullMoveNumber</span> <span class="comment">the</span> <span class="comment">number</span> <span class="comment">of</span> <span class="comment">moves</span> <span class="comment">black</span> <span class="comment">has</span> <span class="comment">played</span>
+138 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">halfMoveClock</span> <span class="comment">the</span> <span class="comment">number</span> <span class="comment">of</span> <span class="comment">moves</span> <span class="comment">both</span> <span class="comment">players</span> <span class="comment">have</span> <span class="comment">made</span> <span class="comment">since</span> <span class="comment">the</span> <span class="comment">last</span> <span class="comment">pawn</span> <span class="comment">advance</span> <span class="comment">or</span> <span class="comment">capture</span>
+139 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">enPassantSquare</span> <span class="comment">the</span> <span class="comment">y</span> <span class="comment">and</span> <span class="comment">x</span> <span class="comment">coordinates</span> <span class="comment">of</span> <span class="comment">a</span> <span class="comment">square</span> <span class="comment">that</span> <span class="comment">can</span> <span class="comment">be</span> <span class="comment">captured</span> <span class="comment">via</span> <span class="comment">en</span> <span class="comment">passant</span><span class="comment">.</span> <span class="comment">If</span> <span class="comment">no</span> <span class="comment">such</span> <span class="comment">square</span> <span class="comment">exists</span><span class="comment">, </span><span class="comment">use</span> <span class="comment">new</span> <span class="comment">int</span><span class="comment">[0]</span>
+140      <span class="comment">*/</span>
+141     <span class="literal">public</span> ChessBoardState(<span class="literal">int</span>[][]gameBoard,<span class="literal">boolean</span> castlingRights[],<span class="literal">boolean</span> isBlackToPlayNext, <span class="literal">int</span> fullMoveNumber,<span class="literal">int</span> halfMoveClock,<span class="literal">int</span>[]enPassantSquare){
+142         <span class="comment">//stores board</span>
+143         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){<span class="comment">//generates board</span>
+144             <span class="literal">for</span>(<span class="literal">int</span> x =0;x&lt;8;x++){
+145                 BOARD[y][x]=gameBoard[y][x];
+146             }
+147         }
+148         <span class="comment">//creates castling rights</span>
+149         CASTLING_RIGHTS[0]=castlingRights[0];CASTLING_RIGHTS[1]=castlingRights[1];CASTLING_RIGHTS[2]=castlingRights[2];CASTLING_RIGHTS[3]=castlingRights[3];
+150         IS_BLACK_TURN_TO_PLAY_NEXT=isBlackToPlayNext;
+151         FULL_MOVE_NUMBER=fullMoveNumber;
+152         HALF_MOVE_CLOCK=halfMoveClock;
+153         <span class="comment">//creates en passant data</span>
+154         <span class="literal">if</span>(enPassantSquare.length==0){
+155             SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT= <span class="literal">new</span> <span class="literal">int</span>[0];
+156         }<span class="literal">else</span>{
+157             SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT=<span class="literal">new</span> <span class="literal">int</span> [2];
+158             SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[0]=enPassantSquare[0];
+159             SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[1]=enPassantSquare[1];
+160         }
+161     }
+162     <span class="comment">/**</span>
+163 <span class="comment">     * </span><span class="ST0">Converts</span> <span class="ST0">the</span> <span class="ST0">current</span> <span class="ST0">board</span> <span class="ST0">state</span> <span class="ST0">to</span> <span class="ST0">a</span> <span class="ST0">form</span> <span class="ST0">where</span> <span class="ST0">it</span> <span class="ST0">can</span> <span class="ST0">be</span> <span class="ST0">input</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">neural</span> <span class="ST0">network</span><span class="ST0">.</span>
+164 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">double</span> <span class="comment">array</span> <span class="comment">that</span> <span class="comment">can</span> <span class="comment">be</span> <span class="comment">input</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">trained</span> <span class="comment">neural</span> <span class="comment">network</span><span class="comment">.</span>
+165      <span class="comment">*/</span>
+166     <span class="literal">public</span> <span class="literal">double</span>[]getNeuralNetInputDouble(){
+167         <span class="literal">double</span> data[]= <span class="literal">new</span> <span class="literal">double</span> [777];<span class="comment">//creates the array that stores the neural network attributes</span>
+168         <span class="comment">//stores castling rights</span>
+169         <span class="literal">if</span>(CASTLING_RIGHTS[0]){
+170             data[768]=1;
+171         }
+172         <span class="literal">if</span>(CASTLING_RIGHTS[1]){
+173             data[769]=1;
+174         }
+175         <span class="literal">if</span>(CASTLING_RIGHTS[2]){
+176             data[770]=1;
+177         }
+178         <span class="literal">if</span>(CASTLING_RIGHTS[3]){
+179             data[771]=1;
+180         }
+181         <span class="comment">//stores who is going to play next</span>
+182         <span class="literal">if</span>(IS_BLACK_TURN_TO_PLAY_NEXT){
+183             data[772]=1;
+184         }
+185         <span class="comment">//sets half move data</span>
+186         data[773]=HALF_MOVE_CLOCK;
+187         <span class="comment">//sets en passant data</span>
+188         data[775]=9;data[776]=9;
+189         <span class="literal">if</span>(SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length==2){
+190             data[774]=1;data[775]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[0];data[776]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[1];
+191         }
+192         <span class="comment">//generates bitboard data</span>
+193         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){
+194             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;8;x++){
+195                 <span class="literal">switch</span> (BOARD[y][x]) {
+196                     <span class="literal">case</span> WHITE_MULTIPLIER*KING_VALUE:
+197                         data[x+(8*y)]=1;
+198                         <span class="literal">break</span>;
+199                     <span class="literal">case</span> BLACK_MULTIPLIER*KING_VALUE:
+200                         data[x+(8*y)+64]=1;
+201                         <span class="literal">break</span>;
+202                     <span class="literal">case</span> WHITE_MULTIPLIER*ROOK_VALUE:
+203                         data[x+(8*y)+128]=1;
+204                         <span class="literal">break</span>;
+205                     <span class="literal">case</span> BLACK_MULTIPLIER*ROOK_VALUE:
+206                         data[x+(8*y)+192]=1;
+207                         <span class="literal">break</span>;
+208                     <span class="literal">case</span> WHITE_MULTIPLIER*BISHOP_VALUE:
+209                         data[x+(8*y)+256]=1;
+210                         <span class="literal">break</span>;
+211                     <span class="literal">case</span> BLACK_MULTIPLIER*BISHOP_VALUE:
+212                         data[x+(8*y)+320]=1;
+213                         <span class="literal">break</span>;
+214                     <span class="literal">case</span> WHITE_MULTIPLIER*QUEEN_VALUE:
+215                         data[x+(8*y)+384]=1;
+216                         <span class="literal">break</span>;
+217                     <span class="literal">case</span> BLACK_MULTIPLIER*QUEEN_VALUE:
+218                         data[x+(8*y)+448]=1;
+219                         <span class="literal">break</span>;
+220                     <span class="literal">case</span> WHITE_MULTIPLIER*PAWN_VALUE:
+221                         data[x+(8*y)+512]=1;
+222                         <span class="literal">break</span>;
+223                     <span class="literal">case</span> BLACK_MULTIPLIER*PAWN_VALUE:
+224                         data[x+(8*y)+576]=1;
+225                         <span class="literal">break</span>;
+226                     <span class="literal">case</span> WHITE_MULTIPLIER*KNIGHT_VALUE:
+227                         data[x+(8*y)+640]=1;
+228                         <span class="literal">break</span>;
+229                     <span class="literal">case</span> BLACK_MULTIPLIER*KNIGHT_VALUE:
+230                         data[x+(8*y)+704]=1;
+231                         <span class="literal">break</span>;
+232                     <span class="literal">default</span>:
+233                         <span class="literal">break</span>;
+234                 }
+235             }
+236         }
+237         <span class="literal">return</span> data;        
+238     }
+239     <span class="comment">/**</span>
+240 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">string</span> <span class="ST0">used</span> <span class="ST0">for</span> <span class="ST0">the</span> <span class="ST0">neural</span> <span class="ST0">network</span> <span class="ST0">input</span> <span class="ST0">given</span> <span class="ST0">the</span> <span class="ST0">current</span> <span class="ST0">board</span> <span class="ST0">state</span>
+241 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">input</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">neural</span> <span class="comment">network</span>
+242      <span class="comment">*/</span>
+243     <span class="literal">public</span> <span class="literal">int</span>[] getNeuralNetInput(){
+244         <span class="literal">int</span> data[]= <span class="literal">new</span> <span class="literal">int</span> [777];<span class="comment">//creates the array that stores the neural network attributes</span>
+245         <span class="comment">//stores castling rights</span>
+246         <span class="literal">if</span>(CASTLING_RIGHTS[0]){
+247             data[768]=1;
+248         }
+249         <span class="literal">if</span>(CASTLING_RIGHTS[1]){
+250             data[769]=1;
+251         }
+252         <span class="literal">if</span>(CASTLING_RIGHTS[2]){
+253             data[770]=1;
+254         }
+255         <span class="literal">if</span>(CASTLING_RIGHTS[3]){
+256             data[771]=1;
+257         }
+258         <span class="comment">//stores who is going to play next</span>
+259         <span class="literal">if</span>(IS_BLACK_TURN_TO_PLAY_NEXT){
+260             data[772]=1;
+261         }
+262         <span class="comment">//sets half move data</span>
+263         data[773]=HALF_MOVE_CLOCK;
+264         <span class="comment">//sets en passant data</span>
+265         data[775]=9;data[776]=9;
+266         <span class="literal">if</span>(SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length==2){
+267             data[774]=1;data[775]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[0];data[776]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[1];
+268         }
+269         <span class="comment">//generates bitboard data</span>
+270         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){
+271             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;8;x++){
+272                 <span class="literal">switch</span> (BOARD[y][x]) {
+273                     <span class="literal">case</span> WHITE_MULTIPLIER*KING_VALUE:
+274                         data[x+(8*y)]=1;
+275                         <span class="literal">break</span>;
+276                     <span class="literal">case</span> BLACK_MULTIPLIER*KING_VALUE:
+277                         data[x+(8*y)+64]=1;
+278                         <span class="literal">break</span>;
+279                     <span class="literal">case</span> WHITE_MULTIPLIER*ROOK_VALUE:
+280                         data[x+(8*y)+128]=1;
+281                         <span class="literal">break</span>;
+282                     <span class="literal">case</span> BLACK_MULTIPLIER*ROOK_VALUE:
+283                         data[x+(8*y)+192]=1;
+284                         <span class="literal">break</span>;
+285                     <span class="literal">case</span> WHITE_MULTIPLIER*BISHOP_VALUE:
+286                         data[x+(8*y)+256]=1;
+287                         <span class="literal">break</span>;
+288                     <span class="literal">case</span> BLACK_MULTIPLIER*BISHOP_VALUE:
+289                         data[x+(8*y)+320]=1;
+290                         <span class="literal">break</span>;
+291                     <span class="literal">case</span> WHITE_MULTIPLIER*QUEEN_VALUE:
+292                         data[x+(8*y)+384]=1;
+293                         <span class="literal">break</span>;
+294                     <span class="literal">case</span> BLACK_MULTIPLIER*QUEEN_VALUE:
+295                         data[x+(8*y)+448]=1;
+296                         <span class="literal">break</span>;
+297                     <span class="literal">case</span> WHITE_MULTIPLIER*PAWN_VALUE:
+298                         data[x+(8*y)+512]=1;
+299                         <span class="literal">break</span>;
+300                     <span class="literal">case</span> BLACK_MULTIPLIER*PAWN_VALUE:
+301                         data[x+(8*y)+576]=1;
+302                         <span class="literal">break</span>;
+303                     <span class="literal">case</span> WHITE_MULTIPLIER*KNIGHT_VALUE:
+304                         data[x+(8*y)+640]=1;
+305                         <span class="literal">break</span>;
+306                     <span class="literal">case</span> BLACK_MULTIPLIER*KNIGHT_VALUE:
+307                         data[x+(8*y)+704]=1;
+308                         <span class="literal">break</span>;
+309                     <span class="literal">default</span>:
+310                         <span class="literal">break</span>;
+311                 }
+312             }
+313         }
+314         <span class="literal">return</span> data;
+315     }
+316     <span class="comment">/**</span>
+317 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">FEN</span> <span class="ST0">string</span> <span class="ST0">from</span> <span class="ST0">board</span> <span class="ST0">state</span>
+318 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">FEN</span> <span class="comment">String</span>
+319      <span class="comment">*/</span>
+320     <span class="literal">public</span> String getFenString(){
+321         <span class="literal">if</span>(<span class="literal">this</span>.hasFenBeenCreated){<span class="comment">//if a fen value has already been created then it is simply returned</span>
+322             <span class="literal">return</span> <span class="literal">this</span>.fenString;
+323         }
+324         <span class="comment">//creates a fen string from scratch</span>
+325         String fenStringBoard=<span class="string">&quot;&quot;</span>;<span class="comment">//stores board as FEN string</span>
+326         <span class="literal">int</span> noOfEmptySquares;<span class="comment">//stores the number of empty squares next to each other in a row</span>
+327         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){<span class="comment">//generates board and FEN String for the board</span>
+328             <span class="literal">if</span>(y!=0){
+329                 fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">/</span><span class="string">&quot;</span>;<span class="comment">//splits the ranks</span>
+330             }
+331             noOfEmptySquares=0;
+332             <span class="comment">//for each square in the rank, the correct fen symbol is calculated</span>
+333             <span class="literal">for</span>(<span class="literal">int</span> x =0;x&lt;8;x++){
+334                 <span class="literal">switch</span> (BOARD[y][x]) {
+335                     <span class="literal">case</span> EMPTY_VALUE:
+336                         noOfEmptySquares++;
+337                         <span class="literal">if</span>(x==7){
+338                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+339                         }   <span class="literal">break</span>;
+340                     <span class="literal">case</span> BLACK_MULTIPLIER*ROOK_VALUE:
+341                         <span class="literal">if</span>(noOfEmptySquares!=0){
+342                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+343                             noOfEmptySquares=0;
+344                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">r</span><span class="string">&quot;</span>;
+345                         <span class="literal">break</span>;
+346                     <span class="literal">case</span> BLACK_MULTIPLIER*KNIGHT_VALUE:
+347                         <span class="literal">if</span>(noOfEmptySquares!=0){
+348                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+349                             noOfEmptySquares=0;
+350                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">n</span><span class="string">&quot;</span>;
+351                         <span class="literal">break</span>;
+352                     <span class="literal">case</span> BLACK_MULTIPLIER*BISHOP_VALUE:
+353                         <span class="literal">if</span>(noOfEmptySquares!=0){
+354                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+355                             noOfEmptySquares=0;
+356                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">b</span><span class="string">&quot;</span>;
+357                         <span class="literal">break</span>;
+358                     <span class="literal">case</span> BLACK_MULTIPLIER*QUEEN_VALUE:
+359                         <span class="literal">if</span>(noOfEmptySquares!=0){
+360                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+361                             noOfEmptySquares=0;
+362                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">q</span><span class="string">&quot;</span>;
+363                         <span class="literal">break</span>;
+364                     <span class="literal">case</span> BLACK_MULTIPLIER*KING_VALUE:
+365                         <span class="literal">if</span>(noOfEmptySquares!=0){
+366                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+367                             noOfEmptySquares=0;
+368                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">k</span><span class="string">&quot;</span>;
+369                         <span class="literal">break</span>;
+370                     <span class="literal">case</span> BLACK_MULTIPLIER*PAWN_VALUE:
+371                         <span class="literal">if</span>(noOfEmptySquares!=0){
+372                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+373                             noOfEmptySquares=0;
+374                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">p</span><span class="string">&quot;</span>;
+375                         <span class="literal">break</span>;
+376                     <span class="literal">case</span> WHITE_MULTIPLIER*ROOK_VALUE:
+377                         <span class="literal">if</span>(noOfEmptySquares!=0){
+378                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+379                             noOfEmptySquares=0;
+380                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">R</span><span class="string">&quot;</span>;
+381                         <span class="literal">break</span>;
+382                     <span class="literal">case</span> WHITE_MULTIPLIER*KNIGHT_VALUE:
+383                         <span class="literal">if</span>(noOfEmptySquares!=0){
+384                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+385                             noOfEmptySquares=0;
+386                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">N</span><span class="string">&quot;</span>;
+387                         <span class="literal">break</span>;
+388                     <span class="literal">case</span> WHITE_MULTIPLIER*BISHOP_VALUE:
+389                         <span class="literal">if</span>(noOfEmptySquares!=0){
+390                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+391                             noOfEmptySquares=0;
+392                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">B</span><span class="string">&quot;</span>;
+393                         <span class="literal">break</span>;
+394                     <span class="literal">case</span> WHITE_MULTIPLIER*QUEEN_VALUE:
+395                         <span class="literal">if</span>(noOfEmptySquares!=0){
+396                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+397                             noOfEmptySquares=0;
+398                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">Q</span><span class="string">&quot;</span>;
+399                         <span class="literal">break</span>;
+400                     <span class="literal">case</span> WHITE_MULTIPLIER*KING_VALUE:
+401                         <span class="literal">if</span>(noOfEmptySquares!=0){
+402                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+403                             noOfEmptySquares=0;
+404                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">K</span><span class="string">&quot;</span>;
+405                         <span class="literal">break</span>;
+406                     <span class="literal">case</span> WHITE_MULTIPLIER*PAWN_VALUE:
+407                         <span class="literal">if</span>(noOfEmptySquares!=0){
+408                             fenStringBoard=fenStringBoard+String.valueOf(noOfEmptySquares);
+409                             noOfEmptySquares=0;
+410                         }   fenStringBoard=fenStringBoard+<span class="string">&quot;</span><span class="string">P</span><span class="string">&quot;</span>;
+411                         <span class="literal">break</span>;
+412                     <span class="literal">default</span>:
+413                         <span class="literal">break</span>;
+414                 }
+415             }
+416         }
+417         <span class="comment">//creates the castling rights</span>
+418         String fenCastlingRights=<span class="string">&quot;&quot;</span>;
+419         <span class="literal">if</span>(CASTLING_RIGHTS[0]){
+420             fenCastlingRights=<span class="string">&quot;</span><span class="string">K</span><span class="string">&quot;</span>;
+421         }
+422         <span class="literal">if</span>(CASTLING_RIGHTS[1]){
+423             fenCastlingRights=fenCastlingRights+<span class="string">&quot;</span><span class="string">Q</span><span class="string">&quot;</span>;
+424         }
+425         <span class="literal">if</span>(CASTLING_RIGHTS[2]){
+426             fenCastlingRights=fenCastlingRights+<span class="string">&quot;</span><span class="string">k</span><span class="string">&quot;</span>;
+427         }
+428         <span class="literal">if</span>(CASTLING_RIGHTS[3]){
+429             fenCastlingRights=fenCastlingRights+<span class="string">&quot;</span><span class="string">q</span><span class="string">&quot;</span>;
+430         }
+431         <span class="literal">if</span>(fenCastlingRights.equals(<span class="string">&quot;&quot;</span>)){
+432             fenCastlingRights=<span class="string">&quot;</span><span class="string">-</span><span class="string">&quot;</span>;
+433         }
+434         String fenColourToPlay=<span class="string">&quot;&quot;</span>;
+435         <span class="comment">//sets who&#39;s turn it is to play next</span>
+436         <span class="literal">if</span>(IS_BLACK_TURN_TO_PLAY_NEXT){
+437             fenColourToPlay=<span class="string">&quot;</span><span class="string">b</span><span class="string">&quot;</span>;
+438         }<span class="literal">else</span>{
+439             fenColourToPlay=<span class="string">&quot;</span><span class="string">w</span><span class="string">&quot;</span>;
+440         }
+441         <span class="comment">//stores the square (if any) on which en passant can be performed on</span>
+442         String enPassantSquareFen=<span class="string">&quot;</span><span class="string">-</span><span class="string">&quot;</span>;
+443         <span class="literal">if</span>(SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length==2){
+444             enPassantSquareFen=getStringOfSquare(SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[0], SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[1]);
+445         }
+446         <span class="comment">//creates the final fen string</span>
+447         <span class="literal">this</span>.fenString=fenStringBoard+<span class="string">&quot;</span> <span class="string">&quot;</span>+fenColourToPlay+<span class="string">&quot;</span> <span class="string">&quot;</span>+fenCastlingRights+<span class="string">&quot;</span> <span class="string">&quot;</span>+enPassantSquareFen+<span class="string">&quot;</span> <span class="string">&quot;</span>+String.valueOf(HALF_MOVE_CLOCK)+<span class="string">&quot;</span> <span class="string">&quot;</span>+String.valueOf(FULL_MOVE_NUMBER); 
+448         <span class="literal">this</span>.hasFenBeenCreated=<span class="literal">true</span>;
+449         <span class="literal">return</span> <span class="literal">this</span>.fenString;
+450     }
+451     <span class="comment">/**</span>
+452 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">string</span> <span class="ST0">value</span> <span class="ST0">of</span> <span class="ST0">a</span> <span class="ST0">square</span> <span class="ST0">given</span> <span class="ST0">its</span> <span class="ST0">y</span> <span class="ST0">and</span> <span class="ST0">x</span> <span class="ST0">coordinates</span><span class="ST0">.</span> <span class="comment">E</span><span class="comment">.</span><span class="comment">g</span><span class="comment">.</span> <span class="comment">getStringOfSquare</span><span class="comment">(1,0) = &quot;</span><span class="comment">a7</span><span class="comment">&quot;</span>
+453 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">y</span> <span class="comment">The</span> <span class="comment">y</span> <span class="comment">index</span> <span class="comment">in</span> <span class="comment">the</span> <span class="comment">board</span> <span class="comment">array</span>
+454 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">x</span> <span class="comment">The</span> <span class="comment">x</span> <span class="comment">index</span> <span class="comment">in</span> <span class="comment">the</span> <span class="comment">board</span> <span class="comment">array</span>
+455 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">square</span>
+456      <span class="comment">*/</span>
+457     <span class="literal">private</span> <span class="literal">static</span> String getStringOfSquare(<span class="literal">int</span> y, <span class="literal">int</span> x){
+458         <span class="literal">switch</span> (x) {
+459             <span class="literal">case</span> 0:
+460                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">a</span><span class="string">&quot;</span>+String.valueOf(8-y);
+461             <span class="literal">case</span> 1:
+462                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">b</span><span class="string">&quot;</span>+String.valueOf(8-y);
+463             <span class="literal">case</span> 2:
+464                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">c</span><span class="string">&quot;</span>+String.valueOf(8-y);
+465             <span class="literal">case</span> 3:
+466                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">d</span><span class="string">&quot;</span>+String.valueOf(8-y);
+467             <span class="literal">case</span> 4:
+468                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">e</span><span class="string">&quot;</span>+String.valueOf(8-y);
+469             <span class="literal">case</span> 5:
+470                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">f</span><span class="string">&quot;</span>+String.valueOf(8-y);
+471             <span class="literal">case</span> 6:
+472                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">g</span><span class="string">&quot;</span>+String.valueOf(8-y);
+473             <span class="literal">default</span>:
+474                 <span class="literal">return</span> <span class="string">&quot;</span><span class="string">h</span><span class="string">&quot;</span>+String.valueOf(8-y);
+475         }
+476     }
+477     <span class="comment">/**</span>
+478 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">neural</span> <span class="ST0">network</span> <span class="ST0">input</span> <span class="ST0">for</span> <span class="ST0">a</span> <span class="ST0">reduced</span> <span class="ST0">size</span> <span class="ST0">neural</span> <span class="ST0">network</span> <span class="ST0">that</span> <span class="ST0">does</span> <span class="ST0">not</span> <span class="ST0">use</span> <span class="ST0">the</span> <span class="ST0">bitboard</span> <span class="ST0">representation</span><span class="ST0">.</span>
+479 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">network</span> <span class="comment">input</span>
+480      <span class="comment">*/</span>
+481     <span class="literal">public</span> <span class="literal">int</span>[]getNeuralNetInputReducedSize(){
+482         <span class="literal">int</span> data[]=<span class="literal">new</span> <span class="literal">int</span>[64+4+2+1];
+483         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){
+484             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;8;x++){
+485                 data[8*y +x]=BOARD[y][x];
+486             }
+487         }
+488         <span class="literal">if</span>(IS_BLACK_TURN_TO_PLAY_NEXT){
+489             data[64]=1;
+490         }
+491         <span class="literal">if</span>(CASTLING_RIGHTS[0]){
+492             data[65]=1;
+493         }
+494         <span class="literal">if</span>(CASTLING_RIGHTS[1]){
+495             data[66]=1;
+496         }
+497         <span class="literal">if</span>(CASTLING_RIGHTS[2]){
+498             data[67]=1;
+499         }
+500         <span class="literal">if</span>(CASTLING_RIGHTS[3]){
+501             data[68]=1;
+502         }
+503         <span class="literal">if</span>(SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length==2){
+504             data[69]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[0];
+505             data[70]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[1];
+506         }
+507         <span class="literal">return</span> data;
+508     }
+509     <span class="comment">/**</span>
+510 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">a</span> <span class="ST0">reduced</span> <span class="ST0">size</span> <span class="ST0">neural</span> <span class="ST0">network</span> <span class="ST0">input</span> <span class="ST0">as</span> <span class="ST0">a</span> <span class="ST0">double</span> <span class="ST0">array</span><span class="ST0">.</span>
+511 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">neural</span> <span class="comment">network</span> <span class="comment">input</span>
+512      <span class="comment">*/</span>
+513     <span class="literal">public</span> <span class="literal">double</span>[]getNeuralNetInputReducedSizeDouble(){
+514         <span class="literal">double</span> data[]=<span class="literal">new</span> <span class="literal">double</span>[71];
+515         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){
+516             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;8;x++){
+517                 data[8*y +x]=BOARD[y][x];
+518             }
+519         }
+520         <span class="literal">if</span>(IS_BLACK_TURN_TO_PLAY_NEXT){
+521             data[64]=1;
+522         }
+523         <span class="literal">if</span>(CASTLING_RIGHTS[0]){
+524             data[65]=1;
+525         }
+526         <span class="literal">if</span>(CASTLING_RIGHTS[1]){
+527             data[66]=1;
+528         }
+529         <span class="literal">if</span>(CASTLING_RIGHTS[2]){
+530             data[67]=1;
+531         }
+532         <span class="literal">if</span>(CASTLING_RIGHTS[3]){
+533             data[68]=1;
+534         }
+535         <span class="literal">if</span>(SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length==2){
+536             data[69]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[0];
+537             data[70]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[1];
+538         }
+539         <span class="literal">return</span> data;
+540     }
+541     <span class="comment">/**</span>
+542 <span class="comment">     * </span><span class="ST0">Takes</span> <span class="ST0">a</span> <span class="ST0">chess</span> <span class="ST0">square</span><span class="ST0">, </span><span class="ST0">such</span> <span class="ST0">as</span><span class="ST0"> &quot;</span><span class="ST0">a3</span><span class="ST0">&quot; </span><span class="ST0">as</span> <span class="ST0">input</span> <span class="ST0">and</span> <span class="ST0">returns</span> <span class="ST0">the</span> <span class="ST0">y</span> <span class="ST0">and</span> <span class="ST0">x</span> <span class="ST0">coordinates</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">square</span> <span class="ST0">on</span> <span class="ST0">the</span> <span class="ST0">board</span>
+543 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">square</span> <span class="comment">The</span> <span class="comment">square</span>
+544 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">An</span> <span class="comment">int</span> <span class="comment">array</span> <span class="comment">of</span> <span class="comment">length</span><span class="comment"> [2], </span><span class="comment">with</span> <span class="comment">the</span> <span class="comment">y</span> <span class="comment">and</span> <span class="comment">x</span> <span class="comment">index</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">board</span> <span class="comment">array</span>
+545      <span class="comment">*/</span>
+546     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">int</span>[] getYAndXOfSquare(String square){
+547         <span class="literal">int</span>[]ret = <span class="literal">new</span> <span class="literal">int</span>[2];
+548         ret[0]=8-Character.getNumericValue(square.charAt(1));
+549         <span class="literal">switch</span> (square.charAt(0)) {
+550             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">a</span><span class="string">&#39;</span>:
+551                 ret[1]=0;
+552                 <span class="literal">break</span>;
+553             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">b</span><span class="string">&#39;</span>:
+554                 ret[1]=1;
+555                 <span class="literal">break</span>;
+556             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">c</span><span class="string">&#39;</span>:
+557                 ret[1]=2;
+558                 <span class="literal">break</span>;
+559             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">d</span><span class="string">&#39;</span>:
+560                 ret[1]=3;
+561                 <span class="literal">break</span>;
+562             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">e</span><span class="string">&#39;</span>:
+563                 ret[1]=4;
+564                 <span class="literal">break</span>;
+565             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">f</span><span class="string">&#39;</span>:
+566                 ret[1]=5;
+567                 <span class="literal">break</span>;
+568             <span class="literal">case</span> <span class="string">&#39;</span><span class="string">g</span><span class="string">&#39;</span>:
+569                 ret[1]=6;
+570                 <span class="literal">break</span>;
+571             <span class="literal">default</span>:
+572                 ret[1]=7;
+573                 <span class="literal">break</span>;
+574         }
+575         <span class="literal">return</span> ret;
+576     }
+577     <span class="comment">/**</span>
+578 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">a</span> <span class="ST0">copy</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">board</span> <span class="ST0">array</span><span class="ST0">.</span> <span class="comment">use</span> <span class="comment">this</span> <span class="comment">when</span> <span class="comment">writing</span> <span class="comment">with</span> <span class="comment">board</span>
+579 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">A</span> <span class="comment">copy</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">board</span> <span class="comment">array</span>
+580      <span class="comment">*/</span>
+581     <span class="literal">public</span> <span class="literal">int</span>[][]getCopyOfBoard(){
+582         <span class="literal">int</span>[][]board=<span class="literal">new</span> <span class="literal">int</span>[8][8];
+583         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){
+584             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;8;x++){
+585                 board[y][x]=BOARD[y][x];
+586             }
+587         }
+588         <span class="literal">return</span> board;
+589     }
+590     <span class="comment">/**</span>
+591 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">a</span> <span class="ST0">copy</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">castling</span> <span class="ST0">rights</span> <span class="ST0">array</span>
+592 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">castling</span> <span class="comment">rights</span>
+593      <span class="comment">*/</span>
+594     <span class="literal">public</span> <span class="literal">boolean</span> []getCopyOfCastlingRights(){
+595         <span class="literal">boolean</span> rights []=<span class="literal">new</span> <span class="literal">boolean</span>[4];
+596         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;4;i++){
+597             rights[i]=CASTLING_RIGHTS[i];
+598         }
+599         <span class="literal">return</span> rights;
+600     }
+601     <span class="comment">/**</span>
+602 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">a</span> <span class="ST0">copy</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">en</span> <span class="ST0">passant</span> <span class="ST0">square</span> <span class="ST0">array</span> <span class="ST0">and</span> <span class="ST0">returns</span> <span class="ST0">it</span><span class="ST0">.</span>
+603 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">copy</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">array</span>
+604      <span class="comment">*/</span>
+605     <span class="literal">public</span> <span class="literal">int</span>[]getCopyOfEnPassantSquare(){
+606         <span class="literal">int</span> ret[]=<span class="literal">new</span> <span class="literal">int</span>[SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length];
+607         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;ret.length;i++){
+608             ret[i]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[i];
+609         }
+610         <span class="literal">return</span> ret;
+611     }
+612     <span class="comment">/**</span>
+613 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">whether</span> <span class="ST0">this</span> <span class="ST0">game</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">win</span><span class="ST0">.</span> <span class="comment">Note</span> <span class="comment">this</span> <span class="comment">variable</span> <span class="comment">may</span> <span class="comment">not</span> <span class="comment">be</span> <span class="comment">initialised</span> <span class="comment">and</span> <span class="comment">can</span> <span class="comment">only</span> <span class="comment">be</span> <span class="comment">set</span> <span class="comment">by</span> <span class="comment">external</span> <span class="comment">methods</span><span class="comment">.</span> <span class="comment">Hence</span><span class="comment">, </span><span class="comment">only</span>
+614 <span class="comment">     * </span><span class="comment">call</span> <span class="comment">this</span> <span class="comment">method</span> <span class="comment">if</span> <span class="comment">you</span> <span class="comment">are</span> <span class="comment">certain</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">board</span> <span class="comment">state</span> <span class="comment">has</span> <span class="comment">been</span> <span class="comment">set</span><span class="comment">.</span>
+615 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">board</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">win</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">current</span> <span class="comment">user</span>
+616      <span class="comment">*/</span>
+617     <span class="literal">public</span> <span class="literal">boolean</span> getIsWin(){
+618         <span class="literal">return</span> <span class="literal">this</span>.isWin;
+619     }
+620     <span class="comment">/**</span>
+621 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">whether</span> <span class="ST0">this</span> <span class="ST0">game</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">draw</span><span class="ST0">.</span> <span class="comment">Note</span><span class="comment">: </span><span class="comment">this</span> <span class="comment">variable</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">automatically</span> <span class="comment">initialised</span> <span class="comment">and</span> <span class="comment">is</span> <span class="comment">set</span> <span class="comment">externally</span><span class="comment">.</span>
+622 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">draw</span>
+623      <span class="comment">*/</span>
+624     <span class="literal">public</span> <span class="literal">boolean</span> getIsDraw(){
+625         <span class="literal">return</span> <span class="literal">this</span>.isDraw;
+626     }
+627     <span class="comment">/**</span>
+628 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">whether</span> <span class="ST0">this</span> <span class="ST0">game</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">loss</span> <span class="ST0">for</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">to</span> <span class="ST0">play</span> <span class="ST0">currently</span><span class="ST0">.</span> <span class="comment">Note</span> <span class="comment">this</span> <span class="comment">variable</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">automatically</span> <span class="comment">initialised</span><span class="comment">, </span><span class="comment">so</span> <span class="comment">only</span> <span class="comment">call</span> <span class="comment">this</span> <span class="comment">method</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">variable</span> <span class="comment">has</span> <span class="comment">been</span> <span class="comment">initialised</span><span class="comment">.</span>
+629 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">loss</span>
+630      <span class="comment">*/</span>
+631     <span class="literal">public</span> <span class="literal">boolean</span> getIsLoss(){
+632         <span class="literal">return</span> <span class="literal">this</span>.isLoss;
+633     }
+634     <span class="comment">/**</span>
+635 <span class="comment">     * </span><span class="comment">Sets</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">as</span> <span class="comment">win</span>
+636      <span class="comment">*/</span>
+637     <span class="literal">public</span> <span class="literal">void</span> setIsWinTrue(){
+638         <span class="literal">this</span>.isWin=<span class="literal">true</span>;<span class="literal">this</span>.isLoss=<span class="literal">false</span>;<span class="literal">this</span>.isDraw=<span class="literal">false</span>;
+639     }
+640     <span class="comment">/**</span>
+641 <span class="comment">     * </span><span class="comment">Sets</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">as</span> <span class="comment">a</span> <span class="comment">draw</span>
+642      <span class="comment">*/</span>
+643     <span class="literal">public</span> <span class="literal">void</span> setIsDrawTrue(){
+644         <span class="literal">this</span>.isDraw=<span class="literal">true</span>;<span class="literal">this</span>.isLoss=<span class="literal">false</span>;<span class="literal">this</span>.isWin=<span class="literal">false</span>;
+645     }
+646     <span class="comment">/**</span>
+647 <span class="comment">     * </span><span class="comment">Sets</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">as</span> <span class="comment">a</span> <span class="comment">loss</span>
+648      <span class="comment">*/</span>
+649     <span class="literal">public</span> <span class="literal">void</span> setIsLossTrue(){
+650         <span class="literal">this</span>.isLoss=<span class="literal">true</span>;<span class="literal">this</span>.isDraw=<span class="literal">false</span>;<span class="literal">this</span>.isWin=<span class="literal">false</span>;
+651     }
+652     <span class="comment">/**</span>
+653 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">FEN</span> <span class="ST0">string</span> <span class="ST0">if</span> <span class="ST0">it</span> <span class="ST0">has</span> <span class="ST0">already</span> <span class="ST0">been</span> <span class="ST0">created</span>
+654 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">fen</span> <span class="comment">The</span> <span class="comment">FEN</span> 
+655      <span class="comment">*/</span>
+656     <span class="literal">private</span> <span class="literal">void</span> setFen(String fen){
+657         <span class="literal">this</span>.fenString=fen;
+658     }
+659     <span class="comment">/**</span>
+660 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">FEN</span> <span class="ST0">has</span> <span class="ST0">been</span> <span class="ST0">created</span>
+661 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">hasFenBeenCreated</span> <span class="comment">Has</span> <span class="comment">the</span> <span class="comment">FEN</span> <span class="comment">been</span> <span class="comment">created</span>
+662      <span class="comment">*/</span>
+663     <span class="literal">private</span> <span class="literal">void</span> setHasFenBeenCreated(<span class="literal">boolean</span> hasFenBeenCreated){
+664         <span class="literal">this</span>.hasFenBeenCreated=hasFenBeenCreated;
+665     }
+666     <span class="comment">/**</span>
+667 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">loss</span>
+668 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isLoss</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">loss</span>
+669      <span class="comment">*/</span>
+670     <span class="literal">private</span> <span class="literal">void</span> setIsLoss(<span class="literal">boolean</span> isLoss){
+671         <span class="literal">this</span>.isLoss=isLoss;
+672     }
+673     <span class="comment">/**</span>
+674 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">draw</span>
+675 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isDraw</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">draw</span>
+676      <span class="comment">*/</span>
+677     <span class="literal">private</span> <span class="literal">void</span> setIsDraw(<span class="literal">boolean</span> isDraw){
+678         <span class="literal">this</span>.isDraw=isDraw;
+679     }
+680     <span class="comment">/**</span>
+681 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">is</span> <span class="ST0">a</span> <span class="ST0">win</span>
+682 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isWin</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">a</span> <span class="comment">win</span>
+683      <span class="comment">*/</span>
+684     <span class="literal">private</span> <span class="literal">void</span> setIsWin(<span class="literal">boolean</span> isWin){
+685         <span class="literal">this</span>.isWin=isWin;
+686     }
+687     <span class="comment">/**</span>
+688 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">a</span> <span class="ST0">copy</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">current</span> <span class="ST0">chess</span> <span class="ST0">board</span> <span class="ST0">state</span><span class="ST0">.</span>
+689 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">copy</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">current</span> <span class="comment">board</span> <span class="comment">state</span>
+690      <span class="comment">*/</span>
+691     <span class="literal">public</span> ChessBoardState getCopyOfState(){
+692         <span class="literal">int</span>[][]board=<span class="literal">new</span> <span class="literal">int</span>[8][8];<span class="comment">//creates a copy of the board</span>
+693         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;8;y++){
+694             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;8;x++){
+695                 board[y][x]=BOARD[y][x];
+696             }
+697         }
+698         <span class="comment">//copies all values from current state and use them to create a new board state object</span>
+699         <span class="literal">int</span>[]enPassant = <span class="literal">new</span> <span class="literal">int</span>[SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length];
+700         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT.length;i++){
+701             enPassant[i]=SQUARE_THAT_CAN_BE_CAPTURED_EN_PASSANT[i];
+702         }
+703         <span class="literal">boolean</span> castling[]=<span class="literal">new</span> <span class="literal">boolean</span>[CASTLING_RIGHTS.length];
+704         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;CASTLING_RIGHTS.length;i++){
+705             castling[i]=CASTLING_RIGHTS[i];
+706         }
+707         <span class="comment">//creates a new object copying the board</span>
+708         ChessBoardState newState = <span class="literal">new</span> ChessBoardState(board, castling, IS_BLACK_TURN_TO_PLAY_NEXT, FULL_MOVE_NUMBER, HALF_MOVE_CLOCK, enPassant);
+709         newState.setHasFenBeenCreated(hasFenBeenCreated);
+710         newState.setFen(fenString);
+711         newState.setIsWin(isWin);
+712         newState.setIsLoss(isLoss);
+713         newState.setIsDraw(isDraw);
+714         <span class="literal">return</span> newState;
+715     }
+716 }
+717 
+</pre></body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>ThreadClient.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\ThreadClient.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+  7 
+  8 <span class="literal">import</span> java.io.IOException;
+  9 <span class="literal">import</span> philipm.cs5.software.development.server.system.UserInfo;
+ 10 <span class="literal">import</span> java.io.ObjectInputStream;
+ 11 <span class="literal">import</span> java.io.ObjectOutputStream;
+ 12 <span class="literal">import</span> java.net.InetAddress;
+ 13 <span class="literal">import</span> java.net.Socket;
+ 14 
+ 15 <span class="comment">/**</span>
+ 16 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">objects</span> <span class="ST0">consists</span> <span class="ST0">of</span> <span class="ST0">a</span> <span class="ST0">set</span> <span class="ST0">of</span> <span class="ST0">static</span> <span class="ST0">methods</span> <span class="ST0">which</span> <span class="ST0">send</span><span class="ST0"> (</span><span class="ST0">and</span> <span class="ST0">sometimes</span> <span class="ST0">receive</span><span class="ST0">) </span><span class="ST0">data</span> <span class="ST0">from</span><span class="ST0"> / </span><span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">server</span><span class="ST0">.</span>
+ 17 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 18  <span class="comment">*/</span>
+ 19 <span class="literal">public</span> <span class="literal">class</span> ThreadClient {
+ 20     <span class="comment">/**</span>
+ 21 <span class="comment">     * </span><span class="ST0">Tries</span> <span class="ST0">to</span> <span class="ST0">log</span> <span class="ST0">user</span> <span class="ST0">in</span> <span class="ST0">with</span> <span class="ST0">provided</span> <span class="ST0">details</span>
+ 22 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span>
+ 23 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">password</span> <span class="comment">The</span> <span class="comment">users</span> <span class="comment">password</span>
+ 24 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">information</span>
+ 25 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">If</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">, </span><span class="comment">such</span> <span class="comment">as</span> <span class="comment">failing</span> <span class="comment">to</span> <span class="comment">connect</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">server</span><span class="comment">, </span><span class="comment">an</span> <span class="comment">exception</span> <span class="comment">is</span> <span class="comment">thrown</span>
+ 26      <span class="comment">*/</span>
+ 27     <span class="literal">public</span> <span class="literal">static</span> UserInfo logInWithUserName(String userName, String password) <span class="literal">throws</span> Exception{
+ 28         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//creates a socket to connect with the server</span>
+ 29         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets the object input stream</span>
+ 30         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());<span class="comment">//gets the object output stream</span>
+ 31         InputPackages pack = <span class="literal">new</span> InputPackages();pack.createLogInRequestForWithUserNameAndPassword(userName, password);<span class="comment">//creates the package to send to the server</span>
+ 32         out.writeObject(pack);<span class="comment">//sends package to server</span>
+ 33         <span class="literal">return</span> (UserInfo)in.readObject();<span class="comment">//gets the UserInfo object from the server and returns it</span>
+ 34     }
+ 35     <span class="comment">/**</span>
+ 36 <span class="comment">     * </span><span class="ST0">Tries</span> <span class="ST0">to</span> <span class="ST0">log</span> <span class="ST0">user</span> <span class="ST0">in</span> <span class="ST0">with</span> <span class="ST0">email</span> <span class="ST0">address</span><span class="ST0">.</span> 
+ 37 <span class="comment">    * </span><span class="ST0">@param</span> <span class="comment">emailAddress</span> <span class="comment">The</span> <span class="comment">user</span><span class="comment">&#39;</span><span class="comment">s</span> <span class="comment">email</span> <span class="comment">address</span>
+ 38 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">password</span> <span class="comment">The</span> <span class="comment">user</span><span class="comment">&#39;</span><span class="comment">s</span> <span class="comment">password</span>
+ 39 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">information</span> <span class="comment">for</span> <span class="comment">the</span> <span class="comment">user</span>
+ 40 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">If</span> <span class="comment">a</span> <span class="comment">networking</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">, </span><span class="comment">an</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">be</span> <span class="comment">thrown</span>
+ 41      <span class="comment">*/</span>
+ 42     <span class="literal">public</span> <span class="literal">static</span> UserInfo logInWithEmailAddress(String emailAddress, String password) <span class="literal">throws</span> Exception{
+ 43         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//creates socket that connects to the server</span>
+ 44         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+ 45         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());<span class="comment">//gets output stream</span>
+ 46         InputPackages pack = <span class="literal">new</span> InputPackages();pack.createLogInRequestForWithEmailAndPassword(emailAddress, password);<span class="comment">//creates package to send to sever</span>
+ 47         out.writeObject(pack);<span class="comment">//sends package to server</span>
+ 48         UserInfo inf=(UserInfo)in.readObject();
+ 49         <span class="literal">return</span> inf;<span class="comment">//gets the UserInfo object from the server and returns it</span>
+ 50     }
+ 51     <span class="comment">/**</span>
+ 52 <span class="comment">     * </span><span class="ST0">Checks</span> <span class="ST0">to</span> <span class="ST0">see</span> <span class="ST0">if</span> <span class="ST0">the</span> <span class="ST0">provided</span> <span class="ST0">username</span> <span class="ST0">is</span> <span class="ST0">already</span> <span class="ST0">stored</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">database</span>
+ 53 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">username</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">fetched</span>
+ 54 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Returns</span> <span class="comment">true</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">username</span> <span class="comment">if</span> <span class="comment">already</span> <span class="comment">taken</span> <span class="comment">and</span> <span class="comment">false</span> <span class="comment">otherwise</span>
+ 55 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">be</span> <span class="comment">thrown</span> <span class="comment">due</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">online</span> <span class="comment">connection</span> <span class="comment">required</span> <span class="comment">to</span> <span class="comment">execute</span> <span class="comment">this</span> <span class="comment">method</span><span class="comment">.</span>
+ 56      <span class="comment">*/</span>
+ 57     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">boolean</span> isUserNameAlreadyTaken(String username)<span class="literal">throws</span> Exception{
+ 58         <span class="literal">try</span>{
+ 59             <span class="literal">return</span> logInWithUserName(username,<span class="string">&quot;</span><span class="string">passw</span><span class="string">&quot;</span>).getUserFound();<span class="comment">//attempts to log in with the chosen username and an arbitary password</span>
+ 60         }<span class="literal">catch</span>(Exception e){
+ 61             <span class="literal">throw</span> e;
+ 62         }
+ 63     }
+ 64     <span class="comment">/**</span>
+ 65 <span class="comment">     * </span><span class="ST0">Checks</span> <span class="ST0">to</span> <span class="ST0">see</span> <span class="ST0">if</span> <span class="ST0">the</span> <span class="ST0">provided</span> <span class="ST0">email</span> <span class="ST0">address</span> <span class="ST0">is</span> <span class="ST0">already</span> <span class="ST0">stored</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">database</span>
+ 66 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">emailAddress</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">fetched</span>
+ 67 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Returns</span> <span class="comment">true</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">if</span> <span class="comment">already</span> <span class="comment">taken</span> <span class="comment">and</span> <span class="comment">false</span> <span class="comment">otherwise</span>
+ 68 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">be</span> <span class="comment">thrown</span> <span class="comment">due</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">online</span> <span class="comment">connection</span> <span class="comment">required</span> <span class="comment">to</span> <span class="comment">execute</span> <span class="comment">this</span> <span class="comment">method</span><span class="comment">.</span>
+ 69      <span class="comment">*/</span>
+ 70     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">boolean</span> isEmailAddressAlreadyTaken(String emailAddress)<span class="literal">throws</span> Exception{
+ 71         <span class="literal">try</span>{
+ 72             <span class="literal">return</span> logInWithEmailAddress(emailAddress, <span class="string">&quot;</span><span class="string">passw</span><span class="string">&quot;</span>).getEmailAddressFound();<span class="comment">//attempts to log in with chosen email address and an arbitary password</span>
+ 73         }<span class="literal">catch</span>(Exception e){
+ 74             <span class="literal">throw</span> e;
+ 75         }
+ 76     }
+ 77     <span class="comment">/**</span>
+ 78 <span class="comment">     * </span><span class="ST0">Communicates</span> <span class="ST0">with</span> <span class="ST0">the</span> <span class="ST0">server</span> <span class="ST0">to</span> <span class="ST0">create</span> <span class="ST0">the</span> <span class="ST0">new</span> <span class="ST0">user</span> <span class="ST0">account</span><span class="ST0">.</span>
+ 79 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">accountDetails</span> <span class="comment">The</span> <span class="comment">array</span> <span class="comment">containing</span> <span class="comment">the</span> <span class="comment">account</span> <span class="comment">record</span> <span class="comment">to</span> <span class="comment">be</span> <span class="comment">written</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">file</span>
+ 80 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">emailAddress</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">account</span>
+ 81 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">due</span> <span class="comment">to</span> <span class="comment">network</span> <span class="comment">issues</span><span class="comment">.</span>
+ 82      <span class="comment">*/</span>
+ 83     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> createAccount(String[]accountDetails,String emailAddress)<span class="literal">throws</span> Exception{
+ 84         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//creates socket that communicates with server</span>
+ 85         InputPackages pack = <span class="literal">new</span> InputPackages();pack.createAccountPacket(accountDetails, accountDetails[0], emailAddress);<span class="comment">//creates package to send to server</span>
+ 86         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());<span class="comment">//gets output stream</span>
+ 87         out.writeObject(pack);<span class="comment">//writes package to server</span>
+ 88     }
+ 89     <span class="comment">/**</span>
+ 90 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">data</span> <span class="ST0">for</span> <span class="ST0">online</span> <span class="ST0">games</span> <span class="ST0">for</span> <span class="ST0">a</span> <span class="ST0">specific</span> <span class="ST0">user</span>
+ 91 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span>
+ 92 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">data</span>
+ 93 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">If</span> <span class="comment">a</span> <span class="comment">networking</span> <span class="comment">error</span> <span class="comment">occurs</span><span class="comment">, </span><span class="comment">then</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">is</span> <span class="comment">thrown</span>
+ 94      <span class="comment">*/</span>
+ 95     <span class="literal">public</span> <span class="literal">static</span> String[][]getOnlineGameData(String userName) <span class="literal">throws</span> Exception{
+ 96         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+ 97         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+ 98         pack.createRequestForAllGameDataForAUser(userName);
+ 99         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+100         out.writeObject(pack);<span class="comment">//writes the package to the server</span>
+101         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//creates the object input stream   </span>
+102         <span class="literal">return</span> (String[][])in.readObject();
+103     }
+104     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> createNewRandomOnlineGame(String userName)<span class="literal">throws</span> Exception{
+105         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+106         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+107         pack.createRandomGamePackage(userName);<span class="comment">//creates server request</span>
+108         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+109         out.writeObject(pack);<span class="comment">//writes the package to the server</span>
+110     }
+111     <span class="comment">/**</span>
+112 <span class="comment">     * </span><span class="ST0">Communicates</span> <span class="ST0">with</span> <span class="ST0">server</span> <span class="ST0">to</span> <span class="ST0">delete</span> <span class="ST0">the</span> <span class="ST0">specified</span> <span class="ST0">game</span>
+113 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gameId</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">id</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">to</span> <span class="comment">delete</span> 
+114 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gameResult</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">result</span><span class="comment">.</span><span class="comment"> 1 </span><span class="comment">indicates</span> <span class="comment">a</span> <span class="comment">win</span> <span class="comment">for</span> <span class="comment">player</span> <span class="comment">one</span><span class="comment">.</span><span class="comment"> 0</span><span class="comment">.</span><span class="comment">5 </span><span class="comment">indicates</span> <span class="comment">a</span> <span class="comment">draw</span><span class="comment">.</span><span class="comment"> 0 </span><span class="comment">indicates</span> <span class="comment">a</span> <span class="comment">win</span> <span class="comment">for</span> <span class="comment">player</span> <span class="comment">two</span>
+115 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+116      <span class="comment">*/</span>
+117     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> deleteOnlineGame(<span class="literal">int</span> gameId,<span class="literal">double</span> gameResult)<span class="literal">throws</span> Exception{
+118         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+119         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+120         pack.createRequestToDeleteGame(String.valueOf(gameId),gameResult);<span class="comment">//creates server request</span>
+121         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+122         out.writeObject(pack);<span class="comment">//writes the package to the server        </span>
+123     }
+124     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> updateOnlineGameRecord(String[]newRecord)<span class="literal">throws</span> Exception{
+125         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+126         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+127         pack.createRequestToUpdateOnlineGame(newRecord);<span class="comment">//creates server request</span>
+128         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+129         out.writeObject(pack);<span class="comment">//writes the package to the server          </span>
+130     }
+131     <span class="literal">public</span> <span class="literal">static</span> String createGameAgainstFriend(String playerOneUserName,String playerTwoName,<span class="literal">int</span> timeLeftForBoth)<span class="literal">throws</span> Exception{
+132         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+133         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+134         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+135         pack.createNewOnlineGameWithFriend(playerOneUserName, playerTwoName, String.valueOf(timeLeftForBoth));<span class="comment">//creates server request</span>
+136         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+137         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+138         <span class="literal">return</span> (String)in.readObject();
+139     }
+140     <span class="comment">/**</span>
+141 <span class="comment">     * </span><span class="ST0">Tries</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">a</span> <span class="ST0">game</span> <span class="ST0">using</span> <span class="ST0">a</span> <span class="ST0">friend</span> <span class="ST0">code</span><span class="ST0">.</span> <span class="comment">If</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">is</span> <span class="comment">found</span> <span class="comment">and</span> <span class="comment">has</span> <span class="comment">been</span> <span class="comment">joined</span><span class="comment">, </span><span class="comment">true</span> <span class="comment">is</span> <span class="comment">returned</span><span class="comment">.</span> <span class="comment">Otherwise</span><span class="comment">, </span><span class="comment">false</span> <span class="comment">is</span> <span class="comment">returned</span>
+142 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">code</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">code</span>
+143 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">player</span> <span class="comment">attempting</span> <span class="comment">to</span> <span class="comment">join</span> <span class="comment">the</span> <span class="comment">game</span>
+144 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">game</span> <span class="comment">has</span> <span class="comment">been</span> <span class="comment">joined</span>
+145 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">error</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+146      <span class="comment">*/</span>
+147     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">boolean</span> joinGameUsingFriendCode(<span class="literal">int</span> code,String userName)<span class="literal">throws</span> Exception{
+148         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+149         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+150         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+151         pack.joinGameUsingGameCode(code,userName);<span class="comment">//creates server request</span>
+152         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+153         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+154         <span class="literal">return</span> (<span class="literal">boolean</span>)in.readObject();       
+155     }
+156     <span class="comment">/**</span>
+157 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">game</span> <span class="ST0">data</span> <span class="ST0">stored</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">online</span> <span class="ST0">game</span> <span class="ST0">file</span>
+158 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">gameCode</span> <span class="comment">The</span> <span class="comment">game</span> <span class="comment">id</span>
+159 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">record</span><span class="comment"> - </span><span class="comment">if</span> <span class="comment">the</span> <span class="comment">record</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">found</span><span class="comment">, </span><span class="comment">the</span> <span class="comment">array</span> <span class="comment">will</span> <span class="comment">all</span> <span class="comment">be</span> <span class="comment">null</span>
+160 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">error</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+161      <span class="comment">*/</span>
+162     <span class="literal">public</span> <span class="literal">static</span> String[] getGameData(<span class="literal">int</span> gameCode) <span class="literal">throws</span> Exception{
+163         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+164         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+165         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+166         pack.getGameRecord(gameCode);<span class="comment">//creates server request</span>
+167         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+168         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+169         <span class="literal">return</span> (String[])in.readObject();           
+170     }
+171     <span class="comment">/**</span>
+172 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">contact</span> <span class="ST0">details</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">West</span> <span class="ST0">Cross</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span>
+173 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">contact</span> <span class="comment">details</span><span class="comment">.</span> <span class="comment">Element</span><span class="comment"> 0 </span><span class="comment">is</span> <span class="comment">the</span> <span class="comment">phone</span> <span class="comment">number</span> <span class="comment">and</span> <span class="comment">element</span><span class="comment"> 1 </span><span class="comment">is</span> <span class="comment">the</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">to</span> <span class="comment">contact</span><span class="comment">.</span>
+174 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+175      <span class="comment">*/</span>
+176     <span class="literal">public</span> <span class="literal">static</span> String[]getChessClubContactDetails() <span class="literal">throws</span> Exception{
+177         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+178         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+179         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+180         pack.requestClubContactInfo();<span class="comment">//creates server request</span>
+181         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+182         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+183         <span class="literal">return</span> (String[])in.readObject();          
+184     }
+185     <span class="comment">/**</span>
+186 <span class="comment">     * </span><span class="ST0">Checks</span> <span class="ST0">to</span> <span class="ST0">see</span> <span class="ST0">whether</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">has</span> <span class="ST0">requested</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">club</span>
+187 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+188 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">True</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">has</span> <span class="comment">and</span> <span class="comment">false</span> <span class="comment">otherwise</span>
+189 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+190      <span class="comment">*/</span>
+191     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">boolean</span> getHasUserRequestedToJoinChessClub(String userName) <span class="literal">throws</span> Exception{
+192         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+193         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+194         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+195         pack.getWhetherUserHasRequestedToJoinClub(userName);<span class="comment">//creates server request</span>
+196         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+197         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+198         <span class="literal">return</span> in.readBoolean();
+199     }
+200     <span class="comment">/**</span>
+201 <span class="comment">     * </span><span class="ST0">Alters</span> <span class="ST0">the</span> <span class="ST0">status</span> <span class="ST0">of</span> <span class="ST0">a</span> <span class="ST0">user</span><span class="ST0">&#39;</span><span class="ST0">s</span> <span class="ST0">request</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">club</span><span class="ST0">.</span> <span class="comment">I</span><span class="comment">.</span><span class="comment">e</span><span class="comment">.</span><span class="comment">, </span><span class="comment">if</span> <span class="comment">they</span> <span class="comment">have</span> <span class="comment">requested</span> <span class="comment">to</span> <span class="comment">join</span> <span class="comment">the</span> <span class="comment">club</span><span class="comment">, </span><span class="comment">this</span> <span class="comment">request</span> <span class="comment">is</span> <span class="comment">withdrawn</span> <span class="comment">and</span> <span class="comment">vice</span> <span class="comment">versa</span><span class="comment">.</span>
+202 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span>
+203 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+204      <span class="comment">*/</span>
+205     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> changeRequestToJoinClubStatus(String userName)<span class="literal">throws</span> Exception{
+206         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+207         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+208         pack.changeRequestToJoinClubStatus(userName);<span class="comment">//creates server request</span>
+209         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+210         out.writeObject(pack);<span class="comment">//writes the package to the server             </span>
+211     }
+212     <span class="comment">/**</span>
+213 <span class="comment">     * </span><span class="ST0">Removes</span> <span class="ST0">user</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span>
+214 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">user</span>
+215 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+216      <span class="comment">*/</span>
+217     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> removeUserFromChessClub(String userName)<span class="literal">throws</span> Exception{
+218         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+219         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+220         pack.removeUserFromChessClub(userName);<span class="comment">//creates server request</span>
+221         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+222         out.writeObject(pack);<span class="comment">//writes the package to the server          </span>
+223     }
+224     <span class="comment">/**</span>
+225 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">league</span> <span class="ST0">table</span>
+226 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">table</span>
+227 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+228      <span class="comment">*/</span>
+229     <span class="literal">public</span> <span class="literal">static</span> String[][]getLeagueTable()<span class="literal">throws</span> Exception{
+230         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+231         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+232         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+233         pack.getLeagueTableRequest();<span class="comment">//creates server request</span>
+234         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+235         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+236         <span class="literal">return</span> (String[][])in.readObject();       
+237     }
+238     <span class="comment">/**</span>
+239 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">all</span> <span class="ST0">members</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span>
+240 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">members</span>
+241 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+242      <span class="comment">*/</span>
+243     <span class="literal">public</span> <span class="literal">static</span> String[]getMembersOfChessClub()<span class="literal">throws</span> Exception{
+244         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+245         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+246         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+247         pack.getAllClubMembers();<span class="comment">//creates server request</span>
+248         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+249         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+250         <span class="literal">return</span> (String[])in.readObject();       
+251     }  
+252     <span class="comment">/**</span>
+253 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">all</span> <span class="ST0">fixtures</span> <span class="ST0">and</span> <span class="ST0">results</span> <span class="ST0">of</span> <span class="ST0">current</span> <span class="ST0">season</span><span class="ST0">.</span> <span class="comment">The</span> <span class="comment">array</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">of</span> <span class="comment">length</span><span class="comment"> 0 </span><span class="comment">if</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurred</span><span class="comment"> (</span><span class="comment">e</span><span class="comment">.</span><span class="comment">g</span><span class="comment">.</span> <span class="comment">no</span> <span class="comment">fixtures</span> <span class="comment">can</span> <span class="comment">be</span> <span class="comment">displayed</span><span class="comment">)</span>
+254 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">fixtures</span> <span class="comment">and</span> <span class="comment">results</span><span class="comment">.</span>
+255 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+256      <span class="comment">*/</span>
+257     <span class="literal">public</span> <span class="literal">static</span> String[][][]getFixturesAndResults()<span class="literal">throws</span> Exception{
+258         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+259         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+260         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+261         pack.getFixturesAndResults();<span class="comment">//creates server request</span>
+262         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+263         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+264         <span class="literal">return</span> (String[][][])in.readObject();               
+265     }
+266     <span class="comment">/**</span>
+267 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">all</span> <span class="ST0">fixtures</span> <span class="ST0">and</span> <span class="ST0">results</span> <span class="ST0">of</span> <span class="ST0">current</span> <span class="ST0">season</span><span class="ST0">.</span> <span class="comment">The</span> <span class="comment">array</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">of</span> <span class="comment">length</span><span class="comment"> 0 </span><span class="comment">if</span> <span class="comment">an</span> <span class="comment">error</span> <span class="comment">occurred</span><span class="comment"> (</span><span class="comment">e</span><span class="comment">.</span><span class="comment">g</span><span class="comment">.</span> <span class="comment">no</span> <span class="comment">fixtures</span> <span class="comment">can</span> <span class="comment">be</span> <span class="comment">displayed</span><span class="comment">)</span>
+268 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">fixtures</span> <span class="comment">and</span> <span class="comment">results</span><span class="comment">.</span>
+269 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+270      <span class="comment">*/</span>
+271     <span class="literal">public</span> <span class="literal">static</span> String[]getListOfPeopleAddedMidwayThroughSeason()<span class="literal">throws</span> Exception{
+272         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+273         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+274         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+275         pack.getPeopleAddedMidwayThroughSeason();<span class="comment">//creates server request</span>
+276         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+277         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+278         <span class="literal">return</span> (String[])in.readObject();               
+279     }
+280     <span class="comment">/**</span>
+281 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">server</span> <span class="ST0">stored</span> <span class="ST0">fixture</span><span class="ST0">&#39;</span><span class="ST0">s</span> <span class="ST0">and</span> <span class="ST0">results</span>
+282 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">newFixturesAndResults</span> <span class="comment">The</span> <span class="comment">updated</span> <span class="comment">fixture</span> <span class="comment">and</span> <span class="comment">results</span>
+283 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">io</span><span class="comment">.</span><span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+284      <span class="comment">*/</span>
+285     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> updateFixturesAndResults(String[][][]newFixturesAndResults)<span class="literal">throws</span> IOException{
+286         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+287         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+288         pack.updateFixturesAndResults(newFixturesAndResults);<span class="comment">//creates server request</span>
+289         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+290         out.writeObject(pack);<span class="comment">//writes the package to the server             </span>
+291     }
+292     <span class="comment">/**</span>
+293 <span class="comment">     * </span><span class="ST0">Starts</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">season</span>
+294 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">io</span><span class="comment">.</span><span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+295      <span class="comment">*/</span>
+296     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> createNewSeason()<span class="literal">throws</span> IOException{
+297         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+298         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+299         pack.startNewSeason();<span class="comment">//creates server request</span>
+300         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+301         out.writeObject(pack);<span class="comment">//writes the package to the server             </span>
+302     }
+303     <span class="comment">/**</span>
+304 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span> <span class="ST0">contact</span> <span class="ST0">details</span>
+305 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">phoneNumber</span> <span class="comment">The</span> <span class="comment">chess</span> <span class="comment">club</span> <span class="comment">phone</span> <span class="comment">number</span>
+306 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">emailAddress</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">club</span>
+307 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+308      <span class="comment">*/</span>
+309     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> setChessClubContactDetails(String phoneNumber,String emailAddress) <span class="literal">throws</span> IOException{
+310         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+311         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+312         pack.setContactDetails(phoneNumber,emailAddress);<span class="comment">//creates server request</span>
+313         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+314         out.writeObject(pack);<span class="comment">//writes the package to the server           </span>
+315     }
+316     <span class="comment">/**</span>
+317 <span class="comment">     * </span><span class="ST0">Sets</span> <span class="ST0">the</span> <span class="ST0">inputted</span> <span class="ST0">user</span> <span class="ST0">as</span> <span class="ST0">both</span> <span class="ST0">a</span> <span class="ST0">club</span> <span class="ST0">member</span> <span class="ST0">and</span> <span class="ST0">the</span> <span class="ST0">club</span> <span class="ST0">leader</span>
+318 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">name</span>
+319 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+320      <span class="comment">*/</span>
+321     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> setUserAsClubLeader(String userName) <span class="literal">throws</span> IOException{
+322         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+323         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+324         pack.setClubLeader(userName);<span class="comment">//creates server request</span>
+325         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+326         out.writeObject(pack);<span class="comment">//writes the package to the server             </span>
+327     }
+328     <span class="comment">/**</span>
+329 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">all</span> <span class="ST0">requests</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">west</span> <span class="ST0">cross</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span>
+330 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">requests</span><span class="comment">.</span> <span class="comment">Each</span> <span class="comment">row</span> <span class="comment">is</span> <span class="comment">one</span> <span class="comment">record</span> <span class="comment">from</span> <span class="comment">the</span> <span class="comment">user</span> <span class="comment">details</span> <span class="comment">column</span>
+331 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">io</span><span class="comment">.</span><span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+332      <span class="comment">*/</span>
+333     <span class="literal">public</span> <span class="literal">static</span> String[][]getAllRequestsToJoinClub() <span class="literal">throws</span> Exception{
+334         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+335         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+336         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+337         pack.getAllRequestsToJoinClub();<span class="comment">//creates server request</span>
+338         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+339         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+340         <span class="literal">return</span> (String[][])in.readObject();           
+341     }
+342     <span class="comment">/**</span>
+343 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">the</span> <span class="ST0">email</span> <span class="ST0">address</span> <span class="ST0">of</span> <span class="ST0">a</span> <span class="ST0">chosen</span> <span class="ST0">user</span>
+344 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+345 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">email</span> <span class="comment">address</span>
+346 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+347      <span class="comment">*/</span>
+348     <span class="literal">public</span> <span class="literal">static</span> String getEmailAddressOfUser(String userName)<span class="literal">throws</span> Exception{
+349         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+350         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+351         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+352         pack.getEmailAddressOfUser(userName);<span class="comment">//creates server request</span>
+353         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+354         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+355         <span class="literal">return</span> ((String[])in.readObject())[0];               
+356     }
+357     <span class="comment">/**</span>
+358 <span class="comment">     * </span><span class="ST0">Makes</span> <span class="ST0">it</span> <span class="ST0">so</span> <span class="ST0">that</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">chosen</span> <span class="ST0">has</span> <span class="ST0">not</span> <span class="ST0">requested</span> <span class="ST0">to</span> <span class="ST0">join</span> <span class="ST0">the</span> <span class="ST0">chess</span> <span class="ST0">club</span><span class="ST0">.</span>
+359 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">user</span> <span class="comment">name</span>
+360 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+361      <span class="comment">*/</span>
+362     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> withdrawRequestToJoinClub(String userName) <span class="literal">throws</span> Exception{
+363         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+364         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+365         pack.withdrawRequestToJoinClub(userName);<span class="comment">//creates server request</span>
+366         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+367         out.writeObject(pack);<span class="comment">//writes the package to the server            </span>
+368     }
+369     <span class="comment">/**</span>
+370 <span class="comment">     * </span><span class="ST0">Adds</span> <span class="ST0">the</span> <span class="ST0">specified</span> <span class="ST0">user</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">west</span> <span class="ST0">cross</span> <span class="ST0">chess</span> <span class="ST0">club</span>
+371 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">user</span>
+372 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+373      <span class="comment">*/</span>
+374     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> addUserToClubAsMember(String userName)<span class="literal">throws</span> Exception{
+375         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+376         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+377         pack.addUserToClubAsMember(userName);<span class="comment">//creates server request</span>
+378         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+379         out.writeObject(pack);<span class="comment">//writes the package to the server              </span>
+380     }
+381     <span class="comment">/**</span>
+382 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">info</span> <span class="ST0">of</span> <span class="ST0">all</span> <span class="ST0">members</span> <span class="ST0">who</span> <span class="ST0">are</span> <span class="ST0">part</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">club</span>
+383 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">info</span>
+384 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+385      <span class="comment">*/</span>
+386     <span class="literal">public</span> <span class="literal">static</span> String[][] getAllClubMemberUserInfo()<span class="literal">throws</span> Exception{
+387         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+388         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+389         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+390         pack.getAllClubMembersInfo();<span class="comment">//creates server request</span>
+391         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+392         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+393         <span class="literal">return</span> (String[][])in.readObject();            
+394     }
+395     <span class="comment">/**</span>
+396 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">record</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">user</span> <span class="ST0">who</span><span class="ST0">&#39;</span><span class="ST0">s</span> <span class="ST0">user</span> <span class="ST0">name</span> <span class="ST0">is</span> <span class="ST0">stored</span> <span class="ST0">at</span> <span class="ST0">element</span><span class="ST0"> 0 </span><span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">inputted</span> <span class="ST0">array</span><span class="ST0">.</span>
+397 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userRecord</span> <span class="comment">The</span> <span class="comment">new</span> <span class="comment">record</span>
+398 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+399      <span class="comment">*/</span>
+400     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> updateUserInfo(String[]userRecord)<span class="literal">throws</span> Exception{
+401         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+402         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+403         pack.updateUserRecord(userRecord);<span class="comment">//creates server request</span>
+404         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+405         out.writeObject(pack);<span class="comment">//writes the package to the server              </span>
+406     }
+407     <span class="comment">/**</span>
+408 <span class="comment">     * </span><span class="ST0">Deletes</span> <span class="ST0">the</span> <span class="ST0">data</span> <span class="ST0">of</span> <span class="ST0">a</span> <span class="ST0">non</span> <span class="ST0">chess</span> <span class="ST0">club</span> <span class="ST0">member</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">server</span>
+409 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">userName</span> <span class="comment">The</span> <span class="comment">username</span>
+410 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+411      <span class="comment">*/</span>
+412     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> deleteUserInfoOfNonMemberUserFromServer(String userName)<span class="literal">throws</span> Exception{
+413         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+414         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+415         pack.removeNonMemberUserFromRecord(userName);<span class="comment">//creates server request</span>
+416         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+417         out.writeObject(pack);<span class="comment">//writes the package to the server               </span>
+418     }
+419     <span class="comment">/**</span>
+420 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">all</span> <span class="ST0">non</span> <span class="ST0">chess</span> <span class="ST0">club</span> <span class="ST0">members</span>
+421 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">users</span>
+422 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">communicating</span> <span class="comment">with</span> <span class="comment">the</span> <span class="comment">server</span>
+423      <span class="comment">*/</span>
+424     <span class="literal">public</span> <span class="literal">static</span> String[][]getAllUsersWhoAreNotMembers() <span class="literal">throws</span> Exception{
+425         Socket socket = <span class="literal">new</span> Socket(InetAddress.getByName(ChangeInternetSettings.getServerAddress()),ChangeInternetSettings.getPortNumber());<span class="comment">//connects to server</span>
+426         ObjectInputStream in =<span class="literal">new</span> ObjectInputStream(socket.getInputStream());<span class="comment">//gets input stream</span>
+427         InputPackages pack = <span class="literal">new</span> InputPackages();<span class="comment">//creates a new input package</span>
+428         pack.getAllNonMembers();<span class="comment">//creates server request</span>
+429         ObjectOutputStream out = <span class="literal">new</span> ObjectOutputStream(socket.getOutputStream());
+430         out.writeObject(pack);<span class="comment">//writes the package to the server    </span>
+431         <span class="literal">return</span> (String[][])in.readObject();          
+432     }
+433 }
+434 
+</pre></body>
+</html>

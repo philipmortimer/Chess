@@ -1,0 +1,450 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>PhilipMCS5SoftwareDevelopmentNeuralNetworkTrain.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development Neural Network train\src\philipm\cs5\software\development\neural\network\train\PhilipMCS5SoftwareDevelopmentNeuralNetworkTrain.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.neural.network.train;
+  7 
+  8 <span class="literal">import</span> java.io.BufferedReader;
+  9 <span class="literal">import</span> java.io.BufferedWriter;
+ 10 <span class="literal">import</span> java.io.FileReader;
+ 11 <span class="literal">import</span> java.io.FileWriter;
+ 12 <span class="literal">import</span> java.io.IOException;
+ 13 <span class="literal">import</span> java.util.ArrayList;
+ 14 <span class="literal">import</span> java.util.Collections;
+ 15 <span class="literal">import</span> java.util.Random;
+ 16 
+ 17 <span class="comment">/**</span>
+ 18 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">is</span> <span class="ST0">the</span> <span class="ST0">main</span> <span class="ST0">class</span> <span class="ST0">used</span> <span class="ST0">to</span> <span class="ST0">train</span> <span class="ST0">my</span> <span class="ST0">chess</span> <span class="ST0">neural</span> <span class="ST0">network</span><span class="ST0">.</span>
+ 19 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 20  <span class="comment">*/</span>
+ 21 <span class="literal">public</span> <span class="literal">class</span> PhilipMCS5SoftwareDevelopmentNeuralNetworkTrain {
+ 22     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> TOTAL_AMOUNT_OF_DATA=2326888;<span class="comment">//stores total data items</span>
+ 23     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_TEST_BOARDS=80000;<span class="comment">//stores the number of boards used in test data    </span>
+ 24     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_TRAINING_BOARDS=2246888<span class="comment">/*TOTAL_AMOUNT_OF_DATA-NO_OF_TEST_BOARDS*/</span>;<span class="comment">//stores number of boards used in training data</span>
+ 25     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> WIDTH_OF_DATA=779;<span class="comment">//stores the width of each data item</span>
+ 26     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String TEST_FILE_NAME=<span class="string">&quot;</span><span class="string">testData.txt</span><span class="string">&quot;</span>;<span class="comment">//stores name of test data text file</span>
+ 27     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String TRAIN_FILE_NAME=<span class="string">&quot;</span><span class="string">trainData.txt</span><span class="string">&quot;</span>;<span class="comment">//stores name of training data file</span>
+ 28     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String SPLIT=<span class="string">&quot;</span><span class="string">,</span><span class="string">&quot;</span>;<span class="comment">//stores character used to split items in file</span>
+ 29     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String LOSE_FILE_NAME=<span class="string">&quot;</span><span class="string">losestates.txt</span><span class="string">&quot;</span>;<span class="comment">//stores file name for losing states</span>
+ 30     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String WIN_FILE_NAME=<span class="string">&quot;</span><span class="string">winstates.txt</span><span class="string">&quot;</span>;<span class="comment">//stores file name for winning states</span>
+ 31     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String DRAW_FILE_NAME=<span class="string">&quot;</span><span class="string">drawstates.txt</span><span class="string">&quot;</span>;<span class="comment">//stores file name for drawing states</span>
+ 32     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_DRAWS=485843*4;<span class="comment">//stores number of draws in dataset</span>
+ 33     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_WINS=414929*4;<span class="comment">//stores number of wins in dataset</span>
+ 34     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_LOSSES=305861*4;<span class="comment">//stores number of losses in dataset</span>
+ 35     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_WINS_WHITE=208767;
+ 36     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_WINS_BLACK=206162;
+ 37     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_LOSE_BLACK=152503;
+ 38     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> <span class="literal">int</span> NO_OF_LOSE_WHITE=153358;
+ 39     
+ 40     <span class="comment">/**</span>
+ 41 <span class="comment">     * </span><span class="ST0">The</span> <span class="ST0">main</span> <span class="ST0">method</span> <span class="ST0">used</span> <span class="ST0">to</span> <span class="ST0">train</span> <span class="ST0">the</span> <span class="ST0">neural</span> <span class="ST0">network</span>
+ 42 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">args</span> <span class="comment">the</span> <span class="comment">command</span> <span class="comment">line</span> <span class="comment">arguments</span>
+ 43      <span class="comment">*/</span>
+ 44     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> main(String[] args) {
+ 45         NeuralNetwork net = <span class="literal">new</span> NeuralNetwork(<span class="literal">new</span> <span class="literal">int</span>[]{777,300,200,100,2});<span class="comment">//creates a neural network with this structure</span>
+ 46         <span class="literal">double</span> a []=<span class="literal">new</span> <span class="literal">double</span>[777];
+ 47         <span class="literal">double</span> timeBefore=System.currentTimeMillis();
+ 48         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;200000;i++){
+ 49             net.feedThroughNet(a);
+ 50         }
+ 51         System.out.println(<span class="string">&quot;</span><span class="string">Time to do 200,000: </span><span class="string">&quot;</span>+(System.currentTimeMillis()-timeBefore)/1000.0);
+ 52         System.out.println(<span class="string">&quot;</span><span class="string">new system</span><span class="string">&quot;</span>);
+ 53         <span class="literal">double</span> learningRate=0.001;<span class="literal">int</span> noOfEpochs=200000;<span class="literal">int</span> batchSize=128;
+ 54         <span class="literal">int</span> totalSizeOfTrainingData=NO_OF_TRAINING_BOARDS;<span class="literal">int</span> printAfterNoIterations =1000;<span class="literal">double</span> dropoutRate=0.0;
+ 55         net.trainNew(learningRate, noOfEpochs, batchSize,  totalSizeOfTrainingData,printAfterNoIterations,dropoutRate);<span class="comment">//trains network</span>
+ 56         net.writeBestNetToBestFile(); <span class="comment">//writes best network to a text file - this is used for the ChessNeuralNetwork Class</span>
+ 57         <span class="literal">try</span>{
+ 58             <span class="comment">//tests the accuracy of the chess neural network</span>
+ 59             ChessNeuralNetwork c= <span class="literal">new</span> ChessNeuralNetwork(<span class="literal">new</span> <span class="literal">int</span>[]{777,300,200,100,2});
+ 60             <span class="literal">double</span>[]aT=c.testAccuracy(getTestData());
+ 61             System.out.println(aT[0]+<span class="string">&quot;</span> <span class="string">&quot;</span>+aT[1]);
+ 62             net.setAllWeightsAndBiases(net.loadBestNetFile());<span class="comment">//sets the neural network to be the network with the best accuracy</span>
+ 63         }<span class="literal">catch</span>(Exception e){
+ 64             System.out.println(e);
+ 65         }
+ 66         <span class="comment">//tests the accuracy of the trained neural network</span>
+ 67         <span class="literal">double</span>[] aT=net.testAccuracy(getTestData());
+ 68         System.out.println(aT[0]+<span class="string">&quot;</span> <span class="string">&quot;</span>+aT[1]);
+ 69     }
+ 70     <span class="comment">/**</span>
+ 71 <span class="comment">     * </span><span class="ST0">This</span> <span class="ST0">method</span> <span class="ST0">is</span> <span class="ST0">used</span> <span class="ST0">to</span> <span class="ST0">generate</span> <span class="ST0">a</span> <span class="ST0">training</span> <span class="ST0">and</span> <span class="ST0">test</span> <span class="ST0">data</span> <span class="ST0">set</span> <span class="ST0">using</span> <span class="ST0">stockfish</span><span class="ST0"> (</span><span class="ST0">the</span> <span class="ST0">world</span><span class="ST0">&#39;</span><span class="ST0">s</span> <span class="ST0">strongest</span> <span class="ST0">chess</span> <span class="ST0">engine</span><span class="ST0">) </span><span class="ST0">as</span> <span class="ST0">the</span> <span class="ST0">ground</span> <span class="ST0">truth</span>
+ 72 <span class="comment">     * </span><span class="ST0">evaluation</span> <span class="ST0">of</span> <span class="ST0">a</span> <span class="ST0">board</span> <span class="ST0">state</span><span class="ST0">.</span> <span class="comment">Essentially</span><span class="comment">, </span><span class="comment">the</span> <span class="comment">code</span> <span class="comment">loops</span> <span class="comment">through</span> <span class="comment">all</span> <span class="comment">board</span> <span class="comment">states</span> <span class="comment">stored</span> <span class="comment">and</span> <span class="comment">stores</span> <span class="comment">the</span> <span class="comment">stockfish</span> <span class="comment">evaluation</span> <span class="comment">along</span> <span class="comment">with</span>
+ 73 <span class="comment">     * </span><span class="comment">a</span> <span class="comment">computer</span> <span class="comment">friendly</span> <span class="comment">chess</span> <span class="comment">board</span> <span class="comment">representation</span><span class="comment">.</span> <span class="comment">This</span> <span class="comment">code</span> <span class="comment">was</span> <span class="comment">not</span> <span class="comment">used</span> <span class="comment">as</span> <span class="comment">the</span> <span class="comment">code</span> <span class="comment">would</span> <span class="comment">take</span> <span class="comment">too</span> <span class="comment">long</span> <span class="comment">to</span> <span class="comment">run</span><span class="comment"> (</span><span class="comment">as</span> <span class="comment">stockfish</span> <span class="comment">needs</span> <span class="comment">a</span> <span class="comment">minimum</span> <span class="comment">amount</span>
+ 74 <span class="comment">     * </span><span class="comment">of</span> <span class="comment">time</span> <span class="comment">to</span> <span class="comment">evaluate</span> <span class="comment">each</span> <span class="comment">board</span> <span class="comment">state</span> <span class="comment">with</span> <span class="comment">any</span> <span class="comment">accuracy</span><span class="comment">)</span><span class="comment">.</span> <span class="comment">This</span> <span class="comment">method</span> <span class="comment">would</span> <span class="comment">prove</span> <span class="comment">effective</span> <span class="comment">given</span> <span class="comment">more</span> <span class="comment">computer</span> <span class="comment">resources</span><span class="comment">.</span>
+ 75      <span class="comment">*/</span>
+ 76     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">void</span> formatDataForStockfish(){
+ 77         <span class="literal">try</span>{
+ 78             StockFish stock = <span class="literal">new</span> StockFish();
+ 79             ChessBoardState state;
+ 80             <span class="literal">int</span> arr[];
+ 81             String dat;
+ 82             String fens[];
+ 83             ArrayList &lt;String&gt; data = <span class="literal">new</span> ArrayList &lt;String&gt;(100000);<span class="comment">//stores the data to be written to the text files</span>
+ 84             FileReader read = <span class="literal">new</span> FileReader(WIN_FILE_NAME);
+ 85             BufferedReader buffRead =  <span class="literal">new</span> BufferedReader(read);            
+ 86             fens=buffRead.lines().toArray(String[]::<span class="literal">new</span>);
+ 87             buffRead.close();read.close();
+ 88             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;fens.length;i++){
+ 89                 <span class="comment">//gets the value and computer version of each board state -this process is repeated for winning, drawing and losing board states</span>
+ 90                 state = <span class="literal">new</span>  ChessBoardState(fens[i]);
+ 91                 arr=state.getNeuralNetInput();
+ 92                 <span class="literal">try</span>{
+ 93                     dat = String.valueOf(stock.getCurrentBoardValue(fens[i],state.IS_BLACK_TURN_TO_PLAY_NEXT));
+ 94                 }<span class="literal">catch</span>(Exception de){
+ 95                     <span class="literal">continue</span>;
+ 96                 }
+ 97                 <span class="literal">for</span>(<span class="literal">int</span> j=0;j&lt;arr.length;j++){
+ 98                     dat=dat+<span class="string">&quot;</span><span class="string">,</span><span class="string">&quot;</span>+String.valueOf(arr[j]);
+ 99                 }
+100                 <span class="literal">if</span>(i%1000==0&amp;&amp; i&gt;1){
+101                     
+102                     System.out.println(<span class="string">&quot;</span><span class="string">i </span><span class="string">&quot;</span>+i);
+103                 }
+104                 data.add(dat);
+105             }   
+106             FileReader read2 = <span class="literal">new</span> FileReader(DRAW_FILE_NAME);
+107             BufferedReader buffRead2 =  <span class="literal">new</span> BufferedReader(read2);            
+108             fens=buffRead2.lines().toArray(String[]::<span class="literal">new</span>);
+109             buffRead2.close();read2.close();
+110             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;fens.length;i++){
+111                 state = <span class="literal">new</span>  ChessBoardState(fens[i]);
+112                 arr=state.getNeuralNetInput();
+113                 <span class="literal">try</span>{
+114                     dat = String.valueOf(stock.getCurrentBoardValue(fens[i],state.IS_BLACK_TURN_TO_PLAY_NEXT));
+115                 }<span class="literal">catch</span>(Exception de){
+116                     <span class="literal">continue</span>;
+117                 }
+118                 <span class="literal">for</span>(<span class="literal">int</span> j=0;j&lt;arr.length;j++){
+119                     dat=dat+<span class="string">&quot;</span><span class="string">,</span><span class="string">&quot;</span>+String.valueOf(arr[j]);
+120                 }
+121                 <span class="literal">if</span>(i%1000==0&amp;&amp;i&gt;1){
+122                     
+123                     System.out.println(<span class="string">&quot;</span><span class="string">i </span><span class="string">&quot;</span>+i);
+124                 }
+125                 data.add(dat);
+126             }
+127             FileReader read3 = <span class="literal">new</span> FileReader(LOSE_FILE_NAME);
+128             BufferedReader buffRead3 =  <span class="literal">new</span> BufferedReader(read3);            
+129             fens=buffRead3.lines().toArray(String[]::<span class="literal">new</span>);
+130             buffRead3.close();read3.close();
+131             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;fens.length;i++){
+132                 state = <span class="literal">new</span>  ChessBoardState(fens[i]);
+133                 arr=state.getNeuralNetInput();
+134                 <span class="literal">try</span>{
+135                     dat = String.valueOf(stock.getCurrentBoardValue(fens[i],state.IS_BLACK_TURN_TO_PLAY_NEXT));
+136                 }<span class="literal">catch</span>(Exception de){
+137                     <span class="literal">continue</span>;
+138                 }
+139                 <span class="literal">for</span>(<span class="literal">int</span> j=0;j&lt;arr.length;j++){
+140                     dat=dat+<span class="string">&quot;</span><span class="string">,</span><span class="string">&quot;</span>+String.valueOf(arr[j]);
+141                 }
+142                 <span class="literal">if</span>(i%1000==0&amp;&amp;i&gt;1){
+143                    
+144                     System.out.println(<span class="string">&quot;</span><span class="string">i </span><span class="string">&quot;</span>+i);
+145                 }
+146                 data.add(dat);
+147             } 
+148             System.out.println(<span class="string">&quot;</span><span class="string">Size of data </span><span class="string">&quot;</span>+data.size());
+149             stock.exit();
+150             Collections.shuffle(data);<span class="comment">//randomises data</span>
+151             <span class="comment">//writes data to file</span>
+152             <span class="literal">int</span> maxTrainIndex=(data.size()/10)*9;
+153             FileWriter write = <span class="literal">new</span> FileWriter(TRAIN_FILE_NAME,<span class="literal">false</span>);
+154             BufferedWriter buffWrite = <span class="literal">new</span> BufferedWriter(write);
+155             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;maxTrainIndex;i++){
+156                 <span class="literal">if</span>(i!=0){
+157                     buffWrite.newLine();
+158                 }
+159                 buffWrite.write(data.get(i));
+160             }buffWrite.flush();write.flush();
+161             buffWrite.close();write.close();
+162             FileWriter w = <span class="literal">new</span> FileWriter(TEST_FILE_NAME,<span class="literal">false</span>);
+163             BufferedWriter buffW = <span class="literal">new</span> BufferedWriter(w);
+164             <span class="literal">for</span>(<span class="literal">int</span> i= maxTrainIndex;i&lt;data.size();i++){
+165                 <span class="literal">if</span>(i!=maxTrainIndex){
+166                     buffW.newLine();
+167                 }
+168                 buffW.write(data.get(i));
+169             }
+170             buffW.flush();w.flush();
+171             buffW.close();w.close();
+172         }<span class="literal">catch</span>(IOException e){
+173             System.out.println(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+174         }
+175     }
+176     <span class="comment">/**</span>
+177 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">neural</span> <span class="ST0">network</span> <span class="ST0">training</span> <span class="ST0">data</span><span class="ST0">.</span>
+178 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">training</span> <span class="comment">data</span>
+179      <span class="comment">*/</span>
+180     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">int</span>[][]getTrainingData(){
+181         <span class="comment">//reads the training data from the training data text file and returns it as an array</span>
+182         <span class="literal">int</span> w=0;<span class="literal">int</span> l=0;
+183         <span class="literal">int</span> data[][]=<span class="literal">new</span> <span class="literal">int</span>[NO_OF_TRAINING_BOARDS][WIDTH_OF_DATA];
+184         <span class="literal">try</span>{
+185             <span class="literal">int</span> i=0;
+186             String lineRead;String[]line;
+187             FileReader read = <span class="literal">new</span> FileReader(TRAIN_FILE_NAME);
+188             BufferedReader buffRead =<span class="literal">new</span> BufferedReader(read);
+189             <span class="literal">while</span>((lineRead=buffRead.readLine())!=<span class="literal">null</span>&amp;&amp; i&lt;NO_OF_TRAINING_BOARDS){
+190                 line=lineRead.split(SPLIT);
+191                 <span class="literal">for</span>(<span class="literal">int</span> ch=0;ch&lt;WIDTH_OF_DATA;ch++){
+192                     data[i][ch]=Integer.parseInt(line[ch]);
+193                 }
+194                 <span class="literal">if</span>(data[i][0]==1){
+195                     w++;
+196                 }<span class="literal">else</span>{
+197                     l++;
+198                 }
+199                 i++;
+200             }buffRead.close();
+201             read.close();
+202             System.out.println(<span class="string">&quot;</span><span class="string">W: </span><span class="string">&quot;</span>+w+<span class="string">&quot;</span><span class="string"> l: </span><span class="string">&quot;</span>+l);
+203         }<span class="literal">catch</span>(IOException e){
+204             System.out.println(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+205         }
+206         <span class="literal">return</span> data;
+207     }
+208     <span class="comment">/**</span>
+209 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">test</span> <span class="ST0">data</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">test</span> <span class="ST0">file</span><span class="ST0">.</span>
+210 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">test</span> <span class="comment">data</span>
+211      <span class="comment">*/</span>
+212     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">int</span>[][]getTestData(){
+213         <span class="comment">//reads the test data from the test file and writes it to an array</span>
+214         <span class="literal">int</span> data[][]=<span class="literal">new</span> <span class="literal">int</span>[NO_OF_TEST_BOARDS][WIDTH_OF_DATA];
+215         <span class="literal">int</span> w=0;<span class="literal">int</span> l=0;
+216         <span class="literal">try</span>{
+217             <span class="literal">int</span> i=0;
+218             String lineRead;String[]line;
+219             FileReader read = <span class="literal">new</span> FileReader(TEST_FILE_NAME);
+220             BufferedReader buffRead =<span class="literal">new</span> BufferedReader(read);
+221             <span class="literal">while</span>((lineRead=buffRead.readLine())!=<span class="literal">null</span>&amp;&amp; i&lt;NO_OF_TEST_BOARDS){
+222                 line=lineRead.split(SPLIT);
+223                 <span class="literal">for</span>(<span class="literal">int</span> ch=0;ch&lt;WIDTH_OF_DATA;ch++){
+224                     data[i][ch]=Integer.parseInt(line[ch]);
+225                 }
+226                 <span class="literal">if</span>(data[i][0]==1){
+227                     w++;
+228                 }<span class="literal">else</span>{
+229                     l++;
+230                 }
+231                 i++;
+232             }buffRead.close();
+233             read.close();
+234             System.out.println(<span class="string">&quot;</span><span class="string">Win: </span><span class="string">&quot;</span>+w+<span class="string">&quot;</span><span class="string"> lose: </span><span class="string">&quot;</span>+l);
+235         }<span class="literal">catch</span>(IOException e){
+236             System.out.println(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+237         }
+238         <span class="literal">return</span> data;        
+239     }
+240     <span class="comment">/**</span>
+241 <span class="comment">     * </span><span class="ST0">Formats</span> <span class="ST0">data</span> <span class="ST0">for</span> <span class="ST0">a</span> <span class="ST0">neural</span> <span class="ST0">network</span> <span class="ST0">comparing</span> <span class="ST0">the</span> <span class="ST0">value</span> <span class="ST0">of</span> <span class="ST0">boards</span><span class="ST0">.</span> <span class="comment">The</span> <span class="comment">idea</span> <span class="comment">behind</span> <span class="comment">this</span> <span class="comment">was</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">network</span> <span class="comment">would</span> <span class="comment">compare</span> 
+242 <span class="comment">     * </span><span class="comment">two</span> <span class="comment">board</span> <span class="comment">states</span> <span class="comment">and</span> <span class="comment">determine</span> <span class="comment">which</span> <span class="comment">one</span> <span class="comment">was</span> <span class="comment">better</span><span class="comment">.</span> <span class="comment">This</span> <span class="comment">process</span> <span class="comment">was</span> <span class="comment">not</span> <span class="comment">used</span> <span class="comment">as</span> <span class="comment">it</span> <span class="comment">proved</span> <span class="comment">too</span> <span class="comment">inefficient</span> <span class="comment">computationally</span><span class="comment">.</span>
+243      <span class="comment">*/</span>
+244     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">void</span> formatDataCompare(){
+245         <span class="literal">try</span>{
+246             String[]data = <span class="literal">new</span> String[NO_OF_LOSSES];
+247             <span class="literal">int</span> index=0;
+248             <span class="literal">int</span>[]line;
+249             <span class="comment">//loads win data</span>
+250             FileReader read = <span class="literal">new</span> FileReader(WIN_FILE_NAME);
+251             BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+252             String lineRead;
+253             ChessBoardState state;
+254             <span class="literal">while</span>((lineRead=buffRead.readLine())!=<span class="literal">null</span>){
+255                 state =<span class="literal">new</span> ChessBoardState(lineRead);
+256                 line=state.getNeuralNetInput();
+257                 lineRead=String.valueOf(line[0]);
+258                 <span class="literal">for</span>(<span class="literal">int</span> j=1;j&lt;line.length;j++){
+259                     lineRead=lineRead+SPLIT+String.valueOf(line[j]);
+260                 }
+261                 <span class="literal">if</span>(index==NO_OF_LOSSES){<span class="comment">//exits loop once all data is obtained</span>
+262                     <span class="literal">break</span>;
+263                 }
+264                 data[index]=lineRead;
+265                 index++;
+266                 <span class="literal">if</span>(index%50000==0){
+267                     System.out.println(index);
+268                 }
+269             }buffRead.close();read.close();
+270             System.out.println(<span class="string">&quot;</span><span class="string">Done with win file</span><span class="string">&quot;</span>);
+271             <span class="comment">//loads loss data</span>
+272             index=0;
+273             FileReader readLose = <span class="literal">new</span> FileReader(LOSE_FILE_NAME);
+274             BufferedReader buffReadLose = <span class="literal">new</span> BufferedReader(readLose);
+275             <span class="literal">while</span>((lineRead=buffReadLose.readLine())!=<span class="literal">null</span>){
+276                 state =<span class="literal">new</span> ChessBoardState(lineRead);
+277                 line = state.getNeuralNetInput();
+278                 lineRead= String.valueOf(line[0]);
+279                 <span class="literal">for</span>(<span class="literal">int</span> j=1;j&lt;line.length;j++){
+280                     lineRead=lineRead+SPLIT+line[j];
+281                 }
+282                 <span class="literal">if</span>(Math.random()&gt;=0.5){<span class="comment">//creates random win,loss pairings</span>
+283                     data[index]=<span class="string">&quot;</span><span class="string">1</span><span class="string">&quot;</span>+SPLIT+<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>+SPLIT+data[index]+SPLIT+lineRead;
+284                 }<span class="literal">else</span>{
+285                     data[index]=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>+SPLIT+<span class="string">&quot;</span><span class="string">1</span><span class="string">&quot;</span>+SPLIT+lineRead+SPLIT+data[index];
+286                 }
+287                 index++;
+288                 <span class="literal">if</span>(index%50000==0){
+289                     System.out.println(index);
+290                 }
+291             }
+292             buffReadLose.close();readLose.close();
+293             System.out.println(<span class="string">&quot;</span><span class="string">Done with lose file</span><span class="string">&quot;</span>);
+294             <span class="comment">//writes data to file</span>
+295             shuffleArray(data);
+296             System.out.println(<span class="string">&quot;</span><span class="string">Shuffled</span><span class="string">&quot;</span>);
+297             FileWriter write = <span class="literal">new</span> FileWriter(TRAIN_FILE_NAME,<span class="literal">false</span>);
+298             BufferedWriter buffWrite = <span class="literal">new</span> BufferedWriter(write);
+299             buffWrite.write(data[0]);
+300             <span class="literal">for</span>(<span class="literal">int</span> i=1;i&lt;NO_OF_TRAINING_BOARDS;i++){
+301                 buffWrite.newLine();
+302                 buffWrite.write(data[i]);
+303             }buffWrite.flush();write.flush();
+304             buffWrite.close();write.close();
+305             FileWriter w = <span class="literal">new</span> FileWriter(TEST_FILE_NAME,<span class="literal">false</span>);
+306             BufferedWriter buff = <span class="literal">new</span> BufferedWriter(w);
+307             buff.write(data[NO_OF_TRAINING_BOARDS]);
+308             <span class="literal">for</span>(<span class="literal">int</span> i=1;i&lt;NO_OF_TEST_BOARDS;i++){
+309                 buff.newLine();
+310                 buff.write(data[NO_OF_TRAINING_BOARDS+i]);
+311             }buff.flush();w.flush();
+312             buff.close();w.close();
+313             System.out.println(<span class="string">&quot;</span><span class="string">Data created</span><span class="string">&quot;</span>);
+314         }<span class="literal">catch</span>(IOException e){
+315             System.out.println(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+316         }
+317     }
+318     <span class="comment">/**</span>
+319 <span class="comment">     * </span><span class="ST0">Raw</span> <span class="ST0">fen</span> <span class="ST0">strings</span> <span class="ST0">from</span> <span class="ST0">each</span> <span class="ST0">file</span> <span class="ST0">are</span> <span class="ST0">converted</span> <span class="ST0">into</span> <span class="ST0">data</span> <span class="ST0">in</span> <span class="ST0">a</span> <span class="ST0">format</span> <span class="ST0">that</span> <span class="ST0">can</span> <span class="ST0">be</span> <span class="ST0">input</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">neural</span> <span class="ST0">network</span><span class="ST0">.</span> <span class="comment">This</span> <span class="comment">method</span> <span class="comment">was</span> <span class="comment">used</span>
+320 <span class="comment">     * </span><span class="comment">and</span> <span class="comment">this</span> <span class="comment">method</span> <span class="comment">labels</span> <span class="comment">board</span> <span class="comment">states</span> <span class="comment">in</span> <span class="comment">a</span> <span class="comment">game</span> <span class="comment">of</span> <span class="comment">chess</span> <span class="comment">that</span> <span class="comment">was</span> <span class="comment">eventually</span> <span class="comment">won</span> <span class="comment">as</span> <span class="comment">positive</span> <span class="comment">and</span> <span class="comment">vice</span> <span class="comment">versa</span><span class="comment">.</span> <span class="comment">This</span> <span class="comment">approach</span> <span class="comment">produced</span> <span class="comment">a</span> <span class="comment">high</span> <span class="comment">accuracy</span>
+321 <span class="comment">     * </span><span class="comment">although</span> <span class="comment">it</span> <span class="comment">was</span> <span class="comment">limited</span> <span class="comment">by</span> <span class="comment">the</span> <span class="comment">hardware</span> <span class="comment">used</span> <span class="comment">to</span> <span class="comment">train</span> <span class="comment">it</span><span class="comment">.</span> <span class="comment">It</span> <span class="comment">was</span> <span class="comment">also</span> <span class="comment">limited</span> <span class="comment">by</span> <span class="comment">the</span> <span class="comment">fact</span> <span class="comment">that</span> <span class="comment">the</span> <span class="comment">dataset</span> <span class="comment">of</span> <span class="comment">boardstates</span> <span class="comment">is</span> <span class="comment">not</span> <span class="comment">as</span> <span class="comment">strong</span>
+322 <span class="comment">     * </span><span class="comment">as</span> <span class="comment">previously</span> <span class="comment">thought</span><span class="comment">.</span>
+323      <span class="comment">*/</span>
+324     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">void</span> formatData(){
+325         <span class="literal">try</span>{
+326             <span class="literal">int</span>[]line;<span class="comment">//stores the input to the neural network as a double array</span>
+327             <span class="literal">int</span> i=0;<span class="comment">//stores the current record number</span>
+328             String data[]= <span class="literal">new</span> String[TOTAL_AMOUNT_OF_DATA];<span class="comment">//stores the data as an array</span>
+329             ChessBoardState state;<span class="comment">//stores the chessboard state</span>
+330             String lineRead;<span class="comment">//stores the lineRead            </span>
+331             System.out.println(<span class="string">&quot;</span><span class="string">Array created</span><span class="string">&quot;</span>);
+332             FileReader loseRead = <span class="literal">new</span> FileReader(LOSE_FILE_NAME);
+333             BufferedReader buffReadLose=<span class="literal">new</span> BufferedReader(loseRead);
+334             <span class="literal">while</span>((lineRead=buffReadLose.readLine())!=<span class="literal">null</span>){
+335                 state = <span class="literal">new</span> ChessBoardState(lineRead);<span class="comment">//creates a new chess board using the FEN string</span>
+336                 line=state.getNeuralNetInput();
+337                 lineRead=<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>+SPLIT+<span class="string">&quot;</span><span class="string">1</span><span class="string">&quot;</span>;<span class="comment">//used to indicate the desired network output</span>
+338                 <span class="literal">for</span>(<span class="literal">int</span> element=0;element&lt;WIDTH_OF_DATA-2;element++){
+339                     lineRead=lineRead+SPLIT+String.valueOf(line[element]);
+340                 }
+341                 data[i]=lineRead;
+342                 i++;
+343                 <span class="literal">if</span>(i%50000==0){
+344                     System.out.println(i);
+345                 }                
+346             }
+347             buffReadLose.close();loseRead.close();
+348             System.out.println(<span class="string">&quot;</span><span class="string">done with lose</span><span class="string">&quot;</span>);            
+349             FileReader winRead = <span class="literal">new</span> FileReader(WIN_FILE_NAME);
+350             BufferedReader buffReadWin = <span class="literal">new</span> BufferedReader(winRead);
+351             <span class="literal">while</span>((lineRead=buffReadWin.readLine())!=<span class="literal">null</span>){
+352                 state = <span class="literal">new</span> ChessBoardState(lineRead);<span class="comment">//creates a new chess board using the FEN string</span>
+353                 line=state.getNeuralNetInput();
+354                 lineRead=<span class="string">&quot;</span><span class="string">1</span><span class="string">&quot;</span>+SPLIT+<span class="string">&quot;</span><span class="string">0</span><span class="string">&quot;</span>;<span class="comment">//used to indicate the desired network output</span>
+355                 <span class="literal">for</span>(<span class="literal">int</span> element=0;element&lt;WIDTH_OF_DATA-2;element++){
+356                     lineRead=lineRead+SPLIT+String.valueOf(line[element]);
+357                 }
+358                 data[i]=lineRead;
+359                 i++;
+360                 <span class="literal">if</span>(i==TOTAL_AMOUNT_OF_DATA){
+361                     <span class="literal">break</span>;
+362                 }
+363                 <span class="literal">if</span>(i%50000==0){
+364                     System.out.println(i);
+365                 }
+366             }
+367             System.out.println(<span class="string">&quot;</span><span class="string">Done with win</span><span class="string">&quot;</span>);
+368             buffReadWin.close();winRead.close();
+369           <span class="comment">/*  FileReader drawRead = new FileReader(DRAW_FILE_NAME);</span>
+370 <span class="comment">            BufferedReader buffReadDraw=new BufferedReader(drawRead);</span>
+371 <span class="comment">            while((lineRead=buffReadDraw.readLine())!=null){</span>
+372 <span class="comment">                state = new ChessBoardState(lineRead);//creates a new chess board using the FEN string</span>
+373 <span class="comment">                line=state.getNeuralNetInput();</span>
+374 <span class="comment">                lineRead=&quot;0&quot;+SPLIT+&quot;1&quot;+SPLIT+&quot;0&quot;;//used to indicate the desired network output</span>
+375 <span class="comment">                for(int element=0;element&lt;WIDTH_OF_DATA-3;element++){</span>
+376 <span class="comment">                    lineRead=lineRead+SPLIT+String.valueOf(line[element]);</span>
+377 <span class="comment">                }</span>
+378 <span class="comment">                data[i]=lineRead;</span>
+379 <span class="comment">                i++;</span>
+380 <span class="comment">                if(i%50000==0){</span>
+381 <span class="comment">                    System.out.println(i);</span>
+382 <span class="comment">                }</span>
+383 <span class="comment">            }</span>
+384 <span class="comment">            buffReadDraw.close();drawRead.close();</span>
+385 <span class="comment">            System.out.println(&quot;Done with draw&quot;);*/</span>
+386             <span class="comment">//writes data to file</span>
+387             shuffleArray(data);<span class="comment">//shuffles array randomly</span>
+388             <span class="comment">//writes training and test data to file</span>
+389             FileWriter writeTrain = <span class="literal">new</span> FileWriter(TRAIN_FILE_NAME,<span class="literal">false</span>);
+390             BufferedWriter buffWriteTrain = <span class="literal">new</span> BufferedWriter(writeTrain);
+391             buffWriteTrain.write(data[0]);<span class="comment">//writes the first line</span>
+392             <span class="literal">for</span>(i=1;i&lt;NO_OF_TRAINING_BOARDS;i++){
+393                 buffWriteTrain.newLine();
+394                 buffWriteTrain.write(data[i]);
+395             }
+396             buffWriteTrain.flush();writeTrain.flush();
+397             buffWriteTrain.close();writeTrain.close();
+398             <span class="comment">//writes test data to file</span>
+399             FileWriter writeTest = <span class="literal">new</span> FileWriter(TEST_FILE_NAME,<span class="literal">false</span>);
+400             BufferedWriter buffWriteTest = <span class="literal">new</span> BufferedWriter(writeTest);
+401             buffWriteTest.write(data[NO_OF_TRAINING_BOARDS]);
+402             <span class="literal">for</span>(i=NO_OF_TRAINING_BOARDS+1;i&lt;NO_OF_TEST_BOARDS+NO_OF_TRAINING_BOARDS;i++){
+403                 buffWriteTest.newLine();
+404                 buffWriteTest.write(data[i]);
+405             }
+406             buffWriteTest.flush();writeTest.flush();
+407             buffWriteTest.close();writeTest.close();
+408         }<span class="literal">catch</span>(IOException e){
+409             System.out.println(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+410         }
+411         System.out.println(<span class="string">&quot;</span><span class="string">Done with formatting</span><span class="string">&quot;</span>);
+412     }
+413     <span class="comment">/**</span>
+414 <span class="comment">     * </span><span class="ST0">Randomly</span> <span class="ST0">shuffles</span> <span class="ST0">inputted</span> <span class="ST0">array</span>
+415 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">arr</span> <span class="comment">The</span> <span class="comment">array</span> <span class="comment">to</span> <span class="comment">shuffle</span>
+416      <span class="comment">*/</span>
+417     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">void</span> shuffleArray(String[]arr){
+418         Random rnd = <span class="literal">new</span> Random();
+419         String buff;<span class="literal">int</span> el;
+420         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;arr.length;i++){
+421             el=rnd.nextInt(arr.length);
+422             buff=arr[el];
+423             arr[el]=arr[i];
+424             arr[i]=buff;
+425         }
+426     }
+427 }
+428 
+</pre></body>
+</html>

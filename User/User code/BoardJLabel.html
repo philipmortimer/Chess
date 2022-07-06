@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>BoardJLabel.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\BoardJLabel.java</td></tr></table>
+<pre>
+ 1 <span class="comment">/*</span>
+ 2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+ 3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+ 4 <span class="comment"> * and open the template in the editor.</span>
+ 5 <span class="comment"> */</span>
+ 6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+ 7 
+ 8 <span class="literal">import</span> java.awt.Graphics;
+ 9 <span class="literal">import</span> java.awt.Graphics2D;
+10 <span class="literal">import</span> java.awt.RenderingHints;
+11 <span class="literal">import</span> javax.swing.JLabel;
+12 
+13 <span class="comment">/**</span>
+14 <span class="comment"> * </span><span class="ST0">Custom</span> <span class="ST0">JLabel</span> <span class="ST0">that</span> <span class="ST0">renders</span> <span class="ST0">to</span> <span class="ST0">a</span>  <span class="ST0">higher</span> <span class="ST0">quality</span>
+15 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+16  <span class="comment">*/</span>
+17 <span class="literal">public</span> <span class="literal">class</span> BoardJLabel <span class="literal">extends</span> JLabel {
+18     <span class="comment">/**</span>
+19 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">BoardJLabel</span><span class="ST0">.</span>
+20      <span class="comment">*/</span>
+21     <span class="literal">public</span> BoardJLabel(){
+22         <span class="literal">super</span>();<span class="comment">//creates a standard JLabel</span>
+23     }
+24     <span class="comment">/**</span>
+25 <span class="comment">     * </span><span class="ST0">Paints</span> <span class="ST0">the</span> <span class="ST0">component</span> <span class="ST0">using</span> <span class="ST0">the</span> <span class="ST0">highest</span> <span class="ST0">possible</span> <span class="ST0">quality</span> <span class="ST0">rendering</span> <span class="ST0">settings</span><span class="ST0">.</span>
+26 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">g</span> <span class="comment">The</span> <span class="comment">graphics</span>
+27      <span class="comment">*/</span>
+28     @Override
+29     <span class="literal">public</span> <span class="literal">void</span> paintComponent(Graphics g) {
+30         <span class="comment">//creates a custom paint component that ensures high quality rendering options are used when rendering the JLabel</span>
+31         Graphics2D g2d = (Graphics2D) g;
+32                 g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+33                 g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+34                 g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+35                 g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+36                 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+37                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+38                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+39         <span class="literal">super</span>.paintComponent(g2d);
+40     }
+41 }
+42 
+</pre></body>
+</html>

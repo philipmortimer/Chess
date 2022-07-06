@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Audio.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\Audio.java</td></tr></table>
+<pre>
+ 1 <span class="comment">/*</span>
+ 2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+ 3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+ 4 <span class="comment"> * and open the template in the editor.</span>
+ 5 <span class="comment"> */</span>
+ 6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+ 7 
+ 8 <span class="literal">import</span> java.io.File;
+ 9 <span class="literal">import</span> javax.sound.sampled.AudioInputStream;
+10 <span class="literal">import</span> javax.sound.sampled.AudioSystem;
+11 <span class="literal">import</span> javax.sound.sampled.Clip;
+12 
+13 
+14 <span class="comment">/**</span>
+15 <span class="comment"> * </span><span class="ST0">Plays</span> <span class="ST0">desired</span> <span class="ST0">sounds</span>
+16 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+17  <span class="comment">*/</span>
+18 <span class="literal">public</span> <span class="literal">class</span> Audio{
+19     <span class="comment">/**</span>
+20 <span class="comment">     * </span><span class="ST0">Plays</span> <span class="ST0">the</span> <span class="ST0">specified</span> <span class="ST0">sound</span> <span class="ST0">file</span><span class="ST0">.</span> <span class="comment">The</span> <span class="comment">sound</span> <span class="comment">method</span> <span class="comment">is</span> <span class="comment">threaded</span>
+21 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">PATH</span> <span class="comment">The</span> <span class="comment">file</span> <span class="comment">name</span>
+22      <span class="comment">*/</span>
+23     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">synchronized</span> <span class="literal">void</span> playSound(<span class="literal">final</span> String PATH) {
+24        <span class="comment">//creates new thread that plays the desired sound clip</span>
+25       <span class="literal">new</span> Thread(<span class="literal">new</span> Runnable() {
+26           <span class="comment">/**</span>
+27 <span class="comment">           * </span><span class="comment">Plays</span> <span class="comment">the</span> <span class="comment">chosen</span> <span class="comment">audio</span> <span class="comment">clip</span>
+28            <span class="comment">*/</span>
+29         @Override
+30         <span class="literal">public</span> <span class="literal">void</span> run() {
+31           <span class="literal">try</span> {
+32             Clip clip = AudioSystem.getClip();
+33             AudioInputStream inputStream = AudioSystem.getAudioInputStream(
+34               <span class="literal">new</span> File(PATH));
+35             clip.open(inputStream);
+36             clip.start(); 
+37           } <span class="literal">catch</span> (Exception e) {
+38             
+39           }
+40         }
+41       }).start();
+42     }
+43 }
+44 
+</pre></body>
+</html>

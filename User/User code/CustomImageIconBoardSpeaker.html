@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>CustomImageIconBoardSpeaker.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\CustomImageIconBoardSpeaker.java</td></tr></table>
+<pre>
+ 1 <span class="comment">/*</span>
+ 2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+ 3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+ 4 <span class="comment"> * and open the template in the editor.</span>
+ 5 <span class="comment"> */</span>
+ 6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+ 7 
+ 8 <span class="literal">import</span> java.awt.Component;
+ 9 <span class="literal">import</span> java.awt.Graphics;
+10 <span class="literal">import</span> java.awt.Graphics2D;
+11 <span class="literal">import</span> java.awt.Image;
+12 <span class="literal">import</span> java.awt.RenderingHints;
+13 <span class="literal">import</span> java.awt.image.BufferedImage;
+14 <span class="literal">import</span> javax.swing.ImageIcon;
+15 
+16 <span class="comment">/**</span>
+17 <span class="comment"> * </span><span class="ST0">A</span> <span class="ST0">custom</span> <span class="ST0">image</span> <span class="ST0">icon</span> <span class="ST0">class</span> <span class="ST0">that</span> <span class="ST0">ensures</span> <span class="ST0">the</span> <span class="ST0">image</span> <span class="ST0">icon</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">speaker</span> <span class="ST0">is</span> <span class="ST0">of</span> <span class="ST0">high</span> <span class="ST0">quality</span>
+18 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+19  <span class="comment">*/</span>
+20 <span class="literal">public</span> <span class="literal">class</span> CustomImageIconBoardSpeaker <span class="literal">extends</span> ImageIcon {
+21     <span class="comment">/**</span>
+22 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">an</span> <span class="ST0">image</span> <span class="ST0">icon</span> <span class="ST0">for</span> <span class="ST0">the</span> <span class="ST0">speaker</span> <span class="ST0">which</span> <span class="ST0">is</span> <span class="ST0">of</span> <span class="ST0">high</span> <span class="ST0">visual</span> <span class="ST0">quality</span><span class="ST0">.</span>
+23 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">f</span> <span class="comment">The</span> <span class="comment">image</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">speaker</span><span class="comment"> (</span><span class="comment">which</span> <span class="comment">must</span> <span class="comment">be</span><span class="comment"> 15 </span><span class="comment">by</span><span class="comment"> 15 </span><span class="comment">pixels</span><span class="comment">)</span><span class="comment">.</span>
+24      <span class="comment">*/</span>
+25     <span class="literal">public</span> CustomImageIconBoardSpeaker(Image f) {
+26       <span class="literal">super</span>(f);
+27       <span class="comment">//sets a high render quality of the ImageIcon</span>
+28       BufferedImage i= <span class="literal">new</span> BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
+29       <span class="comment">//sets the image to a high rendering quality</span>
+30       Graphics2D g2d = (Graphics2D)i.getGraphics();
+31                 g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+32                 g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+33                 g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+34                 g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+35                 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+36                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+37                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+38                 
+39       g2d.drawImage(getImage(), 0, 0, 15, 15, <span class="literal">null</span>);
+40       setImage(i);
+41     }
+42     <span class="comment">/**</span>
+43 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">height</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">icon</span><span class="ST0">.</span>
+44 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">height</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">icon</span><span class="comment">  (</span><span class="comment">which</span> <span class="comment">is</span> <span class="comment">always</span><span class="comment"> 15)</span>
+45      <span class="comment">*/</span>
+46     @Override
+47     <span class="literal">public</span> <span class="literal">int</span> getIconHeight() {
+48       <span class="literal">return</span> 15;
+49     }
+50     <span class="comment">/**</span>
+51 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">the</span> <span class="ST0">width</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">icon</span><span class="ST0">.</span>
+52 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">width</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">icon</span><span class="comment">  (</span><span class="comment">which</span> <span class="comment">is</span> <span class="comment">always</span><span class="comment"> 15)</span>
+53      <span class="comment">*/</span>
+54     @Override
+55     <span class="literal">public</span> <span class="literal">int</span> getIconWidth() {
+56       <span class="literal">return</span> 15;
+57     }
+58     <span class="comment">/**</span>
+59 <span class="comment">     * </span><span class="ST0">Paints</span> <span class="ST0">the</span> <span class="ST0">icon</span>
+60 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">c</span> <span class="comment">The</span> <span class="comment">component</span>
+61 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">g</span> <span class="comment">The</span> <span class="comment">graphics</span>
+62 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">x</span> <span class="comment">The</span> <span class="comment">x</span> <span class="comment">coordinate</span>
+63 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">y</span> <span class="comment">The</span> <span class="comment">y</span> <span class="comment">coordinate</span>
+64      <span class="comment">*/</span>
+65     @Override
+66     <span class="literal">public</span> <span class="literal">void</span> paintIcon(Component c, Graphics g, <span class="literal">int</span> x, <span class="literal">int</span> y) {
+67       g.drawImage(getImage(), x, y, c);
+68     }   
+69 }
+70 
+</pre></body>
+</html>

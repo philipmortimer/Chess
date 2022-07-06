@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>TableRenderer.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\user\system\TableRenderer.java</td></tr></table>
+<pre>
+ 1 <span class="comment">/*</span>
+ 2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+ 3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+ 4 <span class="comment"> * and open the template in the editor.</span>
+ 5 <span class="comment"> */</span>
+ 6 <span class="literal">package</span> philipm.cs5.software.development.user.system;
+ 7 
+ 8 <span class="literal">import</span> java.awt.Color;
+ 9 <span class="literal">import</span> java.awt.Component;
+10 <span class="literal">import</span> javax.swing.JLabel;
+11 <span class="literal">import</span> javax.swing.JTable;
+12 <span class="literal">import</span> javax.swing.table.DefaultTableCellRenderer;
+13 
+14 <span class="comment">/**</span>
+15 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">creates</span> <span class="ST0">a</span> <span class="ST0">custom</span> <span class="ST0">table</span> <span class="ST0">renderer</span> <span class="ST0">object</span> <span class="ST0">to</span> <span class="ST0">render</span> <span class="ST0">the</span> <span class="ST0">online</span> <span class="ST0">games</span> <span class="ST0">table</span><span class="ST0">.</span>
+16 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+17  <span class="comment">*/</span>
+18 <span class="literal">public</span> <span class="literal">class</span> TableRenderer <span class="literal">extends</span> DefaultTableCellRenderer{
+19     <span class="literal">private</span> <span class="literal">boolean</span> rowOneHighlighted=<span class="literal">false</span>;<span class="comment">//determines the colour of row one</span>
+20     <span class="literal">private</span> <span class="literal">boolean</span> rowTwoHighlighted=<span class="literal">false</span>;<span class="comment">//determines the colour of row two</span>
+21     <span class="literal">private</span> <span class="literal">boolean</span> rowThreeHighlighted=<span class="literal">false</span>;<span class="comment">//determines the colour of row three</span>
+22     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> Color HIGHLIGHT_COLOR=Color.WHITE;<span class="comment">//stores the color used for highlighted rows</span>
+23     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> Color JLABEL_COLOUR=Color.LIGHT_GRAY;<span class="comment">//stores the default JLabel rows.</span>
+24     <span class="literal">private</span> <span class="literal">final</span> OnlineMenu ONLINE;<span class="comment">//stores the online menu in which the table is locared</span>
+25     <span class="comment">/**</span>
+26 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">custom</span> <span class="ST0">table</span> <span class="ST0">renderer</span> <span class="ST0">to</span> <span class="ST0">render</span> <span class="ST0">the</span> <span class="ST0">online</span> <span class="ST0">game</span> <span class="ST0">table</span><span class="ST0">.</span>
+27 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">online</span> <span class="comment">The</span> <span class="comment">online</span> <span class="comment">menu</span> <span class="comment">form</span> <span class="comment">in</span> <span class="comment">which</span> <span class="comment">the</span> <span class="comment">online</span> <span class="comment">table</span> <span class="comment">is</span> <span class="comment">in</span><span class="comment">.</span>
+28      <span class="comment">*/</span>
+29     <span class="literal">public</span> TableRenderer(OnlineMenu online){
+30         ONLINE=online;<span class="comment">//stores the online menu form</span>
+31     }
+32     <span class="comment">/**</span>
+33 <span class="comment">     * </span><span class="ST0">Updates</span> <span class="ST0">the</span> <span class="ST0">variables</span> <span class="ST0">that</span> <span class="ST0">change</span> <span class="ST0">the</span> <span class="ST0">table</span> <span class="ST0">row</span> <span class="ST0">colour</span>
+34 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">rowOneIsHighlighted</span> <span class="comment">Whether</span> <span class="comment">row</span> <span class="comment">one</span> <span class="comment">should</span> <span class="comment">be</span> <span class="comment">highlighted</span>
+35 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">rowTwoIsHighlighted</span> <span class="comment">Whether</span> <span class="comment">row</span> <span class="comment">two</span> <span class="comment">should</span> <span class="comment">be</span> <span class="comment">highlighted</span>
+36 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">rowThreeIsHighlighted</span> <span class="comment">Whether</span> <span class="comment">row</span> <span class="comment">three</span> <span class="comment">should</span> <span class="comment">be</span> <span class="comment">highlighted</span>
+37      <span class="comment">*/</span>
+38     <span class="literal">public</span> <span class="literal">void</span> updateRowColour(<span class="literal">boolean</span> rowOneIsHighlighted,<span class="literal">boolean</span> rowTwoIsHighlighted,<span class="literal">boolean</span> rowThreeIsHighlighted){
+39         rowOneHighlighted=rowOneIsHighlighted;rowTwoHighlighted=rowTwoIsHighlighted;rowThreeHighlighted=rowThreeIsHighlighted;<span class="comment">//sets object variables equal to the passed variables</span>
+40     }
+41     <span class="comment">/**</span>
+42 <span class="comment">     * </span><span class="ST0">Returns</span> <span class="ST0">the</span> <span class="ST0">customised</span> <span class="ST0">component</span> <span class="ST0">to</span> <span class="ST0">be</span> <span class="ST0">rendered</span>
+43 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">table</span> <span class="comment">The</span> <span class="comment">table</span>
+44 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">value</span> <span class="comment">The</span> <span class="comment">value</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">component</span>
+45 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">isSelected</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">component</span> <span class="comment">is</span> <span class="comment">selected</span>
+46 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">hasFocus</span> <span class="comment">Whether</span> <span class="comment">the</span> <span class="comment">component</span> <span class="comment">is</span> <span class="comment">focused</span>
+47 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">row</span> <span class="comment">The</span> <span class="comment">row</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">component</span>
+48 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">col</span> <span class="comment">The</span> <span class="comment">column</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">table</span>
+49 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">component</span>
+50      <span class="comment">*/</span>
+51     @Override
+52     <span class="literal">public</span> Component getTableCellRendererComponent(JTable table, Object value, <span class="literal">boolean</span> isSelected, <span class="literal">boolean</span> hasFocus, <span class="literal">int</span> row, <span class="literal">int</span> col) {
+53         JLabel label = (JLabel) <span class="literal">super</span>.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);<span class="comment">//gets JLabel for the row + col chosen</span>
+54         <span class="comment">//Get the status for the current row and sets the colour of the JLabel </span>
+55         Color cellColour = JLABEL_COLOUR;
+56         <span class="literal">switch</span> (row) {
+57             <span class="literal">case</span> 0:
+58                 <span class="literal">if</span> (rowOneHighlighted) {
+59                     cellColour = HIGHLIGHT_COLOR;
+60                 }
+61                 <span class="literal">break</span>;
+62             <span class="literal">case</span> 1:
+63                 <span class="literal">if</span> (rowTwoHighlighted) {
+64                     cellColour = HIGHLIGHT_COLOR;
+65                 }
+66                 <span class="literal">break</span>;
+67             <span class="literal">default</span>:
+68                 <span class="literal">if</span> (rowThreeHighlighted) {
+69                     cellColour = HIGHLIGHT_COLOR;
+70                 }
+71                 <span class="literal">break</span>;
+72         }
+73         <span class="literal">if</span> (isSelected) {
+74             <span class="literal">if</span> (cellColour == JLABEL_COLOUR) {
+75                 ONLINE.setPlayButtonEnabled(<span class="literal">false</span>);
+76                 ONLINE.setDeleteButtonEnabled(!table.getValueAt(row, 0).equals(<span class="string">&quot;&quot;</span>));
+77             } <span class="literal">else</span> {
+78                 ONLINE.setPlayButtonEnabled(<span class="literal">true</span>);
+79                 ONLINE.setDeleteButtonEnabled(<span class="literal">false</span>);
+80                 cellColour = table.getSelectionBackground();
+81             }
+82         }
+83         label.setBackground(cellColour);<span class="comment">//sets colour to chosen colour</span>
+84         <span class="literal">return</span> label;
+85     }
+86 }
+87 
+</pre></body>
+</html>

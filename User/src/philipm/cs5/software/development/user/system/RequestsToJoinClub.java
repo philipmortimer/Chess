@@ -1,0 +1,642 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package philipm.cs5.software.development.user.system;
+
+import java.awt.Color;
+import javax.swing.JOptionPane;
+
+
+/**
+ * Creates form which lets the chess club leader handle requests to join the chess club
+ * @author mortimer
+ */
+public class RequestsToJoinClub extends javax.swing.JFrame {
+    
+    private SessionInfo session;//stores the session information
+    private String[][]requestsToJoinClub;//stores the data of requests to join the club
+    private String[]emails;//stores the email addresses of the user's requesting to join the club
+    private int currentReqeustIndex=0;//stores the index which points to the user info of the current person being viewed
+    /**
+     * Creates new form CreateAccount
+     * @param session The session information
+     * @throws java.lang.Exception An exception may occur when attempting to load requests.
+     */
+    public RequestsToJoinClub(SessionInfo session) throws Exception{
+        initComponents();
+        this.session=session;
+        noRequestsLbl.setVisible(false);//sets the label that displays that there are no requests to handle invisible initially
+        approveBtn.setBackground(Color.green);denyBtn.setBackground(Color.red);
+        requestsToJoinClub=ThreadClient.getAllRequestsToJoinClub();//gets all requests to join the club and the user info of each person requesting to join the club
+        emails = new String[requestsToJoinClub.length];
+        for(int req=0;req<emails.length;req++){//gets the email address of each person requesting to join the club
+            emails[req]=ThreadClient.getEmailAddressOfUser(requestsToJoinClub[req][0]);
+        }
+        checkIfThereAreMoreRequestsAndUpdateComponents();
+        loadRequestToFormIfAppropraite();
+    }
+    /**
+     * Creates new form CreateAccount
+     */
+    private RequestsToJoinClub(){
+        initComponents();
+    }
+    /**
+     * Loads user info onto the form if there are any more requests to load
+     */
+    private void loadRequestToFormIfAppropraite(){
+        if(currentReqeustIndex>=requestsToJoinClub.length || requestsToJoinClub.length==0){//if there are no valid requests to handle, this method does nothing
+            return;
+        }
+        //loads the user data onto the form
+        //Username, password, first name, surname, postcode, addressline one, address line two, address line three, address line four, discord username, discord number, date of birth, phone number, isClubLeader, isClubMember, ELO, hasUserRequestedToJoinClub
+        usernameTxt.setText(requestsToJoinClub[currentReqeustIndex][0]);
+        emailAddressTxt.setText(emails[currentReqeustIndex]);
+        firstNameTxt.setText(requestsToJoinClub[currentReqeustIndex][2]);surnameTxt.setText(requestsToJoinClub[currentReqeustIndex][3]);
+        postcodeTxt.setText(requestsToJoinClub[currentReqeustIndex][4]);addressLineOneTxt.setText(requestsToJoinClub[currentReqeustIndex][5]);
+        addressLineTwoTxt.setText(requestsToJoinClub[currentReqeustIndex][6]);addressLineThreeTxt.setText(requestsToJoinClub[currentReqeustIndex][7]);
+        addressLineFourTxt.setText(requestsToJoinClub[currentReqeustIndex][8]);discordUsernameTxt.setText(requestsToJoinClub[currentReqeustIndex][9]);
+        discordNumberTxt.setText(requestsToJoinClub[currentReqeustIndex][10]);dateOfBirthTxt.setText(requestsToJoinClub[currentReqeustIndex][11]);
+        phoneNumberTxt.setText(requestsToJoinClub[currentReqeustIndex][12]);eloTxt.setText(requestsToJoinClub[currentReqeustIndex][15]);
+    }
+    /**
+     * Checks to see if there are any more requests. If there are no requests to handle, components are updated. 
+     */
+    private void checkIfThereAreMoreRequestsAndUpdateComponents(){
+        if(currentReqeustIndex>=requestsToJoinClub.length || requestsToJoinClub.length==0){
+            denyBtn.setEnabled(false);approveBtn.setEnabled(false);
+            JOptionPane.showMessageDialog(this,"There are no requests to handle.","No requests",JOptionPane.OK_OPTION);
+            noRequestsLbl.setVisible(true);
+            clearForm();
+        }
+    }
+    /**
+     * Sets all fields on the form empty
+     */
+    private void clearForm(){
+        usernameTxt.setText("");emailAddressTxt.setText("");
+        firstNameTxt.setText("");surnameTxt.setText("");postcodeTxt.setText("");
+        eloTxt.setText("");addressLineOneTxt.setText("");addressLineTwoTxt.setText("");
+        addressLineThreeTxt.setText("");addressLineFourTxt.setText("");
+        discordUsernameTxt.setText("");discordNumberTxt.setText("");
+        dateOfBirthTxt.setText("");phoneNumberTxt.setText("");
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        usernameTxt = new javax.swing.JTextField();
+        emailAddressTxt = new javax.swing.JTextField();
+        firstNameTxt = new javax.swing.JTextField();
+        surnameTxt = new javax.swing.JTextField();
+        postcodeTxt = new javax.swing.JTextField();
+        addressLineOneTxt = new javax.swing.JTextField();
+        addressLineTwoTxt = new javax.swing.JTextField();
+        addressLineThreeTxt = new javax.swing.JTextField();
+        addressLineFourTxt = new javax.swing.JTextField();
+        discordUsernameTxt = new javax.swing.JTextField();
+        discordNumberTxt = new javax.swing.JTextField();
+        dateOfBirthTxt = new javax.swing.JTextField();
+        phoneNumberTxt = new javax.swing.JTextField();
+        backBtn = new javax.swing.JButton();
+        approveBtn = new javax.swing.JButton();
+        passwordLabel = new javax.swing.JLabel();
+        confirmPasswordLabel = new javax.swing.JLabel();
+        firstNameLabel = new javax.swing.JLabel();
+        surnameLabel = new javax.swing.JLabel();
+        postcodeLabel = new javax.swing.JLabel();
+        addressOneLabel = new javax.swing.JLabel();
+        addressTwoLabel = new javax.swing.JLabel();
+        addressThreeLabel = new javax.swing.JLabel();
+        addressFourLabel = new javax.swing.JLabel();
+        discordUsernameLabel = new javax.swing.JLabel();
+        discordNumberLabel = new javax.swing.JLabel();
+        dateOfBirthLabel = new javax.swing.JLabel();
+        phoneNumberLabel = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        eloTxt = new javax.swing.JTextField();
+        denyBtn = new javax.swing.JButton();
+        noRequestsLbl = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Requests To Join Club");
+
+        jLabel1.setText("Username");
+
+        jLabel2.setText("Email Address");
+
+        jLabel5.setText("First Name");
+
+        jLabel6.setText("Surname");
+
+        jLabel7.setText("Postcode");
+
+        jLabel8.setText("Address Line 1");
+
+        jLabel9.setText("Address Line 2");
+
+        jLabel10.setText("Address Line 3");
+
+        jLabel11.setText("Address Line 4");
+
+        jLabel12.setText("Discord Username");
+
+        jLabel13.setText("Discord Number");
+
+        jLabel14.setText("Date of Birth");
+
+        jLabel15.setText("Phone Number");
+
+        usernameTxt.setEditable(false);
+        usernameTxt.setFocusCycleRoot(true);
+        usernameTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                usernameTxtFocusLost(evt);
+            }
+        });
+        usernameTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                usernameTxtKeyTyped(evt);
+            }
+        });
+
+        emailAddressTxt.setEditable(false);
+        emailAddressTxt.setFocusCycleRoot(true);
+        emailAddressTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                emailAddressTxtFocusLost(evt);
+            }
+        });
+
+        firstNameTxt.setEditable(false);
+        firstNameTxt.setFocusCycleRoot(true);
+
+        surnameTxt.setEditable(false);
+
+        postcodeTxt.setEditable(false);
+
+        addressLineOneTxt.setEditable(false);
+
+        addressLineTwoTxt.setEditable(false);
+
+        addressLineThreeTxt.setEditable(false);
+
+        addressLineFourTxt.setEditable(false);
+
+        discordUsernameTxt.setEditable(false);
+
+        discordNumberTxt.setEditable(false);
+
+        dateOfBirthTxt.setEditable(false);
+        dateOfBirthTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dateOfBirthTxtActionPerformed(evt);
+            }
+        });
+
+        phoneNumberTxt.setEditable(false);
+
+        backBtn.setText("Back");
+        backBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backBtnActionPerformed(evt);
+            }
+        });
+
+        approveBtn.setText("Approve");
+        approveBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                approveBtnActionPerformed(evt);
+            }
+        });
+
+        passwordLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        confirmPasswordLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        firstNameLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        surnameLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        postcodeLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        addressOneLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        addressTwoLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        addressThreeLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        addressFourLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        discordUsernameLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        discordNumberLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        dateOfBirthLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        phoneNumberLabel.setForeground(new java.awt.Color(255, 51, 51));
+
+        jLabel20.setText("Elo");
+
+        eloTxt.setEditable(false);
+
+        denyBtn.setText("Deny");
+        denyBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                denyBtnActionPerformed(evt);
+            }
+        });
+
+        noRequestsLbl.setText("No Requests To Handle");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(firstNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(surnameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(postcodeTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(eloTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(125, 125, 125)
+                                        .addComponent(usernameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(emailAddressTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(36, 36, 36)
+                                .addComponent(backBtn)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(87, 87, 87)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(passwordLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                            .addComponent(confirmPasswordLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(noRequestsLbl)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(firstNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(surnameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(postcodeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(107, 107, 107)
+                        .addComponent(denyBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(addressLineTwoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(addressLineOneTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel14)
+                                    .addComponent(jLabel13))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(discordNumberTxt)
+                                    .addComponent(discordUsernameTxt)
+                                    .addComponent(addressLineFourTxt)
+                                    .addComponent(addressLineThreeTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel15)
+                                .addGap(29, 29, 29)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(phoneNumberTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(dateOfBirthTxt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(addressOneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addressTwoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addressThreeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addressFourLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(discordUsernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(discordNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dateOfBirthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(phoneNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(approveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(60, 60, 60)
+                                .addComponent(addressOneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(addressTwoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(addressThreeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(addressFourLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(discordUsernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(confirmPasswordLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(19, 19, 19)
+                                        .addComponent(firstNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(surnameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(jLabel1)
+                                            .addComponent(usernameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(jLabel2)
+                                            .addComponent(emailAddressTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addGap(18, 18, 18)
+                                                        .addComponent(passwordLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addGap(24, 24, 24)
+                                                        .addComponent(firstNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGap(27, 27, 27)
+                                                .addComponent(surnameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel6)))
+                                        .addGap(30, 30, 30)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(postcodeTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel7))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)))))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(discordNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(postcodeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(dateOfBirthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(phoneNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(noRequestsLbl)))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel20)
+                                .addComponent(eloTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(addressLineOneTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(addressLineTwoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(addressLineThreeTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(addressLineFourTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel12)
+                            .addComponent(discordUsernameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel13)
+                            .addComponent(discordNumberTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel14)
+                            .addComponent(dateOfBirthTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel15)
+                            .addComponent(phoneNumberTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(backBtn)
+                    .addComponent(approveBtn)
+                    .addComponent(denyBtn))
+                .addContainerGap(39, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void dateOfBirthTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateOfBirthTxtActionPerformed
+
+    }//GEN-LAST:event_dateOfBirthTxtActionPerformed
+
+    private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
+        //goes back to the log in form
+        WestCrossChessClubLeader leader = new WestCrossChessClubLeader(session);
+        leader.setVisible(true);this.dispose();
+    }//GEN-LAST:event_backBtnActionPerformed
+
+    private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
+        // approves the request to join the club
+        try{
+            ThreadClient.withdrawRequestToJoinClub(usernameTxt.getText());
+            ThreadClient.addUserToClubAsMember(usernameTxt.getText());
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this,"An error occurred when communicating with the server: "+e,"Error",JOptionPane.OK_OPTION);
+            Menu menu = new Menu(session);menu.setVisible(true);this.dispose();
+        }
+        //updates the form following the acceptance of the request
+        clearForm();
+        currentReqeustIndex++;
+        checkIfThereAreMoreRequestsAndUpdateComponents();
+        loadRequestToFormIfAppropraite();
+    }//GEN-LAST:event_approveBtnActionPerformed
+
+    private void usernameTxtKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameTxtKeyTyped
+        
+    }//GEN-LAST:event_usernameTxtKeyTyped
+
+    private void usernameTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usernameTxtFocusLost
+
+    }//GEN-LAST:event_usernameTxtFocusLost
+
+    private void emailAddressTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_emailAddressTxtFocusLost
+
+    }//GEN-LAST:event_emailAddressTxtFocusLost
+
+    private void denyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_denyBtnActionPerformed
+        // denies the request to join the club
+        try{
+            ThreadClient.withdrawRequestToJoinClub(usernameTxt.getText());
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this,"An error occurred when communicating with the server: "+e,"Error",JOptionPane.OK_OPTION);
+            Menu menu = new Menu(session);menu.setVisible(true);this.dispose();
+        }
+        //updates the form after the request has been denied
+        clearForm();
+        currentReqeustIndex++;
+        checkIfThereAreMoreRequestsAndUpdateComponents();
+        loadRequestToFormIfAppropraite();
+    }//GEN-LAST:event_denyBtnActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(RequestsToJoinClub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(RequestsToJoinClub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(RequestsToJoinClub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(RequestsToJoinClub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new RequestsToJoinClub().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel addressFourLabel;
+    private javax.swing.JTextField addressLineFourTxt;
+    private javax.swing.JTextField addressLineOneTxt;
+    private javax.swing.JTextField addressLineThreeTxt;
+    private javax.swing.JTextField addressLineTwoTxt;
+    private javax.swing.JLabel addressOneLabel;
+    private javax.swing.JLabel addressThreeLabel;
+    private javax.swing.JLabel addressTwoLabel;
+    private javax.swing.JButton approveBtn;
+    private javax.swing.JButton backBtn;
+    private javax.swing.JLabel confirmPasswordLabel;
+    private javax.swing.JLabel dateOfBirthLabel;
+    private javax.swing.JTextField dateOfBirthTxt;
+    private javax.swing.JButton denyBtn;
+    private javax.swing.JLabel discordNumberLabel;
+    private javax.swing.JTextField discordNumberTxt;
+    private javax.swing.JLabel discordUsernameLabel;
+    private javax.swing.JTextField discordUsernameTxt;
+    private javax.swing.JTextField eloTxt;
+    private javax.swing.JTextField emailAddressTxt;
+    private javax.swing.JLabel firstNameLabel;
+    private javax.swing.JTextField firstNameTxt;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel noRequestsLbl;
+    private javax.swing.JLabel passwordLabel;
+    private javax.swing.JLabel phoneNumberLabel;
+    private javax.swing.JTextField phoneNumberTxt;
+    private javax.swing.JLabel postcodeLabel;
+    private javax.swing.JTextField postcodeTxt;
+    private javax.swing.JLabel surnameLabel;
+    private javax.swing.JTextField surnameTxt;
+    private javax.swing.JTextField usernameTxt;
+    // End of variables declaration//GEN-END:variables
+}

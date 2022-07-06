@@ -1,0 +1,392 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Fixture.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.string {color: #ce7b00}
+.literal {color: #0000e6}
+.comment {color: #969696}
+.ST0 {color: #969696; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">C:\Users\mortimer\OneDrive - gowercollegeswansea.ac.uk\Documents\College\YEAR 12\COMPUTER SCIENCE\Books attempt\DataBase\PhilipM CS5 Software Development User System\src\philipm\cs5\software\development\server\system\Fixture.java</td></tr></table>
+<pre>
+  1 <span class="comment">/*</span>
+  2 <span class="comment"> * To change this license header, choose License Headers in Project Properties.</span>
+  3 <span class="comment"> * To change this template file, choose Tools | Templates</span>
+  4 <span class="comment"> * and open the template in the editor.</span>
+  5 <span class="comment"> */</span>
+  6 <span class="literal">package</span> philipm.cs5.software.development.server.system;
+  7 
+  8 <span class="literal">import</span> java.io.BufferedReader;
+  9 <span class="literal">import</span> java.io.BufferedWriter;
+ 10 <span class="literal">import</span> java.io.FileReader;
+ 11 <span class="literal">import</span> java.io.FileWriter;
+ 12 <span class="literal">import</span> java.io.IOException;
+ 13 <span class="literal">import</span> java.util.Random;
+ 14 
+ 15 <span class="comment">/**</span>
+ 16 <span class="comment"> * </span><span class="ST0">This</span> <span class="ST0">static</span> <span class="ST0">class</span> <span class="ST0">is</span> <span class="ST0">used</span> <span class="ST0">to</span> <span class="ST0">interact</span> <span class="ST0">with</span> <span class="ST0">the</span> <span class="ST0">fixture</span> <span class="ST0">and</span> <span class="ST0">results</span> <span class="ST0">stored</span><span class="ST0">.</span>
+ 17 <span class="comment"> * </span><span class="ST0">@author</span> <span class="comment">mortimer</span>
+ 18  <span class="comment">*/</span>
+ 19 <span class="literal">public</span> <span class="literal">class</span> Fixture {
+ 20     <span class="comment">//stores various constants used thorughout the fixture code- such as values that represent a win or draw</span>
+ 21     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String FILE_NAME=<span class="string">&quot;</span><span class="string">fixtures.txt</span><span class="string">&quot;</span>;
+ 22     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String SPLIT=UserInfo.SPLIT_ITEM;
+ 23     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String GAME_NOT_YET_PLAYED=<span class="string">&quot;</span><span class="string">-1</span><span class="string">&quot;</span>;
+ 24     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String UNABLE_TO_CREATE_GAME=<span class="string">&quot;</span><span class="string">cantCreateGame</span><span class="string">&quot;</span>;
+ 25     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String BYE_GAME_STATE=<span class="string">&quot;</span><span class="string">-2</span><span class="string">&quot;</span>;<span class="comment">//indicates that the game is a bye. Does not necesarily mean that game is scheduled against a bye opponent</span>
+ 26     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String BY_NAME=<span class="string">&quot;</span><span class="string">@</span><span class="string">&quot;</span>;
+ 27     <span class="literal">private</span> <span class="literal">static</span> <span class="literal">final</span> String NO_PLAYERS_TO_ADD=<span class="string">&quot;</span><span class="string">aasifoakofako325</span><span class="string">&quot;</span>;
+ 28     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String TOO_FEW_PLAYERS_ARRAY=<span class="string">&quot;</span><span class="string">Unable to load array too few players</span><span class="string">&quot;</span>;
+ 29     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String GAME_WHITE_WIN=<span class="string">&quot;</span><span class="string">whiteW</span><span class="string">&quot;</span>;
+ 30     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String GAME_BLACK_WIN=<span class="string">&quot;</span><span class="string">blackW</span><span class="string">&quot;</span>;
+ 31     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">final</span> String GAME_DRAW=<span class="string">&quot;</span><span class="string">draww</span><span class="string">&quot;</span>;
+ 32     <span class="comment">/**</span>
+ 33 <span class="comment">     * </span><span class="ST0">Creates</span> <span class="ST0">a</span> <span class="ST0">new</span> <span class="ST0">set</span> <span class="ST0">of</span> <span class="ST0">fixtures</span> <span class="ST0">from</span> <span class="ST0">scratch</span> <span class="ST0">with</span> <span class="ST0">the</span> <span class="ST0">status</span> <span class="ST0">of</span> <span class="ST0">not</span> <span class="ST0">having</span> <span class="ST0">been</span> <span class="ST0">played</span>
+ 34 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">players</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">all</span> <span class="comment">players</span><span class="comment">.</span> <span class="comment">They</span> <span class="comment">must</span> <span class="comment">all</span> <span class="comment">be</span> <span class="comment">unique</span><span class="comment">.</span>
+ 35 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">fixtures</span> <span class="comment">can</span><span class="comment">&#39;</span><span class="comment">t</span> <span class="comment">be</span> <span class="comment">generated</span> <span class="comment">due</span> <span class="comment">to</span> <span class="comment">player</span> <span class="comment">size</span>
+ 36      <span class="comment">*/</span>
+ 37     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> createdNewFixturesFromStart(String[]players) <span class="literal">throws</span> Exception{
+ 38         <span class="literal">if</span>(players.length==0 || players.length==1){
+ 39             <span class="comment">//stores the fact that there are too few players to play a game</span>
+ 40             <span class="literal">try</span>{
+ 41                 FileWriter w = <span class="literal">new</span> FileWriter(FILE_NAME,<span class="literal">false</span>);
+ 42                 BufferedWriter buffW = <span class="literal">new</span> BufferedWriter(w);
+ 43                 buffW.write(UNABLE_TO_CREATE_GAME);
+ 44                 buffW.flush();w.flush();
+ 45                 buffW.close();w.close();
+ 46                 <span class="literal">throw</span> <span class="literal">new</span> Exception(<span class="string">&quot;</span><span class="string">Unable to create game as too few players are present</span><span class="string">&quot;</span>);
+ 47             }<span class="literal">catch</span>(IOException e){
+ 48                 System.out.println(e);
+ 49             }
+ 50         }
+ 51         <span class="literal">if</span>(players.length % 2 == 1){
+ 52             String newNames[]=<span class="literal">new</span> String[players.length+1];<span class="comment">//creates a new array and adds a bye to the list (as only an even number of players can exist in a head-to-head league.</span>
+ 53             <span class="comment">//copies old array to new one</span>
+ 54             <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;players.length;i++){
+ 55                 newNames[i]=players[i];
+ 56             }
+ 57             newNames[players.length]=BY_NAME;
+ 58             players=newNames;
+ 59         }
+ 60         <span class="comment">//randomly swaps names in list</span>
+ 61         String buffer;<span class="literal">int</span> index;
+ 62         Random rnd = <span class="literal">new</span> Random();
+ 63         <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;players.length;i++){
+ 64             index=rnd.nextInt(players.length);
+ 65             buffer = players[index];
+ 66             players[index]=players[i];
+ 67             players[i]=buffer;
+ 68         }
+ 69         String[][][]fixtures=<span class="literal">new</span> String[2*(players.length  -1)][3][players.length/2];<span class="comment">//stores all fixtures. </span>
+ 70         <span class="comment">//the 3d array is indexed fixtures[z][y][x]. z represents the round number, y represents some attribute in the round.</span>
+ 71         <span class="comment">//For example, y = 0 represents all white players. y=1 represents black players. y=2 represents the game state.</span>
+ 72         <span class="comment">//x represents the match element in the round. E.g. fixtures[0][0][0] return the player playing as white in the nought round and in the nought fixture</span>
+ 73         <span class="comment">//sets all games to have not yet been played</span>
+ 74         <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+ 75             <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;players.length/2;game++){
+ 76                 fixtures[round][2][game]=GAME_NOT_YET_PLAYED;
+ 77             }
+ 78         }
+ 79         <span class="comment">//generates fixtures for first round</span>
+ 80         <span class="literal">for</span>(<span class="literal">int</span> y=0;y&lt;2;y++){
+ 81             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;players.length/2;x++){
+ 82                 fixtures[0][y][x]=players[y*(players.length/2) +x];
+ 83             }
+ 84         }
+ 85         <span class="comment">//loads first half of fixtures</span>
+ 86         <span class="literal">for</span>(<span class="literal">int</span> round=1;round&lt;fixtures.length/2;round++){<span class="comment">//fills in the rest of the round</span>
+ 87             <span class="comment">//pushes all of top to the right apart from first element, which is fixed</span>
+ 88             fixtures[round][0][0]=fixtures[0][0][0];
+ 89             <span class="literal">for</span>(<span class="literal">int</span> x=1;x&lt;players.length/2 -1;x++){
+ 90                 fixtures[round][0][x+1]=fixtures[round-1][0][x];
+ 91             }
+ 92             <span class="comment">//adds in buffer at appropriate spot</span>
+ 93             fixtures[round][0][1]=fixtures[round-1][1][0];
+ 94             <span class="comment">//pushes all of bottom to the left</span>
+ 95             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;players.length/2 -1;x++){
+ 96                 fixtures[round][1][x]=fixtures[round-1][1][x+1];
+ 97             }
+ 98             fixtures[round][1][players.length/2 -1]=fixtures[round-1][0][players.length/2 -1];
+ 99         }
+100         <span class="comment">//second half of fixtures is the same as the first half just swapping them around</span>
+101         <span class="literal">for</span>(<span class="literal">int</span> round=fixtures.length/2;round&lt;fixtures.length;round++){
+102             <span class="literal">for</span>(<span class="literal">int</span> x=0;x&lt;players.length/2;x++){
+103                 fixtures[round][0][x]=fixtures[round-(fixtures.length/2)][1][x];
+104                 fixtures[round][1][x]=fixtures[round-(fixtures.length/2)][0][x];
+105             }
+106         }
+107         <span class="comment">//shuffles the games in each round randomly and then shuffles the rounds randomly</span>
+108         String[][]bufferArr;
+109         <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+110             <span class="comment">//shuffles games within round randomly</span>
+111             <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;players.length/2;game++){
+112                 index=rnd.nextInt(players.length/2);
+113                 buffer=fixtures[round][0][game];
+114                 fixtures[round][0][game]=fixtures[round][0][index];
+115                 fixtures[round][0][index]=buffer;
+116                 buffer=fixtures[round][1][game];
+117                 fixtures[round][1][game]=fixtures[round][1][index];
+118                 fixtures[round][1][index]=buffer;
+119             }
+120             <span class="comment">//shuffles the rounds randomly</span>
+121             index=rnd.nextInt(fixtures.length);
+122             bufferArr=fixtures[index];
+123             fixtures[index]=fixtures[round];
+124             fixtures[round]=bufferArr;
+125         }
+126         <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+127             <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;players.length/2;game++){
+128                 <span class="literal">if</span>(fixtures[round][0][game].equals(BY_NAME) || fixtures[round][1][game].equals(BY_NAME)){<span class="comment">//stores games which are byes</span>
+129                     fixtures[round][2][game]=BYE_GAME_STATE;
+130                 }
+131             }
+132             
+133         }
+134         <span class="comment">//writes generated fixtures to a file, overwriting anything that was previously there, in a form that the computer can intepret</span>
+135         writeToFile(fixtures, <span class="literal">new</span> String[0]);
+136     }
+137     <span class="comment">/**</span>
+138 <span class="comment">     * </span><span class="ST0">Writes</span> <span class="ST0">the</span> <span class="ST0">fixtures</span> <span class="ST0">list</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">file</span><span class="ST0">.</span>
+139 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">fixtures</span> <span class="comment">The</span> <span class="comment">fixtures</span> <span class="comment">array</span> <span class="comment">to</span> <span class="comment">write</span>
+140 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">nameOfPlayersAddedLate</span> <span class="comment">The</span> <span class="comment">players</span> <span class="comment">added</span> <span class="comment">halfway</span> <span class="comment">through</span> <span class="comment">the</span> <span class="comment">season</span>
+141 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">IOException</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">writing</span> <span class="comment">to</span> <span class="comment">file</span>
+142      <span class="comment">*/</span>
+143     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> writeToFile(String fixtures[][][], String[] nameOfPlayersAddedLate) <span class="literal">throws</span> IOException{
+144             <span class="literal">int</span> playerLength=fixtures[0][0].length*2;
+145             FileWriter write = <span class="literal">new</span> FileWriter(FILE_NAME,<span class="literal">false</span>);
+146             BufferedWriter buffWrite = <span class="literal">new</span> BufferedWriter(write);
+147             buffWrite.write(String.valueOf(playerLength));buffWrite.newLine();
+148             <span class="comment">//writes fixtures for white</span>
+149             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+150                 <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;playerLength/2;game++){
+151                     <span class="literal">if</span>(round==0 &amp;&amp; game==0){
+152                         buffWrite.write(fixtures[round][0][game]);
+153                     }<span class="literal">else</span>{
+154                         buffWrite.write(SPLIT+fixtures[round][0][game]);
+155                     }
+156                 }
+157             }
+158             buffWrite.newLine();
+159             <span class="comment">//writes fixtures for black</span>
+160             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+161                 <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;playerLength/2;game++){
+162                     <span class="literal">if</span>(round==0 &amp;&amp; game==0){
+163                         buffWrite.write(fixtures[round][1][game]);
+164                     }<span class="literal">else</span>{
+165                         buffWrite.write(SPLIT+fixtures[round][1][game]);
+166                     }
+167                 }
+168             } 
+169             buffWrite.newLine();
+170             <span class="comment">//writes game states to file</span>
+171             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+172                 <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;playerLength/2;game++){
+173                      <span class="literal">if</span>(round==0 &amp;&amp; game==0){
+174                         buffWrite.write(fixtures[round][2][game]);
+175                     }<span class="literal">else</span>{
+176                         buffWrite.write(SPLIT+fixtures[round][2][game]);
+177                     }
+178                 }
+179             } 
+180             <span class="comment">//writes queue of players to add to file</span>
+181             buffWrite.newLine();
+182             <span class="literal">if</span>(nameOfPlayersAddedLate.length==0){
+183                 buffWrite.write(NO_PLAYERS_TO_ADD);
+184             }<span class="literal">else</span>{
+185                 String lineWrite=nameOfPlayersAddedLate[0];
+186                 <span class="literal">for</span>(String name: nameOfPlayersAddedLate){
+187                     lineWrite = lineWrite+SPLIT+name;
+188                 }
+189                 buffWrite.write(lineWrite);
+190             }
+191             buffWrite.flush();write.flush();
+192             buffWrite.close();write.close();     
+193     }
+194     <span class="comment">/**</span>
+195 <span class="comment">     * </span><span class="ST0">Gets</span> <span class="ST0">an</span> <span class="ST0">array</span> <span class="ST0">containing</span> <span class="ST0">the</span> <span class="ST0">people</span> <span class="ST0">who</span> <span class="ST0">wish</span> <span class="ST0">to</span> <span class="ST0">play</span> <span class="ST0">in</span> <span class="ST0">the</span> <span class="ST0">league</span>
+196 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">array</span>
+197 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">IOException</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">when</span> <span class="comment">reading</span> <span class="comment">from</span> <span class="comment">the</span> <span class="comment">text</span> <span class="comment">file</span>
+198      <span class="comment">*/</span>
+199     <span class="literal">public</span> <span class="literal">static</span> String[]getListOfPeopleToAddedDuringSeason()<span class="literal">throws</span> IOException{
+200         FileReader read = <span class="literal">new</span> FileReader(FILE_NAME);
+201         BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+202         buffRead.readLine();buffRead.readLine();buffRead.readLine();buffRead.readLine();
+203         String line = buffRead.readLine();
+204         buffRead.close();read.close();
+205         <span class="literal">if</span>(NO_PLAYERS_TO_ADD.equals(line)){
+206             <span class="literal">return</span> <span class="literal">new</span> String[0];
+207         }
+208         <span class="literal">return</span> line.split(SPLIT);
+209     }
+210     <span class="comment">/**</span>
+211 <span class="comment">     * </span><span class="ST0">Loads</span> <span class="ST0">the</span> <span class="ST0">fixtures</span> <span class="ST0">array</span> <span class="ST0">from</span> <span class="ST0">the</span> <span class="ST0">text</span> <span class="ST0">file</span><span class="ST0">.</span>
+212 <span class="comment">     * </span><span class="ST0">@return</span> <span class="comment">The</span> <span class="comment">array</span> <span class="comment">of</span> <span class="comment">fixtures</span>
+213 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">java</span><span class="comment">.</span><span class="comment">lang</span><span class="comment">.</span><span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">if</span> <span class="comment">the</span> <span class="comment">array</span> <span class="comment">can</span><span class="comment">&#39;</span><span class="comment">t</span> <span class="comment">be</span> <span class="comment">loaded</span> <span class="comment">due</span> <span class="comment">to</span> <span class="comment">the</span> <span class="comment">number</span> <span class="comment">of</span> <span class="comment">players</span> <span class="comment">being</span> <span class="comment">too</span> <span class="comment">small</span><span class="comment">.</span>
+214      <span class="comment">*/</span>
+215     <span class="literal">public</span> <span class="literal">static</span> String[][][]loadFixturesArray() <span class="literal">throws</span> Exception{
+216         <span class="literal">try</span>{
+217             FileReader read = <span class="literal">new</span> FileReader(FILE_NAME);
+218             BufferedReader buffRead = <span class="literal">new</span> BufferedReader(read);
+219             String lin=buffRead.readLine();
+220             <span class="literal">if</span>(lin.equals(UNABLE_TO_CREATE_GAME)){<span class="comment">//if there are too few players and hence no fixture has been created, an exception is thrown</span>
+221                 buffRead.close();read.close();
+222                 <span class="literal">throw</span> <span class="literal">new</span> Exception(TOO_FEW_PLAYERS_ARRAY);
+223             }
+224             <span class="literal">int</span> lengthOfFile = Integer.parseInt(lin);
+225             String[][][]fixtures = <span class="literal">new</span> String[2*(lengthOfFile -1)][3][lengthOfFile/2];<span class="comment">//stores the fixtures / results</span>
+226             String line[]=buffRead.readLine().split(SPLIT);<span class="literal">int</span> lineIndex=0;<span class="comment">//stores the white players</span>
+227             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){<span class="comment">//loops through file updating all white players</span>
+228                 <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;lengthOfFile/2;game++){
+229                     fixtures[round][0][game]=line[lineIndex++];
+230                 }
+231             }
+232             line=buffRead.readLine().split(SPLIT);lineIndex=0;<span class="comment">//stores all black players</span>
+233             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){<span class="comment">//loops through array to store all black players</span>
+234                 <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;lengthOfFile/2;game++){
+235                     fixtures[round][1][game]=line[lineIndex++];
+236                 }
+237             }
+238             line=buffRead.readLine().split(SPLIT);lineIndex=0;<span class="comment">//stores the game states of each game</span>
+239             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+240                 <span class="literal">for</span>(<span class="literal">int</span> game=0;game&lt;lengthOfFile/2;game++){
+241                     fixtures[round][2][game]=line[lineIndex++];
+242                 }
+243             }
+244             buffRead.close();read.close();
+245             <span class="literal">return</span> fixtures;
+246         }<span class="literal">catch</span>(IOException e){
+247             System.out.println(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+248             <span class="literal">throw</span> <span class="literal">new</span> Exception(<span class="string">&quot;</span><span class="string">Error </span><span class="string">&quot;</span>+e);
+249         }
+250     }
+251     <span class="comment">/**</span>
+252 <span class="comment">     * </span><span class="ST0">Adds</span> <span class="ST0">a</span> <span class="ST0">player</span> <span class="ST0">who</span> <span class="ST0">is</span> <span class="ST0">not</span> <span class="ST0">part</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">fixtures</span> <span class="ST0">already</span> <span class="ST0">to</span> <span class="ST0">the</span> <span class="ST0">league</span><span class="ST0">.</span> <span class="comment">If</span> <span class="comment">no</span> <span class="comment">games</span> <span class="comment">have</span> <span class="comment">been</span> <span class="comment">played</span><span class="comment">, </span><span class="comment">the</span> <span class="comment">fixtures</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">generated</span> <span class="comment">from</span> <span class="comment">scratch</span><span class="comment">.</span> <span class="comment">Otherwise</span><span class="comment">, </span><span class="comment">they</span> <span class="comment">cannot</span> <span class="comment">actually</span> <span class="comment">play</span> <span class="comment">until</span> <span class="comment">a</span> <span class="comment">new</span> <span class="comment">season</span> <span class="comment">begins</span><span class="comment">.</span>
+253 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">playerName</span> <span class="comment">The</span> <span class="comment">player</span> <span class="comment">name</span>
+254 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">allClubMembers</span> <span class="comment">An</span> <span class="comment">array</span> <span class="comment">of</span> <span class="comment">all</span> <span class="comment">club</span> <span class="comment">member</span> <span class="comment">names</span><span class="comment"> (</span><span class="comment">INCLUDING</span> <span class="comment">PLAYER</span> <span class="comment">TO</span> <span class="comment">BE</span> <span class="comment">ADDED</span><span class="comment">)</span>
+255 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">reading</span> <span class="comment">and</span> <span class="comment">writing</span> <span class="comment">to</span> <span class="comment">text</span> <span class="comment">files</span>
+256      <span class="comment">*/</span>
+257     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> addPlayerToFixtures(String playerName, String[] allClubMembers) <span class="literal">throws</span> Exception{
+258         <span class="comment">/*</span>
+259 <span class="comment">        If no games have been played yet, then just regernate fixtures from scratch. If the data is stored as too few players</span>
+260 <span class="comment">        then generate fixtures from scratch also.</span>
+261         
+262 <span class="comment">        Else, player is added to list of players who cannot play until next season.</span>
+263 <span class="comment">        */</span>
+264         <span class="literal">try</span>{
+265             String[][][]fixtures = loadFixturesArray();
+266             <span class="comment">//checks to see if any games have been played</span>
+267             <span class="literal">boolean</span> hasMatchBeenPlayed=<span class="literal">false</span>;
+268             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+269                 <span class="literal">for</span>(<span class="literal">int</span> match=0;match&lt;fixtures[0][0].length;match++){
+270                     <span class="literal">if</span>((fixtures[round][2][match].equals(BYE_GAME_STATE) || fixtures[round][2][match].equals(GAME_NOT_YET_PLAYED))==<span class="literal">false</span>){
+271                         hasMatchBeenPlayed=<span class="literal">true</span>;
+272                         <span class="literal">break</span>;
+273                     }
+274                 }
+275                 <span class="literal">if</span>(hasMatchBeenPlayed){
+276                     <span class="literal">break</span>;
+277                 }
+278             }
+279             <span class="literal">if</span>(hasMatchBeenPlayed){
+280                 <span class="comment">//adds player to a list of people added halfway through season</span>
+281                 String[]playersAdded=getListOfPeopleToAddedDuringSeason();
+282                 String playersNew[]=<span class="literal">new</span> String[playersAdded.length+1];
+283                 <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;playersAdded.length;i++){
+284                     playersNew[i]=playersAdded[i];
+285                 }
+286                 playersNew[playersAdded.length]=playerName;
+287                 writeToFile(fixtures, playersNew);
+288                 <span class="literal">return</span>;
+289             }<span class="literal">else</span>{
+290                 <span class="comment">//generates the fixtures from scratch as no games have been played</span>
+291                 createdNewFixturesFromStart(allClubMembers);
+292                 <span class="literal">return</span>;
+293             }
+294         }<span class="literal">catch</span>(Exception e){
+295             <span class="comment">//catches exceptions. An exception may be thrown due to file handling. If this is the case, this is a genuine error and needs to be thrown.</span>
+296             <span class="comment">//The error could simply be that fixtures cannot be loaded as there are too few players to generate any fixtures. In this case, fixtures are generated again.</span>
+297             <span class="literal">if</span>(TOO_FEW_PLAYERS_ARRAY.equals(e.getMessage())){
+298                 createdNewFixturesFromStart(allClubMembers);
+299                 <span class="literal">return</span>;
+300             }<span class="literal">else</span>{
+301                 <span class="literal">throw</span> e;
+302             }
+303         }
+304         
+305     }
+306     <span class="comment">/**</span>
+307 <span class="comment">     * </span><span class="ST0">Checks</span> <span class="ST0">to</span> <span class="ST0">see</span> <span class="ST0">if</span> <span class="ST0">the</span> <span class="ST0">player</span> <span class="ST0">is</span> <span class="ST0">part</span> <span class="ST0">of</span> <span class="ST0">the</span> <span class="ST0">league</span><span class="ST0"> (</span><span class="ST0">or</span> <span class="ST0">waiting</span> <span class="ST0">to</span> <span class="ST0">be</span><span class="ST0">) </span><span class="ST0">and</span> <span class="ST0">removes</span> <span class="ST0">them</span> <span class="ST0">if</span> <span class="ST0">they</span> <span class="ST0">are</span><span class="ST0">.</span> <span class="comment">If</span> <span class="comment">they</span> <span class="comment">appear</span> <span class="comment">in</span> <span class="comment">the</span> <span class="comment">fixtures</span><span class="comment">, </span><span class="comment">those</span> <span class="comment">games</span> <span class="comment">will</span> <span class="comment">be</span> <span class="comment">marked</span> <span class="comment">as</span> <span class="comment">bye</span> <span class="comment">games</span><span class="comment">.</span>
+308 <span class="comment">     * </span><span class="ST0">@param</span> <span class="comment">playerName</span> <span class="comment">The</span> <span class="comment">name</span> <span class="comment">of</span> <span class="comment">the</span> <span class="comment">player</span>
+309 <span class="comment">     * </span><span class="ST0">@throws</span> <span class="comment">Exception</span> <span class="comment">An</span> <span class="comment">exception</span> <span class="comment">may</span> <span class="comment">occur</span> <span class="comment">when</span> <span class="comment">reading</span> <span class="comment">to</span> <span class="comment">and</span> <span class="comment">from</span> <span class="comment">a</span> <span class="comment">text</span> <span class="comment">file</span>
+310      <span class="comment">*/</span>
+311     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> removePlayerFromFixtures(String playerName)<span class="literal">throws</span> Exception{
+312         <span class="literal">try</span>{
+313             String fixtures[][][]=loadFixturesArray();
+314             <span class="comment">//checks to see if player is in fixture. If they are, all their matches are set to bye games (even the ones already played)</span>
+315             <span class="literal">boolean</span> playerFound=<span class="literal">false</span>;
+316             <span class="literal">for</span>(<span class="literal">int</span> round=0;round&lt;fixtures.length;round++){
+317                 <span class="literal">for</span>(<span class="literal">int</span> match=0;match&lt;fixtures[0][0].length;match++){
+318                     <span class="literal">if</span>(fixtures[round][0][match].equals(playerName)){
+319                         fixtures[round][0][match]=BY_NAME;
+320                         fixtures[round][2][match]=BYE_GAME_STATE;
+321                         playerFound=<span class="literal">true</span>;                        
+322                     }<span class="literal">else</span> <span class="literal">if</span>(fixtures[round][1][match].equals(playerName)){
+323                         fixtures[round][1][match]=BY_NAME;
+324                         fixtures[round][2][match]=BYE_GAME_STATE;
+325                         playerFound=<span class="literal">true</span>;
+326                     }
+327                 }   
+328             }
+329             <span class="literal">if</span>(playerFound){
+330                 <span class="comment">//writes the new fixtures to file</span>
+331                 writeToFile(fixtures, getListOfPeopleToAddedDuringSeason());
+332                 <span class="literal">return</span>;
+333             }<span class="literal">else</span>{
+334                 <span class="comment">//checks to see if player was added mid way through season.</span>
+335                 <span class="literal">int</span> indexOfPlayer=-1;
+336                 String[]people=getListOfPeopleToAddedDuringSeason();
+337                 <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;people.length;i++){
+338                     <span class="literal">if</span>(people[i].equals(playerName)){
+339                         indexOfPlayer=i;
+340                         <span class="literal">break</span>;
+341                     }
+342                 }
+343                 <span class="literal">if</span>(indexOfPlayer==-1){
+344                     <span class="literal">return</span> ;<span class="comment">//no action is needed</span>
+345                 }<span class="literal">else</span>{
+346                     <span class="comment">//removes player from list of people waiting</span>
+347                     String peopleNew[]=<span class="literal">new</span> String[people.length-1];
+348                     <span class="literal">for</span>(<span class="literal">int</span> i=0;i&lt;indexOfPlayer;i++){
+349                         peopleNew[i]=people[i];
+350                     }
+351                     <span class="literal">for</span>(<span class="literal">int</span> i=indexOfPlayer+1;i&lt;people.length;i++){
+352                         peopleNew[i-1]=people[i];
+353                     }
+354                     <span class="comment">//writes updated file</span>
+355                     writeToFile(fixtures, peopleNew);
+356                     <span class="literal">return</span>;
+357                 }
+358             }
+359         }<span class="literal">catch</span>(Exception e){
+360             <span class="comment">//an exception may occur if there are too few players to create fixtures. In this case, no action is needed.</span>
+361             <span class="literal">if</span>(TOO_FEW_PLAYERS_ARRAY.equals(e.getMessage())){
+362                 <span class="literal">return</span>;
+363             }<span class="literal">else</span>{
+364                 <span class="literal">throw</span> e;
+365             }
+366         }
+367                 
+368     } 
+369 }
+370 
+</pre></body>
+</html>
