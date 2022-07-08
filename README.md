@@ -4,7 +4,7 @@ The "Server" folder contains the server side application and "User" contains the
 User GUI:
 ![image](https://user-images.githubusercontent.com/64362945/177981945-c0885920-4da4-4d76-afe0-044b8aadd960.png)
 
-https://user-images.githubusercontent.com/64362945/177982711-61287083-4a7b-41ed-af61-ea64b58a3eb2.mp4
+https://user-images.githubusercontent.com/64362945/177983922-a79d6358-a507-4ff4-b2be-0515ad0d5a4c.mp4
 
 
 Server GUI:
